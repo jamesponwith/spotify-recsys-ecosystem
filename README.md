@@ -1,6 +1,6 @@
 # A music recommendation ecosystem, and what measuring it honestly turned up
 
-Four applications built on the [Spotify Million Playlist Dataset](https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge).
+Five applications built on the [Spotify Million Playlist Dataset](https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge).
 They are not four demos of the same idea. Each one was built to answer a question
 the previous one raised, and two of them answered it *no*.
 
@@ -10,6 +10,7 @@ the previous one raised, and two of them answered it *no*.
 | **[timbre](timbre/)** | Content-based cold start | **Killed at its own gate.** Audio descriptors recover 13.2% of what playlist history gives; the bar was 25% |
 | **[segue](segue/)** | Sequence-aware continuation | Playlist order carries real signal — 13.7% fewer Clicks — that set metrics cannot see |
 | **[gamut](gamut/)** | Catalog exposure audit | 43.6% of exposure goes to 1% of artists, and no amount of re-ranking fixes it |
+| **[ostinato](ostinato/)** | Feedback-loop simulation | No detectable runaway in 5 rounds — but the exposure penalty holds its gain in 6 of 6 |
 
 ---
 
@@ -58,6 +59,23 @@ ceiling is set upstream of everything that gets ranked.**
 
 ---
 
+**Ostinato** closes the loop the first four leave open. A recommender is trained
+on interaction data its own output helped create, so Gamut's snapshot may be a
+frame from a film. Five rounds of recommend → accept → refit, against an organic
+control.
+
+> The runaway did not happen. Artist Gini drifts +0.0014 under the closed loop
+> against +0.0010 under the control — an excess of +0.0004 against a ±0.0023
+> noise band. That was not the hypothesis, and it is the headline anyway.
+
+What is real is the third arm: Gamut's popularity penalty holds **+4.8 points**
+more long-tail share in **6 of 6 rounds**. That comparison is *paired* — both arms
+see the same queries and the listener accepts the same positions, so only the
+ranking differs. An intervention that looked marginal in a snapshot does not decay
+under compounding.
+
+---
+
 ## Things that were wrong, and stayed on the record
 
 Every project here has a findings document, because the errors were the most
@@ -76,6 +94,12 @@ useful output.
   where its docstring promises "the first k tracks". Documented rather than
   patched, because fixing it would move every number in Cadence's published
   report. See [segue/docs/FINDINGS.md](segue/docs/FINDINGS.md).
+- **Ostinato's** first run was underpowered and the control proved it: a 0.011%
+  corpus perturbation per round against a noise floor of σ = 0.0012 in artist
+  Gini. It was killed before finishing rather than reported, because it would
+  have produced a confident-looking null that was really a power failure. Its
+  query sample is also redrawn each round, which confounds within-arm
+  trajectories — named on the page rather than quietly smoothed over.
 - **Gamut's** first exposure frontier came out perfectly flat. Exposure metrics
   computed over the candidate pool are invariant to re-ranking — reordering a set
   does not change the set. Exposure has to be counted at the cut the listener
@@ -91,6 +115,7 @@ Each app has a working demo command and a published report showing real output.
 | timbre | `timbre demo "<request>"` | Cadence's own picks frozen out, then handed back an audio-only embedding |
 | segue | `segue demo` | a held-out playlist continued, against what the person really played next |
 | gamut | `gamut demo` | one query before and after the exposure-aware re-rank |
+| ostinato | `ostinato simulate` | exposure drift across rounds, three arms |
 
 ## Running any of it
 

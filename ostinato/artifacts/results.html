@@ -1,0 +1,240 @@
+<title>When the Recommender Trains on Itself</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --surface: #F7F6F4;
+    --raised: #FFFFFF;
+    --ink: #1A1815;
+    --ink_soft: #443F39;
+    --muted: #65605A;
+    --hairline: #E2DED8;
+    --grid: #EDE9E4;
+    --loop: #C74A38;
+    --aware: #4557A8;
+    --floor: #948E87;
+    --good: #2E7D4F;
+    --critical: #B3261E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --surface: #16151A;
+    --raised: #1E1C22;
+    --ink: #ECE9E5;
+    --ink_soft: #C9C4BD;
+    --muted: #9A948C;
+    --hairline: #2B2830;
+    --grid: #232028;
+    --loop: #DD6E5E;
+    --aware: #7C8BD8;
+    --floor: #867F78;
+    --good: #4CAF7D;
+    --critical: #E5766D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --surface: #16151A;
+    --raised: #1E1C22;
+    --ink: #ECE9E5;
+    --ink_soft: #C9C4BD;
+    --muted: #9A948C;
+    --hairline: #2B2830;
+    --grid: #232028;
+    --loop: #DD6E5E;
+    --aware: #7C8BD8;
+    --floor: #867F78;
+    --good: #4CAF7D;
+    --critical: #E5766D;
+  }
+  body {
+    margin: 0; background: var(--surface); color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 56px 24px 96px; }
+  h1, h2, h3 {
+    font-family: ui-serif, "Iowan Old Style", "Source Serif 4", Palatino, Georgia, serif;
+    font-weight: 600; text-wrap: balance; margin: 0;
+  }
+  h1 { font-size: 2.4rem; letter-spacing: -0.018em; line-height: 1.14; }
+  h2 { font-size: 1.42rem; letter-spacing: -0.01em; }
+  p { margin: 0; max-width: 68ch; }
+  section { display: flex; flex-direction: column; gap: 16px; }
+  main { display: flex; flex-direction: column; gap: 54px; }
+  header { display: flex; flex-direction: column; gap: 14px; }
+  .eyebrow, .tick, .ptitle, td.num, th.num, .hero-num, code, .delta, .chip {
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+  .eyebrow { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .lede { font-size: 1.1rem; color: var(--ink_soft); max-width: 64ch; }
+  .meta { font-size: 0.76rem; color: var(--muted); border-top: 1px solid var(--hairline);
+    padding-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 20px; }
+  .verdict { background: var(--raised); border: 1px solid var(--hairline); border-radius: 10px;
+    padding: 26px 28px; display: grid; grid-template-columns: minmax(190px, auto) 1fr;
+    gap: 26px 36px; align-items: start; }
+  @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
+  .hero-num { font-size: 2.6rem; line-height: 1.1; font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em; color: var(--loop); }
+  .hero-cap { font-size: 0.8rem; color: var(--muted); margin-top: 8px; max-width: 28ch; }
+  .checks { display: flex; flex-direction: column; gap: 10px; }
+  .check { display: grid; grid-template-columns: 20px 1fr auto; gap: 12px; align-items: baseline;
+    font-size: 0.92rem; border-bottom: 1px dotted var(--hairline); padding-bottom: 9px; }
+  .check:last-child { border-bottom: none; }
+  .check .num { font-size: 0.86rem; color: var(--ink_soft); font-variant-numeric: tabular-nums;
+    font-family: ui-monospace, Menlo, monospace; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .scroll { overflow-x: auto; }
+  .chart { display: block; max-width: 100%; height: auto; }
+  .chart .tick { font-size: 10px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+  .chart .ptitle { font-size: 11.5px; fill: var(--ink_soft); letter-spacing: .04em; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 0.8rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+  .caption { font-size: 0.83rem; color: var(--muted); max-width: 66ch; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+  th, td { text-align: left; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--hairline);
+    vertical-align: top; }
+  th { font-size: 0.7rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted);
+    font-weight: 500; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 0; }
+  .delta { font-size: 0.78rem; color: var(--muted); }
+  tr:last-child td { border-bottom: none; }
+  .note { border-left: 2px solid var(--loop); padding: 2px 0 2px 18px; color: var(--ink_soft);
+    font-size: 0.93rem; }
+  code { font-size: 0.86em; background: var(--raised); border: 1px solid var(--hairline);
+    border-radius: 4px; padding: 1px 5px; }
+  ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+  li { max-width: 66ch; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">Ostinato &middot; feedback-loop simulation</span>
+      <h1>When the recommender trains on itself</h1>
+      <p class="lede">Gamut measured concentration at one instant. But a recommender
+      is trained on interaction data its own output helped create. Close that loop and
+      run it 5 times.</p>
+      <div class="meta">
+        <span>5 rounds &times; 3 arms</span>
+        <span>150 queries per round</span>
+        <span>full refit each round</span>
+        <span>seed 20260815</span>
+        <span>30 min</span>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <div class="verdict">
+          <div>
+            <div class="hero-num">+0.0005</div>
+            <div class="hero-cap">excess artist-Gini drift under the closed loop &mdash;
+            against a &plusmn;0.0023 noise band. Too small to call.</div>
+          </div>
+          <div class="checks"><div class="check"><span style="color:var(--critical)" aria-hidden="true">&#10007;</span><span>Closed loop concentrates faster than the control<span class="sr-only"> &mdash; no</span></span><span class="num">+0.0005 vs a &plusmn;0.0023 noise band</span></div><div class="check"><span style="color:var(--good)" aria-hidden="true">&#10003;</span><span>Exposure penalty holds more long tail, every round<span class="sr-only"> &mdash; yes</span></span><span class="num">+4.8pp, 6/6 rounds</span></div></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Three worlds, same starting state</h2>
+        <p>Every arm begins from Cadence's trained spaces and adds the same kind of data
+        each round: playlists a simulated listener kept. Only the <em>source</em> of the
+        ranking differs.</p>
+        <ul>
+          <li><strong>Organic control</strong> &mdash; the ranking is drawn from the
+          catalog's own popularity distribution, not from a query. This is the arm that
+          makes the others readable: it adds the same volume of new data, so drift cannot
+          be blamed on simply having more of it.</li>
+          <li><strong>Closed loop</strong> &mdash; Cadence as it ships.</li>
+          <li><strong>Closed loop + exposure penalty</strong> &mdash; Gamut's popularity
+          penalty at 0.3, applied before the listener ever sees the list. On
+          Gamut's static frontier this barely moved artist Gini at all.</li>
+        </ul>
+        <p>The listener is a position-based acceptance model: a track at the top is kept
+        far more often than one at the bottom. That is the crude part and also the
+        load-bearing part &mdash; it is the mechanism that turns a <em>ranking</em> bias
+        into a <em>data</em> bias, and then into a training bias next round.</p>
+      </section>
+
+      <section>
+        <h2>What 5 rounds do</h2>
+        <div class="grid3"><div><svg viewBox="0 0 300 210" width="300" height="210" role="img" aria-label="ARTIST GINI across rounds" class="chart"><text x="0" y="12" class="ptitle">ARTIST GINI</text><line x1="54" y1="180.0" x2="288" y2="180.0" stroke="var(--grid)" stroke-width="1"/><text x="46" y="183.5" class="tick" text-anchor="end">0.963</text><line x1="54" y1="103.0" x2="288" y2="103.0" stroke="var(--grid)" stroke-width="1"/><text x="46" y="106.5" class="tick" text-anchor="end">0.967</text><line x1="54" y1="26.0" x2="288" y2="26.0" stroke="var(--grid)" stroke-width="1"/><text x="46" y="29.5" class="tick" text-anchor="end">0.971</text><text x="54.0" y="200" class="tick" text-anchor="middle">r0</text><text x="147.6" y="200" class="tick" text-anchor="middle">r2</text><text x="241.2" y="200" class="tick" text-anchor="middle">r4</text><polyline points="54.0,157.0 100.8,96.5 147.6,155.0 194.4,129.5 241.2,116.3 288.0,137.6" fill="none" stroke="var(--floor)" stroke-width="2" stroke-linejoin="round" stroke-dasharray="5 4"/><circle cx="288.0" cy="137.6" r="3.5" fill="var(--floor)" stroke="var(--surface)" stroke-width="1.5"/><g class="pt"><title>Organic control round 0: 0.964</title><circle cx="54.0" cy="157.0" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 1: 0.967</title><circle cx="100.8" cy="96.5" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 2: 0.964</title><circle cx="147.6" cy="155.0" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 3: 0.966</title><circle cx="194.4" cy="129.5" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 4: 0.966</title><circle cx="241.2" cy="116.3" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 5: 0.965</title><circle cx="288.0" cy="137.6" r="8" fill="transparent"/></g><polyline points="54.0,113.0 100.8,46.4 147.6,138.7 194.4,101.5 241.2,65.6 288.0,84.4" fill="none" stroke="var(--loop)" stroke-width="2" stroke-linejoin="round"/><circle cx="288.0" cy="84.4" r="3.5" fill="var(--loop)" stroke="var(--surface)" stroke-width="1.5"/><g class="pt"><title>Closed loop round 0: 0.967</title><circle cx="54.0" cy="113.0" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 1: 0.970</title><circle cx="100.8" cy="46.4" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 2: 0.965</title><circle cx="147.6" cy="138.7" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 3: 0.967</title><circle cx="194.4" cy="101.5" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 4: 0.969</title><circle cx="241.2" cy="65.6" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 5: 0.968</title><circle cx="288.0" cy="84.4" r="8" fill="transparent"/></g><polyline points="54.0,127.6 100.8,69.5 147.6,159.6 194.4,121.4 241.2,101.1 288.0,90.0" fill="none" stroke="var(--aware)" stroke-width="2" stroke-linejoin="round"/><circle cx="288.0" cy="90.0" r="3.5" fill="var(--aware)" stroke="var(--surface)" stroke-width="1.5"/><g class="pt"><title>Closed loop + exposure penalty round 0: 0.966</title><circle cx="54.0" cy="127.6" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 1: 0.969</title><circle cx="100.8" cy="69.5" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 2: 0.964</title><circle cx="147.6" cy="159.6" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 3: 0.966</title><circle cx="194.4" cy="121.4" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 4: 0.967</title><circle cx="241.2" cy="101.1" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 5: 0.968</title><circle cx="288.0" cy="90.0" r="8" fill="transparent"/></g></svg></div><div><svg viewBox="0 0 300 210" width="300" height="210" role="img" aria-label="TOP 1% ARTIST SHARE across rounds" class="chart"><text x="0" y="12" class="ptitle">TOP 1% ARTIST SHARE</text><line x1="54" y1="180.0" x2="288" y2="180.0" stroke="var(--grid)" stroke-width="1"/><text x="46" y="183.5" class="tick" text-anchor="end">46%</text><line x1="54" y1="103.0" x2="288" y2="103.0" stroke="var(--grid)" stroke-width="1"/><text x="46" y="106.5" class="tick" text-anchor="end">51%</text><line x1="54" y1="26.0" x2="288" y2="26.0" stroke="var(--grid)" stroke-width="1"/><text x="46" y="29.5" class="tick" text-anchor="end">55%</text><text x="54.0" y="200" class="tick" text-anchor="middle">r0</text><text x="147.6" y="200" class="tick" text-anchor="middle">r2</text><text x="241.2" y="200" class="tick" text-anchor="middle">r4</text><polyline points="54.0,147.8 100.8,104.3 147.6,152.6 194.4,138.7 241.2,112.4 288.0,138.7" fill="none" stroke="var(--floor)" stroke-width="2" stroke-linejoin="round" stroke-dasharray="5 4"/><circle cx="288.0" cy="138.7" r="3.5" fill="var(--floor)" stroke="var(--surface)" stroke-width="1.5"/><g class="pt"><title>Organic control round 0: 48%</title><circle cx="54.0" cy="147.8" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 1: 51%</title><circle cx="100.8" cy="104.3" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 2: 48%</title><circle cx="147.6" cy="152.6" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 3: 48%</title><circle cx="194.4" cy="138.7" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 4: 50%</title><circle cx="241.2" cy="112.4" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 5: 48%</title><circle cx="288.0" cy="138.7" r="8" fill="transparent"/></g><polyline points="54.0,146.2 100.8,46.4 147.6,142.4 194.4,100.6 241.2,87.2 288.0,117.8" fill="none" stroke="var(--loop)" stroke-width="2" stroke-linejoin="round"/><circle cx="288.0" cy="117.8" r="3.5" fill="var(--loop)" stroke="var(--surface)" stroke-width="1.5"/><g class="pt"><title>Closed loop round 0: 48%</title><circle cx="54.0" cy="146.2" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 1: 54%</title><circle cx="100.8" cy="46.4" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 2: 48%</title><circle cx="147.6" cy="142.4" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 3: 51%</title><circle cx="194.4" cy="100.6" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 4: 52%</title><circle cx="241.2" cy="87.2" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 5: 50%</title><circle cx="288.0" cy="117.8" r="8" fill="transparent"/></g><polyline points="54.0,156.9 100.8,66.2 147.6,159.6 194.4,117.2 241.2,117.2 288.0,122.1" fill="none" stroke="var(--aware)" stroke-width="2" stroke-linejoin="round"/><circle cx="288.0" cy="122.1" r="3.5" fill="var(--aware)" stroke="var(--surface)" stroke-width="1.5"/><g class="pt"><title>Closed loop + exposure penalty round 0: 47%</title><circle cx="54.0" cy="156.9" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 1: 53%</title><circle cx="100.8" cy="66.2" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 2: 47%</title><circle cx="147.6" cy="159.6" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 3: 50%</title><circle cx="194.4" cy="117.2" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 4: 50%</title><circle cx="241.2" cy="117.2" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 5: 49%</title><circle cx="288.0" cy="122.1" r="8" fill="transparent"/></g></svg></div><div><svg viewBox="0 0 300 210" width="300" height="210" role="img" aria-label="CATALOG REACH across rounds" class="chart"><text x="0" y="12" class="ptitle">CATALOG REACH</text><line x1="54" y1="180.0" x2="288" y2="180.0" stroke="var(--grid)" stroke-width="1"/><text x="46" y="183.5" class="tick" text-anchor="end">1.3%</text><line x1="54" y1="103.0" x2="288" y2="103.0" stroke="var(--grid)" stroke-width="1"/><text x="46" y="106.5" class="tick" text-anchor="end">1.5%</text><line x1="54" y1="26.0" x2="288" y2="26.0" stroke="var(--grid)" stroke-width="1"/><text x="46" y="29.5" class="tick" text-anchor="end">1.8%</text><text x="54.0" y="200" class="tick" text-anchor="middle">r0</text><text x="147.6" y="200" class="tick" text-anchor="middle">r2</text><text x="241.2" y="200" class="tick" text-anchor="middle">r4</text><polyline points="54.0,50.4 100.8,51.8 147.6,51.4 194.4,47.4 241.2,51.6 288.0,46.4" fill="none" stroke="var(--floor)" stroke-width="2" stroke-linejoin="round" stroke-dasharray="5 4"/><circle cx="288.0" cy="46.4" r="3.5" fill="var(--floor)" stroke="var(--surface)" stroke-width="1.5"/><g class="pt"><title>Organic control round 0: 1.7%</title><circle cx="54.0" cy="50.4" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 1: 1.7%</title><circle cx="100.8" cy="51.8" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 2: 1.7%</title><circle cx="147.6" cy="51.4" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 3: 1.7%</title><circle cx="194.4" cy="47.4" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 4: 1.7%</title><circle cx="241.2" cy="51.6" r="8" fill="transparent"/></g><g class="pt"><title>Organic control round 5: 1.7%</title><circle cx="288.0" cy="46.4" r="8" fill="transparent"/></g><polyline points="54.0,157.8 100.8,157.0 147.6,128.0 194.4,124.4 241.2,142.8 288.0,159.6" fill="none" stroke="var(--loop)" stroke-width="2" stroke-linejoin="round"/><circle cx="288.0" cy="159.6" r="3.5" fill="var(--loop)" stroke="var(--surface)" stroke-width="1.5"/><g class="pt"><title>Closed loop round 0: 1.3%</title><circle cx="54.0" cy="157.8" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 1: 1.4%</title><circle cx="100.8" cy="157.0" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 2: 1.4%</title><circle cx="147.6" cy="128.0" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 3: 1.5%</title><circle cx="194.4" cy="124.4" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 4: 1.4%</title><circle cx="241.2" cy="142.8" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop round 5: 1.3%</title><circle cx="288.0" cy="159.6" r="8" fill="transparent"/></g><polyline points="54.0,155.8 100.8,154.0 147.6,121.8 194.4,120.4 241.2,136.2 288.0,157.6" fill="none" stroke="var(--aware)" stroke-width="2" stroke-linejoin="round"/><circle cx="288.0" cy="157.6" r="3.5" fill="var(--aware)" stroke="var(--surface)" stroke-width="1.5"/><g class="pt"><title>Closed loop + exposure penalty round 0: 1.4%</title><circle cx="54.0" cy="155.8" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 1: 1.4%</title><circle cx="100.8" cy="154.0" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 2: 1.5%</title><circle cx="147.6" cy="121.8" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 3: 1.5%</title><circle cx="194.4" cy="120.4" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 4: 1.4%</title><circle cx="241.2" cy="136.2" r="8" fill="transparent"/></g><g class="pt"><title>Closed loop + exposure penalty round 5: 1.3%</title><circle cx="288.0" cy="157.6" r="8" fill="transparent"/></g></svg></div></div>
+        <div class="legend"><span><i class="swatch" style="background:var(--floor); opacity:.7"></i>Organic control</span><span><i class="swatch" style="background:var(--loop)"></i>Closed loop</span><span><i class="swatch" style="background:var(--aware)"></i>Closed loop + exposure penalty</span></div>
+        <p class="caption">Round 0 is measured before any feedback is folded in, so all
+        three arms start from the same system. Each later round is a full refit of the
+        collaborative and folksonomy spaces on the grown corpus.</p>
+      </section>
+
+      <section>
+        <h2>Start to finish</h2>
+        <div class="scroll"><table><thead><tr><th>Metric</th><th class="num">Organic control</th><th class="num">Closed loop</th><th class="num">Closed loop + exposure penalty</th></tr></thead><tbody><tr><td>Artist Gini</td><td class="num">0.9643 &rarr; 0.9653<br><span class="delta">+0.0010</span></td><td class="num">0.9665 &rarr; 0.9680<br><span class="delta">+0.0014</span></td><td class="num">0.9658 &rarr; 0.9677<br><span class="delta">+0.0019</span></td></tr><tr><td>Top 1% artist share</td><td class="num">47.9% &rarr; 48.4%<br><span class="delta">+0.6%</span></td><td class="num">48.0% &rarr; 49.7%<br><span class="delta">+1.8%</span></td><td class="num">47.3% &rarr; 49.5%<br><span class="delta">+2.2%</span></td></tr><tr><td>Catalog reach</td><td class="num">1.686% &rarr; 1.699%<br><span class="delta">+0.013%</span></td><td class="num">1.349% &rarr; 1.344%<br><span class="delta">-0.006%</span></td><td class="num">1.356% &rarr; 1.350%<br><span class="delta">-0.006%</span></td></tr><tr><td>Long-tail share</td><td class="num">8.0% &rarr; 8.1%<br><span class="delta">+0.1%</span></td><td class="num">62.5% &rarr; 65.4%<br><span class="delta">+2.9%</span></td><td class="num">66.8% &rarr; 70.2%<br><span class="delta">+3.4%</span></td></tr></tbody></table></div>
+      </section>
+
+      <section>
+        <h2>Reading it</h2>
+        <div class="note"><strong>The runaway did not happen.</strong> Artist Gini drifts
+        +0.0014 under the closed loop against +0.0010
+        under the control &mdash; an excess of +0.0005 against a noise band of
+        &plusmn;0.0023, measured as twice the control's own round-to-round standard
+        deviation. At this dose and this horizon there is no detectable homogenisation.</div>
+        <p>That is the honest headline and it is worth stating plainly, because the
+        hypothesis going in was the opposite. What the simulation does <em>not</em> support
+        is a claim that five rounds at ~1.4% corpus perturbation drive the catalog toward
+        collapse. A longer horizon, a larger dose, or a system with weaker content
+        channels might; this one, at this setting, does not.</p>
+      </section>
+
+      <section>
+        <h2>The result that is real</h2>
+        <div class="note">The exposure penalty holds <strong>+4.8 points</strong>
+        more long-tail share than the unmodified loop, and it does so in
+        <strong>6 of 6</strong> rounds &mdash; every one.</div>
+        <p>This one is trustworthy in a way the trajectories are not, because it is
+        <em>paired</em>. Both loop arms are driven by the same random stream: at every
+        round they see the identical query sample, and the simulated listener accepts the
+        identical <em>positions</em>. The only thing that differs between them is which
+        track sits at each position. So the gap is attributable to the ranking and to
+        nothing else.</p>
+        <p>Carry that back to Gamut, which measured the same penalty in a static snapshot
+        and found it moved artist Gini by 0.003 &mdash; near enough to nothing. Its effect
+        on <em>tail share</em> was real there too, and it survives being run through five
+        rounds of the corpus rebuilding itself. An intervention that looks marginal in a
+        snapshot does not necessarily decay under compounding.</p>
+      </section>
+
+      <section>
+        <h2>What this is not</h2>
+        <ul>
+          <li><strong>Not a claim about real listeners.</strong> The acceptance model is
+          position bias and nothing else &mdash; no taste, no satiation, no repeat plays,
+          no discovery outside the recommender. It is a claim about what a ranking bias
+          does to a corpus once the corpus is downstream of the ranking.</li>
+          <li><strong>Not calibrated to a real time-scale.</strong> A round is
+          150 queries against a corpus of ~98k playlists, so the
+          per-round effect is small by construction. The direction and the ordering of
+          the arms are the findings; the magnitudes are not transferable.</li>
+          <li><strong>The organic control is popularity-proportional</strong>, which is
+          itself a rich-get-richer process. That is deliberate &mdash; the question is
+          whether the recommender concentrates <em>faster</em> than the world already
+          does, not whether concentration exists.</li>
+          <li><strong>A design flaw worth naming: the query sample is redrawn every
+          round.</strong> That leaves within-arm trajectories confounded &mdash; a change
+          between rounds mixes system drift with a change of question. Cross-arm
+          comparisons at a fixed round are clean, because the arms share a query sample,
+          which is exactly why the paired result above is reported and the trend lines are
+          not. Holding one query set fixed across rounds is the first thing to change.</li>
+          <li>Only the collaborative and folksonomy spaces are refit each round. The
+          lexical and audio channels are content-based and do not move, which plausibly
+          anchors the system against drift &mdash; a recommender without them might not
+          hold as still.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Reproduce</h2>
+        <p><code>ostinato simulate</code> &middot;
+        <code>python scripts/build_report.py</code></p>
+      </section>
+    </main>
+  </div>
