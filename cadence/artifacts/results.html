@@ -1,0 +1,1085 @@
+<title>Cadence</title>
+<style>
+  /* ---- tokens: complete light palette on bare :root ---------------- */
+  :root {
+    --ground: #f4f5f3;
+    --surface: #ffffff;
+    --surface-2: #eceeeb;
+    --ink: #161a18;
+    --ink-2: #454e4a;
+    --ink-3: #6c7570;
+    --rule: #dce0db;
+    --rule-strong: #c3c9c2;
+    --accent: #12876a;
+    --accent-ink: #0d6a53;
+    --accent-soft: #e2efea;
+    --s1: #12876a;
+    --s2: #c2410c;
+    --s3: #4c4fbf;
+    --grid: #e6e9e4;
+    --shadow: 0 1px 2px rgba(20, 30, 26, .05), 0 8px 24px -12px rgba(20, 30, 26, .12);
+
+    --mono: ui-monospace, "SFMono-Regular", "SF Mono", "JetBrains Mono",
+            "Cascadia Code", Menlo, Consolas, monospace;
+    --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            "Helvetica Neue", sans-serif;
+
+    --measure: 68ch;
+    --wide: 1120px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0f1312;
+      --surface: #161b19;
+      --surface-2: #1d2422;
+      --ink: #e7ebe8;
+      --ink-2: #b4bdb8;
+      --ink-3: #8a938e;
+      --rule: #252d2a;
+      --rule-strong: #36403c;
+      --accent: #2fa98a;
+      --accent-ink: #4bc3a3;
+      --accent-soft: #14302a;
+      --s1: #2fa98a;
+      --s2: #e2703a;
+      --s3: #8b84ee;
+      --grid: #222a27;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0f1312;
+    --surface: #161b19;
+    --surface-2: #1d2422;
+    --ink: #e7ebe8;
+    --ink-2: #b4bdb8;
+    --ink-3: #8a938e;
+    --rule: #252d2a;
+    --rule-strong: #36403c;
+    --accent: #2fa98a;
+    --accent-ink: #4bc3a3;
+    --accent-soft: #14302a;
+    --s1: #2fa98a;
+    --s2: #e2703a;
+    --s3: #8b84ee;
+    --grid: #222a27;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .6);
+  }
+
+  /* ---- base -------------------------------------------------------- */
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.62;
+    margin: 0;
+    padding: 0 24px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--wide); margin: 0 auto; }
+  .col  { max-width: var(--measure); }
+
+  p { margin: 0 0 1.05em; color: var(--ink-2); }
+  p strong { color: var(--ink); font-weight: 600; }
+  a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:focus-visible, summary:focus-visible, .tab:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px;
+  }
+
+  /* ---- masthead ---------------------------------------------------- */
+  .masthead {
+    border-bottom: 1px solid var(--rule);
+    padding: 72px 0 28px;
+    margin-bottom: 44px;
+  }
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(38px, 7vw, 66px);
+    font-weight: 700;
+    letter-spacing: -.045em;
+    line-height: .96;
+    margin: 0 0 18px;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  h1 .dot { color: var(--accent); }
+  .standfirst {
+    font-size: clamp(18px, 2.1vw, 21px);
+    line-height: 1.5;
+    color: var(--ink-2);
+    max-width: 60ch;
+    margin: 0 0 26px;
+  }
+  .standfirst b { color: var(--ink); font-weight: 600; }
+
+  .kicker {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 14px;
+  }
+
+  /* ---- stat strip -------------------------------------------------- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .stat { background: var(--surface); padding: 16px 18px 18px; }
+  .stat .v {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 27px;
+    font-weight: 700;
+    letter-spacing: -.03em;
+    color: var(--ink);
+    display: block;
+    line-height: 1.15;
+  }
+  .stat .v.hl { color: var(--accent); }
+  .stat .k {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-top: 6px;
+    display: block;
+  }
+
+  /* ---- sections ---------------------------------------------------- */
+  section { padding: 52px 0 0; }
+  section + section { border-top: 1px solid var(--rule); margin-top: 52px; }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: -.03em;
+    color: var(--ink);
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 10px;
+  }
+  .lede { font-size: 18px; color: var(--ink-2); margin-bottom: 26px; }
+
+  h3 {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    margin: 30px 0 8px;
+    color: var(--ink);
+  }
+
+  /* ---- panels & charts --------------------------------------------- */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 22px 22px 16px;
+    margin: 26px 0;
+    box-shadow: var(--shadow);
+  }
+  .panel-head { margin-bottom: 4px; }
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    color: var(--ink);
+  }
+  .panel-sub {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-3);
+    margin-top: 3px;
+    line-height: 1.45;
+  }
+  .chart-scroll { overflow-x: auto; margin-top: 14px; }
+  svg { display: block; max-width: 100%; height: auto; }
+  .tick { font-family: var(--mono); font-size: 11px; fill: var(--ink-3); }
+  .barlabel { font-family: var(--mono); font-size: 12px; fill: var(--ink); font-weight: 700; }
+  .catlabel { font-family: var(--mono); font-size: 12px; fill: var(--ink-2); }
+  .catlabel.em { fill: var(--ink); font-weight: 700; }
+  .axisline { stroke: var(--rule-strong); stroke-width: 1; }
+  .gridline { stroke: var(--grid); stroke-width: 1; }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-2);
+    margin: 12px 0 0; padding: 0; list-style: none;
+  }
+  .legend li { display: flex; align-items: center; gap: 7px; }
+  .swatch { width: 11px; height: 11px; border-radius: 2px; flex: none; }
+
+  details {
+    margin-top: 14px;
+    border-top: 1px solid var(--rule);
+    padding-top: 10px;
+  }
+  summary {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--ink-3); cursor: pointer;
+  }
+  summary:hover { color: var(--accent); }
+
+
+  .demo-grid { display: flex; flex-direction: column; gap: 26px; }
+  .demo-q { font-family: var(--mono); font-size: 13px; color: var(--accent-ink);
+    letter-spacing: .01em; }
+  .demo-title { font-size: 19px; font-weight: 650; margin-top: 4px; }
+  .demo-desc { font-size: 14.5px; color: var(--ink-2); margin-top: 2px; max-width: 62ch; }
+  .demo-facts { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px;
+    font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .demo-facts b { color: var(--ink-2); font-weight: 600; }
+  .why { color: var(--ink-3); font-size: 12.5px; }
+  .seg { font-family: var(--mono); font-size: 11.5px; color: var(--accent-ink);
+    white-space: nowrap; }
+  td.pos { font-family: var(--mono); color: var(--ink-3); width: 26px; text-align: right; }
+  table { border-collapse: collapse; width: 100%; margin-top: 12px; font-size: 13.5px; }
+  th, td {
+    text-align: left; padding: 7px 12px 7px 0;
+    border-bottom: 1px solid var(--rule); vertical-align: top;
+  }
+  th {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--ink-3); font-weight: 500;
+  }
+  td { color: var(--ink-2); }
+  td.num, th.num {
+    font-family: var(--mono); font-variant-numeric: tabular-nums;
+    text-align: right; padding-right: 0; color: var(--ink);
+  }
+  td.name { color: var(--ink); }
+  tr.em td { color: var(--ink); font-weight: 600; }
+  .table-scroll { overflow-x: auto; }
+
+  /* ---- pipeline ----------------------------------------------------- */
+  ol.pipeline { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 1px;
+                background: var(--rule); border: 1px solid var(--rule); border-radius: 4px;
+                overflow: hidden; }
+  ol.pipeline li {
+    background: var(--surface); padding: 14px 18px;
+    display: grid; grid-template-columns: 34px 148px 1fr; gap: 14px; align-items: baseline;
+  }
+  ol.pipeline .n {
+    font-family: var(--mono); font-size: 11px; color: var(--accent);
+    font-variant-numeric: tabular-nums; font-weight: 700;
+  }
+  ol.pipeline .stage {
+    font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--ink);
+    letter-spacing: -.01em;
+  }
+  ol.pipeline .what { font-size: 14.5px; color: var(--ink-2); line-height: 1.5; }
+  @media (max-width: 640px) {
+    ol.pipeline li { grid-template-columns: 28px 1fr; }
+    ol.pipeline .what { grid-column: 2; }
+  }
+
+  /* ---- callout ------------------------------------------------------ */
+  .callout {
+    border-left: 2px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 16px 20px;
+    border-radius: 0 3px 3px 0;
+    margin: 26px 0;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .kicker { color: var(--accent-ink); margin-bottom: 8px; }
+
+  code {
+    font-family: var(--mono); font-size: .89em;
+    background: var(--surface-2); padding: 1px 5px; border-radius: 3px;
+    color: var(--ink);
+  }
+  pre {
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.65;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 4px;
+    padding: 16px 18px; overflow-x: auto; color: var(--ink-2); margin: 20px 0;
+  }
+  pre b { color: var(--accent); font-weight: 400; }
+
+  ul.plain { margin: 0 0 1.05em; padding-left: 1.15em; color: var(--ink-2); }
+  ul.plain li { margin-bottom: .5em; }
+  ul.plain li strong { color: var(--ink); font-weight: 600; }
+
+  /* ---- camelot ------------------------------------------------------ */
+  .wheel-wrap { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+  .wheel-wrap .legend-col { flex: 1 1 260px; min-width: 240px; }
+  .seg-label { font-family: var(--mono); font-size: 10px; fill: var(--ink-3); }
+  .seg-label.on { fill: var(--ink); font-weight: 700; }
+
+  /* ---- tooltip ------------------------------------------------------ */
+  #tip {
+    position: fixed; pointer-events: none; opacity: 0; transition: opacity .1s;
+    background: var(--ink); color: var(--ground);
+    font-family: var(--mono); font-size: 11.5px; line-height: 1.5;
+    padding: 7px 10px; border-radius: 3px; z-index: 50; white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  #tip b { color: var(--ground); }
+
+  footer {
+    border-top: 1px solid var(--rule); margin-top: 56px; padding-top: 24px;
+    font-family: var(--mono); font-size: 12px; color: var(--ink-3);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="kicker">Retrieval &middot; Spotify Million Playlist Dataset &middot; 159,338 tracks</p>
+    <h1>Cadence<span class="dot">.</span></h1>
+    <p class="standfirst">
+      Natural-language playlist generation where the language model
+      <b>never picks a track</b>. It expresses intent; retrieval selects from a real
+      catalog under hard constraints. Hallucination is structurally impossible,
+      not merely unlikely.
+    </p>
+    <div class="stats">
+      <div class="stat"><span class="v hl">3.5&times;</span><span class="k">vs popularity, cold start</span></div>
+      <div class="stat"><span class="v">0.1422</span><span class="k">R-precision, k=0</span></div>
+      <div class="stat"><span class="v">100%</span><span class="k">constraints satisfied</span></div>
+      <div class="stat"><span class="v">~100<span style="font-size:15px">ms</span></span><span class="k">warm latency</span></div>
+      <div class="stat"><span class="v">98,334</span><span class="k">playlists learned from</span></div>
+    </div>
+  </header>
+
+  <!-- ============================ THE IDEA ======================== -->
+  <section>
+    <div class="col">
+      <p class="eyebrow">The idea</p>
+      <h2>Track metadata contains no mood</h2>
+      <p class="lede">
+        So the bridge from language to music has to come from somewhere else.
+      </p>
+      <p>
+        The string <code>Holocene &mdash; Bon Iver</code> does not contain the words
+        <em>calm</em>, <em>winter</em>, or <em>driving</em>. No text encoder can extract
+        meaning that is not in the text. This is the reason natural-language music
+        search is hard, and it is not fixed by a bigger embedding model.
+      </p>
+      <p>
+        But the corpus holds <strong>98,334 playlists that humans named</strong> &mdash;
+        <code>rainy day</code>, <code>gym</code>, <code>studying</code>,
+        <code>90s throwbacks</code>, <code>late night drive</code>. Those titles describe
+        <em>how music gets used</em>. Build a track &times; title-token matrix, factorise its
+        Shifted PPMI, and a phrase and a song land in one space &mdash; grounded entirely
+        in human behaviour rather than in a model's guess.
+      </p>
+      <div class="callout">
+        <p class="kicker">Why factorise rather than train</p>
+        <p>
+          Levy &amp; Goldberg (2014) showed skip-gram with negative sampling is
+          <em>implicitly</em> factorising a shifted PMI matrix. Doing it explicitly gives the
+          same class of embedding with no epochs, no learning rate, and no sampling
+          noise &mdash; a 40-second fit that is bit-for-bit reproducible from a seed. For a
+          system whose evaluation has to be trustworthy, removing a source of
+          run-to-run variance is worth more than the last fraction of a point.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ RESULT =========================== -->
+  <section>
+    <div class="col">
+      <p class="eyebrow">Result</p>
+      <h2>Cold start is the case that matters</h2>
+      <p class="lede">
+        Title only. No seed tracks. Nothing for collaborative filtering to work with &mdash;
+        which is exactly the situation a natural-language request creates.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">R-precision at k=0 seed tracks</div>
+        <div class="panel-sub">
+          Official RecSys Challenge 2018 metric &middot; 400 held-out playlists &middot; higher is better
+        </div>
+      </div>
+      <div class="chart-scroll"><svg id="c1" viewBox="0 0 720 246" role="img"
+        aria-label="Bar chart of R-precision at zero seed tracks. Cadence 0.1422, item-kNN 0.0404, popularity 0.0404, lexical title matching 0.0197."></svg></div>
+      <details>
+        <summary>Data table</summary>
+        <div class="table-scroll"><table>
+          <thead><tr><th>System</th><th class="num">R-prec</th><th class="num">NDCG@100</th><th class="num">Clicks</th></tr></thead>
+          <tbody>
+            <tr class="em"><td class="name">Cadence</td><td class="num">0.1422</td><td class="num">0.1952</td><td class="num">3.4</td></tr>
+            <tr><td class="name">item-kNN</td><td class="num">0.0404</td><td class="num">0.0545</td><td class="num">13.0</td></tr>
+            <tr><td class="name">popularity</td><td class="num">0.0404</td><td class="num">0.0545</td><td class="num">13.0</td></tr>
+            <tr><td class="name">lexical title match</td><td class="num">0.0197</td><td class="num">0.0266</td><td class="num">26.2</td></tr>
+          </tbody>
+        </table></div>
+      </details>
+    </div>
+
+    <div class="col">
+      <p>
+        <strong>Clicks</strong> is the most product-shaped of these: how many
+        &ldquo;show 10 more&rdquo; presses before the listener hits a track they actually
+        wanted. It falls from <strong>13.0 pages to 3.4</strong>. item-kNN and popularity
+        are identical here by construction &mdash; with no seeds, neighbourhood CF has
+        nothing to condition on and falls back to popularity.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================ ABLATION ========================== -->
+  <section>
+    <div class="col">
+      <p class="eyebrow">The proof</p>
+      <h2>Remove the folksonomy and it collapses</h2>
+      <p class="lede">
+        An ablation is only interesting when it can embarrass you. This one could have.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Channel ablation, R-precision at k=0</div>
+        <div class="panel-sub">
+          Each bar removes or isolates one retrieval channel, holding everything else fixed
+        </div>
+      </div>
+      <div class="chart-scroll"><svg id="c2" viewBox="0 0 720 246" role="img"
+        aria-label="Ablation bar chart at zero seeds. Full fusion 0.0698, folksonomy tags alone 0.0659, without folksonomy tags 0.0191, collaborative channels alone 0.0000."></svg></div>
+      <details>
+        <summary>Data table</summary>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Configuration</th><th class="num">R-prec, k=0</th></tr></thead>
+          <tbody>
+            <tr class="em"><td class="name">Full fusion</td><td class="num">0.0698</td></tr>
+            <tr><td class="name">Folksonomy tags alone</td><td class="num">0.0659</td></tr>
+            <tr><td class="name">Without folksonomy tags</td><td class="num">0.0191</td></tr>
+            <tr><td class="name">Collaborative channels alone</td><td class="num">0.0000</td></tr>
+          </tbody>
+        </table></div>
+      </details>
+    </div>
+
+    <div class="col">
+      <p>
+        Removing the tag channels costs <strong>73%</strong> of R-precision. The tag
+        channels <em>alone</em> still beat popularity by 63%. And both collaborative
+        channels alone score exactly <strong>zero</strong> &mdash; the cleanest result in
+        the study, and the one that says every bit of cold-start performance comes
+        from the bridge between playlist titles and tracks.
+      </p>
+      <p>
+        The learned reranker reached the same conclusion independently and without
+        being told: <code>tag_hits</code> is its highest-importance feature by a
+        factor of two over the next.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================ SWEEP ============================= -->
+  <section>
+    <div class="col">
+      <p class="eyebrow">Across the sweep</p>
+      <h2>The margin holds once seeds appear</h2>
+      <p class="lede">
+        Sweeping the number of revealed seed tracks shows how the channels trade off,
+        instead of hiding it behind one number.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">R-precision by seed count</div>
+        <div class="panel-sub">
+          k = tracks revealed before prediction &middot; 400 held-out playlists per cell
+        </div>
+      </div>
+      <div class="chart-scroll"><svg id="c3" viewBox="0 0 720 300" role="img"
+        aria-label="Line chart of R-precision against seed count for Cadence, item-kNN and popularity. Cadence leads at every seed count, peaking at 0.2483 at k equals 5."></svg></div>
+      <ul class="legend">
+        <li><span class="swatch" style="background:var(--s1)"></span>Cadence</li>
+        <li><span class="swatch" style="background:var(--s2)"></span>item-kNN</li>
+        <li><span class="swatch" style="background:var(--s3)"></span>popularity</li>
+      </ul>
+      <details>
+        <summary>Data table</summary>
+        <div class="table-scroll"><table>
+          <thead><tr><th>System</th><th class="num">k=0</th><th class="num">k=1</th><th class="num">k=5</th><th class="num">k=10</th><th class="num">k=25</th></tr></thead>
+          <tbody>
+            <tr class="em"><td class="name">Cadence</td><td class="num">0.1422</td><td class="num">0.1792</td><td class="num">0.2483</td><td class="num">0.2470</td><td class="num">0.1916</td></tr>
+            <tr><td class="name">item-kNN</td><td class="num">0.0404</td><td class="num">0.1226</td><td class="num">0.1621</td><td class="num">0.1448</td><td class="num">0.0812</td></tr>
+            <tr><td class="name">popularity</td><td class="num">0.0404</td><td class="num">0.0389</td><td class="num">0.0339</td><td class="num">0.0277</td><td class="num">0.0142</td></tr>
+          </tbody>
+        </table></div>
+      </details>
+    </div>
+
+    <div class="col">
+      <p>
+        R-precision peaking at k=5 and easing by k=25 is a property of the metric, not
+        a regression: as more of a playlist is revealed, fewer tracks remain withheld,
+        so the top-|G| cutoff tightens.
+      </p>
+      <div class="callout">
+        <p class="kicker">The measurement that changed the design</p>
+        <p>
+          The first working version shipped only the learned collaborative embedding,
+          and it <em>lost</em> to a plain item-kNN baseline at k=5 &mdash; 0.129 against
+          0.142. The honest reading was that 160 dimensions genuinely lose information
+          exact counts keep. Rather than tune the embedding until it won, exact
+          co-occurrence became its own channel and fusion arbitrates. That took k=5 to
+          0.178, and the reranker to <strong>0.248</strong>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ PIPELINE ========================== -->
+  <section>
+    <div class="col">
+      <p class="eyebrow">How it runs</p>
+      <h2>Eight stages, ~100 ms warm</h2>
+      <p class="lede">
+        Numbered because it genuinely is a sequence &mdash; each stage consumes the last.
+      </p>
+    </div>
+
+    <ol class="pipeline">
+      <li><span class="n">01</span><span class="stage">plan</span><span class="what">Free text &rarr; structured intent. Deterministic rules by default (49-entry mood lexicon, ~4&nbsp;ms, no API key); Claude with structured output optionally.</span></li>
+      <li><span class="n">02</span><span class="stage">mask</span><span class="what">Hard constraints become a boolean filter over the catalog &mdash; explicit, duration, tempo window, avoided artists.</span></li>
+      <li><span class="n">03</span><span class="stage">retrieve</span><span class="what">Seven channels answer differently: collaborative embedding, exact co-occurrence, folksonomy embedding, exact tag counts, TF&#8209;IDF lexical, audio&#8209;feature k&#8209;NN, popularity prior.</span></li>
+      <li><span class="n">04</span><span class="stage">fuse</span><span class="what">Reciprocal rank fusion, because cosine scores, TF&#8209;IDF dot products and damped counts are not on comparable scales.</span></li>
+      <li><span class="n">05</span><span class="stage">rerank</span><span class="what">Gradient-boosted trees over 30 features. Validation AUC <b>0.849</b> against 0.639 for the fusion score alone.</span></li>
+      <li><span class="n">06</span><span class="stage">select</span><span class="what">MMR diversity, per-artist caps, duration targeting. Twenty near-identical songs is a perfect ranking and a bad playlist.</span></li>
+      <li><span class="n">07</span><span class="stage">sequence</span><span class="what">Beam search over an energy arc, Camelot-wheel key compatibility and tempo continuity.</span></li>
+      <li><span class="n">08</span><span class="stage">explain</span><span class="what">Per-track reasons grounded in real counts; generated copy scanned against the catalog before it ships.</span></li>
+    </ol>
+  </section>
+
+  <!-- ============================ SEQUENCING ======================== -->
+  <section>
+    <div class="col">
+      <p class="eyebrow">Domain</p>
+      <h2>A playlist is an arc, not a set</h2>
+      <p class="lede">
+        The same twenty tracks in a different order are a different product.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="wheel-wrap">
+        <div class="chart-scroll">
+          <svg id="wheel" viewBox="0 0 300 300" width="300" height="300" role="img"
+            aria-label="Camelot wheel showing key 8B highlighted with its three harmonically compatible neighbours: 8A the relative minor, and 7B and 9B a fifth away."></svg>
+        </div>
+        <div class="legend-col">
+          <div class="panel-title">Harmonic mixing, as code</div>
+          <p style="font-size:15px;margin-top:8px">
+            Adjacent tracks in compatible keys sound intentional. Compatibility is the
+            standard Camelot wheel: position
+            <code>((root&times;7) mod 12 + 7) mod 12 + 1</code> walking the circle of
+            fifths, with minor keys placed on their relative major.
+          </p>
+          <p style="font-size:15px">
+            From <strong>8B</strong>, three moves are cheap &mdash; <strong>8A</strong>
+            (relative minor), <strong>7B</strong> and <strong>9B</strong> (a fifth
+            either way). A tritone away costs full price. The sequencer's beam search
+            minimises that cost alongside a tempo term and an energy-curve target.
+          </p>
+          <p style="font-size:15px;color:var(--ink-3)">
+            Tracks missing key or tempo get a neutral cost rather than an imputed one,
+            so sequencing degrades with coverage instead of failing.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- DEMO:START -->
+  <!-- ============================ WHAT IT PLAYS ===================== -->
+  <section>
+    <div class="col">
+      <p class="eyebrow">The output</p>
+      <h2>What it actually plays</h2>
+      <p class="lede">
+        Three requests, run end to end. Every track carries the reason it was chosen
+        and the transition into it.
+      </p>
+      <p>
+        The two things worth looking at are the ones a ranked list does not have. Each
+        row's reason is <em>grounded</em> &mdash; it names the tag and the count, or the
+        feature and its distance from target, never a bare score. Each segue is the
+        sequencer's actual output: a tempo move and a Camelot step.
+      </p>
+    </div>
+    <div class="demo-grid">
+      
+      <div class="panel">
+        <div class="demo-q">&ldquo;chill acoustic songs for a rainy sunday&rdquo;</div>
+        <div class="demo-title">Acoustic Chill</div>
+        <div class="demo-desc">20 tracks, for acoustic, chill, rainy day.</div>
+        <div class="demo-facts"><span><b>20</b> tracks</span><span><b>81</b> min</span><span><b>1/1</b> constraints met</span><span><b>4454</b> ms</span></div>
+        <div class="chart-scroll"><table>
+          <thead><tr><th></th><th>Track &middot; why it is here</th><th>Segue</th></tr></thead>
+          <tbody><tr><td class="pos">1</td><td><strong>Here We Go Again</strong><br><span class='why'>Ray Charles &middot; acoustic (acousticness 0.66 vs target 0.67)</span></td><td></td></tr><tr><td class="pos">2</td><td><strong>Sacred Vision</strong><br><span class='why'>Iron &amp; Wine &middot; low-energy (energy 0.31 vs target 0.32)</span></td><td><span class="seg">100-&gt;98 BPM, 6B-&gt;7B (harmonic)</span></td></tr><tr><td class="pos">3</td><td><strong>Winter Wonderland</strong><br><span class='why'>Diana Krall &middot; acoustic (acousticness 0.68 vs target 0.67)</span></td><td><span class="seg">98-&gt;114 BPM, 7B-&gt;7B (harmonic)</span></td></tr><tr><td class="pos">4</td><td><strong>Untouchable Face</strong><br><span class='why'>Ani DiFranco &middot; melancholy (valence 0.39 vs target 0.39)</span></td><td><span class="seg">114-&gt;112 BPM, 7B-&gt;9B (near)</span></td></tr><tr><td class="pos">5</td><td><strong>The Most Beautiful Girl</strong><br><span class='why'>Charlie Rich &middot; low-energy (energy 0.32 vs target 0.32)</span></td><td><span class="seg">112-&gt;103 BPM, 9B-&gt;9B (harmonic)</span></td></tr><tr><td class="pos">6</td><td><strong>Holly Holy - Single Version</strong><br><span class='why'>Neil Diamond &middot; melancholy (valence 0.39 vs target 0.39)</span></td><td><span class="seg">103-&gt;103 BPM, 9B-&gt;11B (near)</span></td></tr><tr><td class="pos">7</td><td><strong>Estos Celos</strong><br><span class='why'>Vicente Fernández &middot; melancholy (valence 0.38 vs target 0.39)</span></td><td><span class="seg">103-&gt;105 BPM, 11B-&gt;12B (harmonic)</span></td></tr><tr><td class="pos">8</td><td><strong>The World As I See It - Live</strong><br><span class='why'>Jason Mraz &middot; melancholy (valence 0.39 vs target 0.39)</span></td><td><span class="seg">105-&gt;119 BPM, 12B-&gt;11B (harmonic)</span></td></tr></tbody>
+        </table></div>
+        
+      </div>
+      
+      <div class="panel">
+        <div class="demo-q">&ldquo;high energy workout, nothing explicit, about 45 minutes&rdquo;</div>
+        <div class="demo-title">High Energy Workout</div>
+        <div class="demo-desc">11 tracks, for high energy, workout, gym, 120-160 bpm, build arc.</div>
+        <div class="demo-facts"><span><b>11</b> tracks</span><span><b>46</b> min</span><span><b>4/4</b> constraints met</span><span><b>447</b> ms</span></div>
+        <div class="chart-scroll"><table>
+          <thead><tr><th></th><th>Track &middot; why it is here</th><th>Segue</th></tr></thead>
+          <tbody><tr><td class="pos">1</td><td><strong>Rap God</strong><br><span class='why'>Eminem &middot; on 57 playlists tagged “workout”</span></td><td></td></tr><tr><td class="pos">2</td><td><strong>Addicted - Radio Edit</strong><br><span class='why'>DJ Assad &middot; danceable (danceability 0.67 vs target 0.70)</span></td><td><span class="seg">148-&gt;130 BPM, 9B-&gt;8B (harmonic)</span></td></tr><tr><td class="pos">3</td><td><strong>Ma'amin Benisim</strong><br><span class='why'>Yaakov Shwekey &middot; danceable (danceability 0.71 vs target 0.70)</span></td><td><span class="seg">130-&gt;127 BPM, 8B-&gt;9B (harmonic)</span></td></tr><tr><td class="pos">4</td><td><strong>We Speak Chinese</strong><br><span class='why'>Mike Ault &middot; high-energy (energy 0.86 vs target 0.86)</span></td><td><span class="seg">127-&gt;128 BPM, 9B-&gt;11B (near)</span></td></tr><tr><td class="pos">5</td><td><strong>Crazy About You</strong><br><span class='why'>Mtbrd &middot; high-energy (energy 0.87 vs target 0.86)</span></td><td><span class="seg">128-&gt;131 BPM, 11B-&gt;11A (harmonic)</span></td></tr><tr><td class="pos">6</td><td><strong>I Got This</strong><br><span class='why'>Big K.R.I.T. &middot; danceable (danceability 0.70 vs target 0.70)</span></td><td><span class="seg">131-&gt;136 BPM, 11A-&gt;12A (harmonic)</span></td></tr></tbody>
+        </table></div>
+        
+      </div>
+      
+      <div class="panel">
+        <div class="demo-q">&ldquo;90s alternative rock for a road trip&rdquo;</div>
+        <div class="demo-title">Road Trip Alternative Rock 1990s</div>
+        <div class="demo-desc">20 tracks, for road trip, alternative rock, leaning 1990s.</div>
+        <div class="demo-facts"><span><b>20</b> tracks</span><span><b>73</b> min</span><span><b>1/1</b> constraints met</span><span><b>378</b> ms</span></div>
+        <div class="chart-scroll"><table>
+          <thead><tr><th></th><th>Track &middot; why it is here</th><th>Segue</th></tr></thead>
+          <tbody><tr><td class="pos">1</td><td><strong>Golden Ocean</strong><br><span class='why'>Miner &middot; upbeat (valence 0.68 vs target 0.68)</span></td><td></td></tr><tr><td class="pos">2</td><td><strong>Olivia</strong><br><span class='why'>One Direction &middot; on 6 playlists tagged “road trip”</span></td><td><span class="seg">120-&gt;118 BPM, 2B-&gt;2B (harmonic)</span></td></tr><tr><td class="pos">3</td><td><strong>Shadrack (Fonograff Rework)</strong><br><span class='why'>Louis Prima &middot; high-energy (energy 0.68 vs target 0.68)</span></td><td><span class="seg">118-&gt;115 BPM, 2B-&gt;3B (harmonic)</span></td></tr><tr><td class="pos">4</td><td><strong>The Choice Is Yours (Revisited)</strong><br><span class='why'>Black Sheep &middot; upbeat (valence 0.68 vs target 0.68)</span></td><td><span class="seg">115-&gt;101 BPM, 3B-&gt;3A (harmonic)</span></td></tr><tr><td class="pos">5</td><td><strong>Jumpin', Jumpin'</strong><br><span class='why'>Destiny's Child &middot; on 69 playlists tagged “1990s”</span></td><td><span class="seg">101-&gt;89 BPM, 3A-&gt;3B (harmonic)</span></td></tr></tbody>
+        </table></div>
+        <p style="font-size:13.5px;color:var(--ink-3);margin-top:12px;max-width:60ch"><strong>This one is wrong, and the reasons say why.</strong> One Direction is not 90s alternative rock. The tag channel matched <code>road trip</code> strongly and the era and genre tokens weakly, so the theme outvoted the constraint. That is a real failure mode &mdash; and it is diagnosable in one line precisely because every track carries a grounded reason instead of a similarity score.</p>
+      </div>
+    </div>
+  </section>
+
+<!-- DEMO:END -->
+  <!-- ============================ CONSTRAINTS ======================= -->
+  <section>
+    <div class="col">
+      <p class="eyebrow">The other half of the promise</p>
+      <h2>Constraints are filters, never prompts</h2>
+      <p class="lede">
+        A filter cannot be talked out of its job. An instruction can.
+      </p>
+      <p>
+        Ranking metrics say nothing about whether the delivered playlist honours what
+        was asked. A separate battery of 20 constrained requests runs end to end and
+        checks:
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Requirement</th><th class="num">Satisfied</th><th class="num">Queries</th></tr></thead>
+          <tbody>
+            <tr><td class="name">Exact track count</td><td class="num">100%</td><td class="num">12</td></tr>
+            <tr><td class="name">Per-artist cap</td><td class="num">100%</td><td class="num">20</td></tr>
+            <tr><td class="name">Duration target &plusmn;10%</td><td class="num">100%</td><td class="num">4</td></tr>
+            <tr><td class="name">BPM window</td><td class="num">100%</td><td class="num">7</td></tr>
+            <tr><td class="name">No known-explicit track</td><td class="num">100%</td><td class="num">5</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:18px">
+        Zero failures. Mood adherence &mdash; the gap between the delivered playlist's
+        mean audio feature and what the request implied &mdash; lands within
+        <strong>0.05</strong> on a 0&ndash;1 scale for five of six dimensions.
+      </p>
+
+      <h3>Three bugs only real output revealed</h3>
+      <p>
+        None was visible in R-precision. All three were obvious in printed output.
+      </p>
+      <ul class="plain">
+        <li>
+          <strong>A curve conflict.</strong> &ldquo;chill rainy morning&rdquo; matched
+          both <code>chill</code> (energy 0.32) and <code>morning</code> (curve
+          <code>build</code>), and the implied curve won &mdash; producing a playlist
+          that ramped <em>up</em>, ending on Wonderwall at 0.90 energy. An implied
+          curve now has to agree with the energy target or it is dropped.
+        </li>
+        <li>
+          <strong>Min-max normalisation hiding the audio term.</strong> The reranker
+          emits probabilities with median ~0.002 and max ~0.7. Min-max normalising
+          that leaves nearly everything at zero and a handful at one, so blending
+          audio affinity against it did nothing <em>at any weight</em>.
+          Rank-normalising relevance fixed it: mean energy for a &ldquo;chill
+          acoustic&rdquo; request moved from 0.63 to 0.43 against a 0.35 target.
+        </li>
+        <li>
+          <strong>Constraint words leaking into the query.</strong>
+          &ldquo;nothing explicit&rdquo; correctly set the clean filter &mdash; and then
+          <code>nothing</code> and <code>explicit</code>, both present in the tag
+          vocabulary, <em>also</em> became query themes and dragged the tag centroid
+          toward unrelated music. Excluding constraint-consumed words cut mean
+          instrumentalness error from 0.221 to 0.130 and energy error from 0.056
+          to 0.043.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================ LIMITS ============================ -->
+  <section>
+    <div class="col">
+      <p class="eyebrow">Where it falls down</p>
+      <h2>Honest limitations</h2>
+      <ul class="plain">
+        <li>
+          <strong>The explicit filter is best-effort.</strong> The flag is known for
+          only <strong>2.76%</strong> of the catalog. Known-explicit tracks are
+          removed; unlabelled ones cannot be checked, and the system says so on every
+          affected response. This is not a child-safety control.
+        </li>
+        <li>
+          <strong>Era targeting is inferred, not factual.</strong> Neither data source
+          carries a release date, so <code>1990s</code> means &ldquo;music people file
+          under the 90s&rdquo;, derived from playlist titles.
+        </li>
+        <li>
+          <strong>Diversity is the weak spot.</strong> Mean long-tail share is 0.057 &mdash;
+          the system draws heavily from the popular head, and the reranker makes that
+          worse while making accuracy better. Measured and reported, not hidden.
+        </li>
+        <li>
+          <strong>The k=0 task uses playlist titles as queries</strong>, which are
+          tidier than real user input. Evaluation playlists are excluded from the tag
+          matrix so the setup is not circular, but the query distribution is friendlier
+          than production.
+        </li>
+        <li>
+          <strong>Many themes dilute each other.</strong> The tag channel embeds a
+          query as the <em>centroid</em> of its theme vectors, so a request stacking
+          an activity, a mood, a genre and an era averages five vectors and drifts
+          toward the most generic of them. Weighting identity tags above soft ones is
+          the obvious fix &mdash; but the evaluation uses playlist titles, which carry
+          one or two themes, so it would barely register the change. Shipping it
+          unmeasured would be guessing; it needs a multi-constraint query set first.
+        </li>
+        <li>
+          <strong>Sequencing quality is unmeasured.</strong> Whether the energy arc and
+          harmonic transitions actually sound intentional needs listening tests. That
+          is the real gap in this evaluation.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================ REPRO ============================= -->
+  <section>
+    <div class="col">
+      <p class="eyebrow">Reproduce</p>
+      <h2>Every number regenerates from a clean checkout</h2>
+      <pre><b>make venv install</b>          # Python 3.12 + deps
+<b>make data</b>                   # MPD + audio features
+<b>make all</b>                    # build → splits → train → reranker → eval
+
+<b>cadence play</b> "chill acoustic songs for a rainy sunday, 8 songs"
+<b>cadence eval-constraints</b>    # does assembly honour what was asked?
+<b>cadence serve</b>               # HTTP API on :8000</pre>
+      <p>
+        Seeded throughout. 6,040 lines of Python, 103 tests, clean <code>ruff</code>
+        and <code>mypy</code>. Five documents cover architecture, evaluation
+        protocol, ten decision records, and the data and model cards &mdash; including
+        the decision that was wrong first.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    Cadence &middot; built on the Spotify Million Playlist Dataset (100k playlists,
+    2010&ndash;2017) &middot; metrics are RecSys Challenge 2018 definitions on a frozen
+    2,000-playlist split
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var tip = document.getElementById("tip");
+  var SVG = "http://www.w3.org/2000/svg";
+
+  function el(name, attrs) {
+    var n = document.createElementNS(SVG, name);
+    for (var k in attrs) if (attrs[k] !== undefined) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+  function showTip(evt, html) {
+    tip.innerHTML = html;
+    tip.style.opacity = "1";
+    var pad = 14;
+    var x = evt.clientX + pad;
+    var y = evt.clientY + pad;
+    var r = tip.getBoundingClientRect();
+    if (x + r.width > window.innerWidth - 8) x = evt.clientX - r.width - pad;
+    if (y + r.height > window.innerHeight - 8) y = evt.clientY - r.height - pad;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+  }
+  function hideTip() { tip.style.opacity = "0"; }
+
+  /* Bar with only its data end rounded, anchored to the baseline. */
+  function barPath(x, y, w, h, r) {
+    r = Math.min(r, w);
+    if (w <= 0.5) return "M" + x + "," + y + "h0";
+    return "M" + x + "," + y +
+           "h" + (w - r) +
+           "a" + r + "," + r + " 0 0 1 " + r + "," + r +
+           "v" + (h - 2 * r) +
+           "a" + r + "," + r + " 0 0 1 " + (-r) + "," + r +
+           "h" + (-(w - r)) + "z";
+  }
+
+  /* ---------- horizontal bar chart ---------------------------------- */
+  function hbars(svgId, rows, opts) {
+    var svg = document.getElementById(svgId);
+    if (!svg) return;
+    var W = 720, padL = 214, padR = 62, padT = 14, padB = 30;
+    var rowH = 40, gap = 12;
+    var H = padT + rows.length * rowH + padB;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+
+    var max = opts.max;
+    var plotW = W - padL - padR;
+    var x = function (v) { return padL + (v / max) * plotW; };
+
+    /* gridlines + ticks */
+    var ticks = opts.ticks;
+    ticks.forEach(function (t) {
+      svg.appendChild(el("line", {
+        x1: x(t), x2: x(t), y1: padT, y2: padT + rows.length * rowH,
+        class: "gridline"
+      }));
+      var lab = el("text", { x: x(t), y: H - 10, class: "tick", "text-anchor": "middle" });
+      lab.textContent = t.toFixed(2);
+      svg.appendChild(lab);
+    });
+    svg.appendChild(el("line", {
+      x1: padL, x2: padL, y1: padT, y2: padT + rows.length * rowH, class: "axisline"
+    }));
+
+    rows.forEach(function (row, i) {
+      var y = padT + i * rowH + gap / 2;
+      var h = rowH - gap;
+      var w = Math.max(x(row.v) - padL, 0);
+
+      var cat = el("text", {
+        x: padL - 14, y: y + h / 2 + 4,
+        class: "catlabel" + (row.em ? " em" : ""), "text-anchor": "end"
+      });
+      cat.textContent = row.label;
+      svg.appendChild(cat);
+
+      if (row.v > 0) {
+        var p = el("path", {
+          d: barPath(padL, y, w, h, 4),
+          fill: row.color || "var(--s1)",
+          "fill-opacity": row.em === false ? 0.42 : 1
+        });
+        svg.appendChild(p);
+      } else {
+        /* zero bar: a visible stub so "0.0000" is legibly a measurement */
+        svg.appendChild(el("line", {
+          x1: padL, x2: padL + 3, y1: y + h / 2, y2: y + h / 2,
+          stroke: "var(--rule-strong)", "stroke-width": 3, "stroke-linecap": "round"
+        }));
+      }
+
+      var val = el("text", {
+        x: Math.max(x(row.v), padL) + 10, y: y + h / 2 + 4, class: "barlabel"
+      });
+      val.textContent = row.v.toFixed(4);
+      svg.appendChild(val);
+
+      /* generous hit target */
+      var hit = el("rect", {
+        x: padL, y: y - gap / 2, width: W - padL - 4, height: rowH, fill: "transparent"
+      });
+      hit.addEventListener("mousemove", function (e) {
+        showTip(e, "<b>" + row.label + "</b><br>" + opts.metric + " " + row.v.toFixed(4) +
+          (row.note ? "<br>" + row.note : ""));
+      });
+      hit.addEventListener("mouseleave", hideTip);
+      svg.appendChild(hit);
+    });
+  }
+
+  hbars("c1", [
+    { label: "Cadence", v: 0.1422, em: true, note: "3.5× popularity" },
+    { label: "item-kNN", v: 0.0404, em: false, note: "falls back to popularity at k=0" },
+    { label: "popularity", v: 0.0404, em: false },
+    { label: "lexical title match", v: 0.0197, em: false }
+  ], { max: 0.16, ticks: [0, 0.04, 0.08, 0.12, 0.16], metric: "R-precision" });
+
+  hbars("c2", [
+    { label: "full fusion", v: 0.0698, em: true },
+    { label: "folksonomy tags alone", v: 0.0659, em: true, color: "var(--s1)" },
+    { label: "without folksonomy tags", v: 0.0191, em: false, color: "var(--s2)",
+      note: "−73% — the collapse" },
+    { label: "collaborative alone", v: 0.0000, em: false, color: "var(--s3)",
+      note: "no seeds, nothing to condition on" }
+  ], { max: 0.08, ticks: [0, 0.02, 0.04, 0.06, 0.08], metric: "R-precision" });
+
+  /* ---------- line chart -------------------------------------------- */
+  (function lineChart() {
+    var svg = document.getElementById("c3");
+    if (!svg) return;
+    var W = 720, H = 300, padL = 56, padR = 96, padT = 18, padB = 44;
+    var ks = [0, 1, 5, 10, 25];
+    var series = [
+      { name: "Cadence", color: "var(--s1)", v: [0.1422, 0.1792, 0.2483, 0.2470, 0.1916] },
+      { name: "item-kNN", color: "var(--s2)", v: [0.0404, 0.1226, 0.1621, 0.1448, 0.0812] },
+      { name: "popularity", color: "var(--s3)", v: [0.0404, 0.0389, 0.0339, 0.0277, 0.0142] }
+    ];
+    var maxY = 0.28;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var X = function (i) { return padL + (i / (ks.length - 1)) * plotW; };
+    var Y = function (v) { return padT + plotH - (v / maxY) * plotH; };
+
+    [0, 0.07, 0.14, 0.21, 0.28].forEach(function (t) {
+      svg.appendChild(el("line", { x1: padL, x2: padL + plotW, y1: Y(t), y2: Y(t), class: "gridline" }));
+      var lab = el("text", { x: padL - 10, y: Y(t) + 4, class: "tick", "text-anchor": "end" });
+      lab.textContent = t.toFixed(2);
+      svg.appendChild(lab);
+    });
+    svg.appendChild(el("line", { x1: padL, x2: padL + plotW, y1: Y(0), y2: Y(0), class: "axisline" }));
+
+    ks.forEach(function (k, i) {
+      var lab = el("text", { x: X(i), y: H - 22, class: "tick", "text-anchor": "middle" });
+      lab.textContent = "k=" + k;
+      svg.appendChild(lab);
+    });
+    var axName = el("text", { x: padL + plotW / 2, y: H - 4, class: "tick", "text-anchor": "middle" });
+    axName.textContent = "seed tracks revealed";
+    svg.appendChild(axName);
+
+    series.forEach(function (s) {
+      var d = s.v.map(function (v, i) { return (i ? "L" : "M") + X(i) + "," + Y(v); }).join(" ");
+      svg.appendChild(el("path", {
+        d: d, fill: "none", stroke: s.color, "stroke-width": 2,
+        "stroke-linejoin": "round", "stroke-linecap": "round"
+      }));
+      s.v.forEach(function (v, i) {
+        svg.appendChild(el("circle", {
+          cx: X(i), cy: Y(v), r: 4.5, fill: s.color,
+          stroke: "var(--surface)", "stroke-width": 2
+        }));
+      });
+      /* direct label at the series end — identity never rests on colour alone */
+      var lab = el("text", {
+        x: X(ks.length - 1) + 12, y: Y(s.v[s.v.length - 1]) + 4,
+        class: "catlabel", fill: s.color
+      });
+      lab.setAttribute("font-weight", "700");
+      lab.textContent = s.name;
+      svg.appendChild(lab);
+    });
+
+    /* crosshair + shared tooltip per k */
+    var cross = el("line", {
+      x1: 0, x2: 0, y1: padT, y2: padT + plotH,
+      stroke: "var(--rule-strong)", "stroke-width": 1, opacity: 0
+    });
+    svg.appendChild(cross);
+    ks.forEach(function (k, i) {
+      var bandW = plotW / (ks.length - 1);
+      var hit = el("rect", {
+        x: X(i) - bandW / 2, y: padT, width: bandW, height: plotH, fill: "transparent"
+      });
+      hit.addEventListener("mousemove", function (e) {
+        cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i));
+        cross.setAttribute("opacity", 1);
+        var html = "<b>k = " + k + " seeds</b>";
+        series.forEach(function (s) { html += "<br>" + s.name + " &nbsp;" + s.v[i].toFixed(4); });
+        showTip(e, html);
+      });
+      hit.addEventListener("mouseleave", function () { cross.setAttribute("opacity", 0); hideTip(); });
+      svg.appendChild(hit);
+    });
+  })();
+
+  /* ---------- Camelot wheel ----------------------------------------- */
+  (function wheel() {
+    var svg = document.getElementById("wheel");
+    if (!svg) return;
+    var cx = 150, cy = 150;
+    var rOut = 138, rMid = 96, rIn = 54;
+    /* 8B selected; compatible = 8A (relative minor), 7B and 9B (a fifth away) */
+    var sel = { n: 8, letter: "B" };
+    var compat = { "7B": 1, "9B": 1, "8A": 1 };
+
+    function arc(n, r0, r1, on, strong) {
+      var a0 = (n - 1) * 30 - 90 - 15, a1 = a0 + 30;
+      var rad = Math.PI / 180;
+      var x0 = cx + r1 * Math.cos(a0 * rad), y0 = cy + r1 * Math.sin(a0 * rad);
+      var x1 = cx + r1 * Math.cos(a1 * rad), y1 = cy + r1 * Math.sin(a1 * rad);
+      var x2 = cx + r0 * Math.cos(a1 * rad), y2 = cy + r0 * Math.sin(a1 * rad);
+      var x3 = cx + r0 * Math.cos(a0 * rad), y3 = cy + r0 * Math.sin(a0 * rad);
+      return el("path", {
+        d: "M" + x0 + "," + y0 + "A" + r1 + "," + r1 + " 0 0 1 " + x1 + "," + y1 +
+           "L" + x2 + "," + y2 + "A" + r0 + "," + r0 + " 0 0 0 " + x3 + "," + y3 + "z",
+        fill: strong ? "var(--accent)" : (on ? "var(--accent)" : "var(--surface-2)"),
+        "fill-opacity": strong ? 1 : (on ? 0.42 : 1),
+        stroke: "var(--surface)", "stroke-width": 2
+      });
+    }
+    function label(n, r, txt, on) {
+      var a = ((n - 1) * 30 - 90) * Math.PI / 180;
+      var t = el("text", {
+        x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) + 3.5,
+        class: "seg-label" + (on ? " on" : ""), "text-anchor": "middle"
+      });
+      if (on) t.setAttribute("fill", "var(--surface)");
+      t.textContent = txt;
+      return t;
+    }
+
+    for (var n = 1; n <= 12; n++) {
+      var bKey = n + "B", aKey = n + "A";
+      var bStrong = (n === sel.n);
+      var bOn = !!compat[bKey];
+      var aOn = !!compat[aKey];
+      svg.appendChild(arc(n, rMid, rOut, bOn, bStrong));
+      svg.appendChild(arc(n, rIn, rMid, aOn, false));
+    }
+    for (var m = 1; m <= 12; m++) {
+      svg.appendChild(label(m, (rMid + rOut) / 2, m + "B", m === sel.n || !!compat[m + "B"]));
+      svg.appendChild(label(m, (rIn + rMid) / 2, m + "A", !!compat[m + "A"]));
+    }
+    var mid = el("text", {
+      x: cx, y: cy - 4, "text-anchor": "middle",
+      class: "seg-label on"
+    });
+    mid.setAttribute("font-size", "12");
+    mid.textContent = "from 8B";
+    svg.appendChild(mid);
+    var mid2 = el("text", { x: cx, y: cy + 12, "text-anchor": "middle", class: "seg-label" });
+    mid2.textContent = "3 cheap moves";
+    svg.appendChild(mid2);
+  })();
+})();
+</script>

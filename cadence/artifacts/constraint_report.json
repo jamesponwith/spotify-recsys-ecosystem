@@ -1,0 +1,37 @@
+{
+  "n_queries": 20,
+  "satisfaction": {
+    "artist_cap": {
+      "rate": 1.0,
+      "n": 20.0
+    },
+    "duration_within_10pct": {
+      "rate": 1.0,
+      "n": 4.0
+    },
+    "no_known_explicit": {
+      "rate": 1.0,
+      "n": 5.0
+    },
+    "tempo_range": {
+      "rate": 1.0,
+      "n": 7.0
+    },
+    "track_count": {
+      "rate": 1.0,
+      "n": 12.0
+    }
+  },
+  "mood_error": {
+    "acousticness": 0.0416,
+    "danceability": 0.036,
+    "energy": 0.0429,
+    "instrumentalness": 0.1302,
+    "speechiness": 0.012,
+    "valence": 0.0206
+  },
+  "mean_latency_ms": 206.8,
+  "mean_long_tail_share": 0.0858,
+  "mean_intra_list_distance": 0.8877,
+  "failures": []
+}

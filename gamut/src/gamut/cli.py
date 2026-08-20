@@ -36,6 +36,35 @@ def audit() -> None:
     )
 
 
+@app.command()
+def demo(index: int = 0, penalty: float = 0.3, n: int = 10) -> None:
+    """Show one query: what ships today vs what the exposure-aware re-rank shows."""
+    from rich.table import Table
+
+    from .demo import build
+
+    out = build(index=index, penalty=penalty, n=n)
+    console.print(f'\n[bold]"{out["query"]}"[/bold]  ({out["held_out"]} tracks withheld)')
+    for label, key in (("as it ships today", "before"), (f"penalty {penalty}", "after")):
+        side = out[key]
+        table = Table(
+            title=f"{label} — {side['tail_share']:.0%} long tail, "
+            f"{side['distinct_artists']} artists, "
+            f"median {side['median_playlists']:.0f} playlists"
+        )
+        table.add_column("#", justify="right")
+        table.add_column("Track", max_width=34, overflow="ellipsis")
+        table.add_column("Artist", max_width=20, overflow="ellipsis")
+        table.add_column("Playlists", justify="right")
+        for r in side["rows"]:
+            mark = "[green]+[/green] " if r.get("new") else "  "
+            tail = "[dim]tail[/dim]" if r["tail"] else ""
+            table.add_row(
+                str(r["rank"]), mark + r["name"], r["artist"], f"{r['playlists']:,} {tail}"
+            )
+        console.print(table)
+
+
 @app.command("report")
 def report_cmd() -> None:
     """Print the stored audit report."""

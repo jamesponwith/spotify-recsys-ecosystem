@@ -200,6 +200,10 @@ CSS = (
     font-weight: 500; white-space: nowrap; }
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 0; }
   tr:last-child td { border-bottom: none; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  @media (max-width: 720px) { .two { grid-template-columns: 1fr; } }
+  .case { display: flex; flex-direction: column; gap: 14px; }
+  .qtitle { font-size: 1.1rem; }
   .note { border-left: 2px solid var(--penalty); padding: 2px 0 2px 18px; color: var(--ink_soft); font-size: 0.93rem; }
   code { font-size: 0.86em; background: var(--raised); border: 1px solid var(--hairline);
     border-radius: 4px; padding: 1px 5px; }
@@ -228,6 +232,37 @@ def channel_table(report: dict) -> str:
     )
 
 
+def demo_section(demo: dict) -> str:
+    blocks = []
+    for case in demo["cases"]:
+        cols = []
+        for label, side in (
+            ("As it ships today", case["before"]),
+            (f"Penalty {case['penalty']}", case["after"]),
+        ):
+            rows = "".join(
+                f'<tr><td class="num">{r["rank"]}</td>'
+                f"<td>{'<strong>&#43;</strong> ' if r.get('new') else ''}{esc(r['name'])}</td>"
+                f"<td>{esc(r['artist'])}</td>"
+                f'<td class="num">{r["playlists"]:,}{" &middot; tail" if r["tail"] else ""}</td></tr>'
+                for r in side["rows"]
+            )
+            cols.append(
+                f'<div class="figure"><h3>{esc(label)}</h3>'
+                f'<p class="caption">{side["tail_share"]:.0%} long tail &middot; '
+                f"{side['distinct_artists']} distinct artists &middot; "
+                f"median {side['median_playlists']:.0f} playlists</p>"
+                f'<div class="scroll"><table><thead><tr><th class="num">#</th><th>Track</th>'
+                f'<th>Artist</th><th class="num">Playlists</th></tr></thead>'
+                f"<tbody>{rows}</tbody></table></div></div>"
+            )
+        blocks.append(
+            f'<div class="case"><h3 class="qtitle">&ldquo;{esc(case["query"])}&rdquo;</h3>'
+            f'<div class="two">{"".join(cols)}</div></div>'
+        )
+    return "".join(blocks)
+
+
 def build() -> Path:
     r = json.loads((ARTIFACTS / "audit_report.json").read_text())
     b, cat, cfg = r["baseline"], r["catalog"], r["config"]
@@ -240,6 +275,11 @@ def build() -> Path:
     )
     tail_gain = best["tail_share"] - b["tail_share"]
     acc_cost = best["r_precision"] / b["r_precision"] - 1
+
+    demo_path = ARTIFACTS / "demo.json"
+    demo = json.loads(demo_path.read_text()) if demo_path.exists() else None
+    demo_html = demo_section(demo) if demo else ""
+    qd = r.get("query_diversity")
 
     body = f"""
   <div class="wrap">
@@ -307,6 +347,18 @@ def build() -> Path:
       </section>
 
       <section>
+        <h2>Any one playlist looks fine</h2>
+        <div class="note">A median of <strong>{qd["distinct_artists_per_query"]["median"]:.0f}
+        distinct artists</strong> in the {cfg["cut"]} tracks shown per query, and only
+        <strong>{qd["single_artist_queries"]} of {qd["n_queries_measured"]}</strong>
+        queries return a single artist. Per-playlist diversity is not the problem.</div>
+        <p>The concentration is <em>across</em> queries: the same artists reappear for
+        different requests. A diversity metric computed per playlist &mdash; which is
+        the usual way this gets measured &mdash; cannot see that, which is why the audit
+        is run over the whole battery and reported as one distribution.</p>
+      </section>
+
+      <section>
         <h2>Which channel concentrates exposure</h2>
         <p>Cadence fuses seven candidate sources. Auditing them separately names the
         trade rather than blaming the system as a whole.</p>
@@ -341,6 +393,19 @@ def build() -> Path:
         (+{tail_gain * 100:.1f} points) for <strong>{acc_cost:.1%}</strong> R-precision.
         Whether that is worth paying is a product decision, which is the point of
         measuring it instead of guessing.</div>
+      </section>
+
+      <section>
+        <h2>Seeing it on one query</h2>
+        <p>Two cases, deliberately paired. The first is a theme, where
+        concentration is a defect the penalty can fix. The second is an artist's
+        name, where concentration is the <em>correct</em> answer and the penalty
+        makes the result worse without improving artist diversity at all &mdash;
+        it just digs for more obscure tracks by the same artist.</p>
+        {demo_html}
+        <p class="caption">&#43; marks a track the intervention pulled into the top
+        {demo["n"] if demo else 0}. An audit that reported only the first case would
+        be recommending a change that breaks the second.</p>
       </section>
 
       <section>

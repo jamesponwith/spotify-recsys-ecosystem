@@ -98,6 +98,10 @@
     font-weight: 500; white-space: nowrap; }
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 0; }
   tr:last-child td { border-bottom: none; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  @media (max-width: 720px) { .two { grid-template-columns: 1fr; } }
+  .case { display: flex; flex-direction: column; gap: 14px; }
+  .qtitle { font-size: 1.1rem; }
   .note { border-left: 2px solid var(--penalty); padding: 2px 0 2px 18px; color: var(--ink_soft); font-size: 0.93rem; }
   code { font-size: 0.86em; background: var(--raised); border: 1px solid var(--hairline);
     border-radius: 4px; padding: 1px 5px; }
@@ -171,6 +175,18 @@
       </section>
 
       <section>
+        <h2>Any one playlist looks fine</h2>
+        <div class="note">A median of <strong>17
+        distinct artists</strong> in the 20 tracks shown per query, and only
+        <strong>5 of 400</strong>
+        queries return a single artist. Per-playlist diversity is not the problem.</div>
+        <p>The concentration is <em>across</em> queries: the same artists reappear for
+        different requests. A diversity metric computed per playlist &mdash; which is
+        the usual way this gets measured &mdash; cannot see that, which is why the audit
+        is run over the whole battery and reported as one distribution.</p>
+      </section>
+
+      <section>
         <h2>Which channel concentrates exposure</h2>
         <p>Cadence fuses seven candidate sources. Auditing them separately names the
         trade rather than blaming the system as a whole.</p>
@@ -205,6 +221,19 @@
         (+4.5 points) for <strong>-9.0%</strong> R-precision.
         Whether that is worth paying is a product decision, which is the point of
         measuring it instead of guessing.</div>
+      </section>
+
+      <section>
+        <h2>Seeing it on one query</h2>
+        <p>Two cases, deliberately paired. The first is a theme, where
+        concentration is a defect the penalty can fix. The second is an artist's
+        name, where concentration is the <em>correct</em> answer and the penalty
+        makes the result worse without improving artist diversity at all &mdash;
+        it just digs for more obscure tracks by the same artist.</p>
+        <div class="case"><h3 class="qtitle">&ldquo;throwback&rdquo;</h3><div class="two"><div class="figure"><h3>As it ships today</h3><p class="caption">0% long tail &middot; 8 distinct artists &middot; median 1104 playlists</p><div class="scroll"><table><thead><tr><th class="num">#</th><th>Track</th><th>Artist</th><th class="num">Playlists</th></tr></thead><tbody><tr><td class="num">1</td><td>Replay</td><td>Iyaz</td><td class="num">1,251</td></tr><tr><td class="num">2</td><td>Down</td><td>Jay Sean</td><td class="num">1,027</td></tr><tr><td class="num">3</td><td>Umbrella</td><td>Rihanna</td><td class="num">1,265</td></tr><tr><td class="num">4</td><td>Kiss Me Thru The Phone</td><td>Soulja Boy</td><td class="num">1,454</td></tr><tr><td class="num">5</td><td>Leavin'</td><td>Jesse McCartney</td><td class="num">521</td></tr><tr><td class="num">6</td><td>Girlfriend (German Version - Explicit) - German Version - Explicit</td><td>Avril Lavigne</td><td class="num">682</td></tr><tr><td class="num">7</td><td>Beautiful Girls</td><td>Sean Kingston</td><td class="num">1,181</td></tr><tr><td class="num">8</td><td>In My Head</td><td>Jason Derulo</td><td class="num">610</td></tr></tbody></table></div></div><div class="figure"><h3>Penalty 0.3</h3><p class="caption">38% long tail &middot; 8 distinct artists &middot; median 602 playlists</p><div class="scroll"><table><thead><tr><th class="num">#</th><th>Track</th><th>Artist</th><th class="num">Playlists</th></tr></thead><tbody><tr><td class="num">1</td><td><strong>&#43;</strong> Strippin The Walk</td><td>Kstylis</td><td class="num">5 &middot; tail</td></tr><tr><td class="num">2</td><td><strong>&#43;</strong> Chasing The Night</td><td>Every Avenue</td><td class="num">4 &middot; tail</td></tr><tr><td class="num">3</td><td><strong>&#43;</strong> Money Goes, Honey Stay (When The Money Goes Remix)</td><td>Fabolous</td><td class="num">4 &middot; tail</td></tr><tr><td class="num">4</td><td>Replay</td><td>Iyaz</td><td class="num">1,251</td></tr><tr><td class="num">5</td><td>Down</td><td>Jay Sean</td><td class="num">1,027</td></tr><tr><td class="num">6</td><td>Leavin'</td><td>Jesse McCartney</td><td class="num">521</td></tr><tr><td class="num">7</td><td>Umbrella</td><td>Rihanna</td><td class="num">1,265</td></tr><tr><td class="num">8</td><td>Girlfriend (German Version - Explicit) - German Version - Explicit</td><td>Avril Lavigne</td><td class="num">682</td></tr></tbody></table></div></div></div></div><div class="case"><h3 class="qtitle">&ldquo;Nickelback&rdquo;</h3><div class="two"><div class="figure"><h3>As it ships today</h3><p class="caption">50% long tail &middot; 1 distinct artists &middot; median 22 playlists</p><div class="scroll"><table><thead><tr><th class="num">#</th><th>Track</th><th>Artist</th><th class="num">Playlists</th></tr></thead><tbody><tr><td class="num">1</td><td>Breathe</td><td>Nickelback</td><td class="num">4 &middot; tail</td></tr><tr><td class="num">2</td><td>This Afternoon</td><td>Nickelback</td><td class="num">110</td></tr><tr><td class="num">3</td><td>Hangnail</td><td>Nickelback</td><td class="num">8 &middot; tail</td></tr><tr><td class="num">4</td><td>Shakin' Hands</td><td>Nickelback</td><td class="num">36</td></tr><tr><td class="num">5</td><td>Midnight Queen</td><td>Nickelback</td><td class="num">9 &middot; tail</td></tr><tr><td class="num">6</td><td>Savin' Me</td><td>Nickelback</td><td class="num">193</td></tr><tr><td class="num">7</td><td>Hollywood</td><td>Nickelback</td><td class="num">4 &middot; tail</td></tr><tr><td class="num">8</td><td>Next Contestant</td><td>Nickelback</td><td class="num">90</td></tr></tbody></table></div></div><div class="figure"><h3>Penalty 0.3</h3><p class="caption">88% long tail &middot; 1 distinct artists &middot; median 5 playlists</p><div class="scroll"><table><thead><tr><th class="num">#</th><th>Track</th><th>Artist</th><th class="num">Playlists</th></tr></thead><tbody><tr><td class="num">1</td><td>Breathe</td><td>Nickelback</td><td class="num">4 &middot; tail</td></tr><tr><td class="num">2</td><td>Hangnail</td><td>Nickelback</td><td class="num">8 &middot; tail</td></tr><tr><td class="num">3</td><td>Hollywood</td><td>Nickelback</td><td class="num">4 &middot; tail</td></tr><tr><td class="num">4</td><td>Midnight Queen</td><td>Nickelback</td><td class="num">9 &middot; tail</td></tr><tr><td class="num">5</td><td><strong>&#43;</strong> Coin For The Ferryman</td><td>Nickelback</td><td class="num">4 &middot; tail</td></tr><tr><td class="num">6</td><td><strong>&#43;</strong> For The River</td><td>Nickelback</td><td class="num">5 &middot; tail</td></tr><tr><td class="num">7</td><td>Shakin' Hands</td><td>Nickelback</td><td class="num">36</td></tr><tr><td class="num">8</td><td><strong>&#43;</strong> After The Rain</td><td>Nickelback</td><td class="num">5 &middot; tail</td></tr></tbody></table></div></div></div></div>
+        <p class="caption">&#43; marks a track the intervention pulled into the top
+        8. An audit that reported only the first case would
+        be recommending a change that breaks the second.</p>
       </section>
 
       <section>

@@ -81,6 +81,17 @@ useful output.
   does not change the set. Exposure has to be counted at the cut the listener
   actually sees.
 
+## Demos
+
+Each app has a working demo command and a published report showing real output.
+
+| App | Demo command | Shows |
+|---|---|---|
+| cadence | `cadence play "<request>"` | a generated playlist, with a grounded reason and a Camelot segue per track |
+| timbre | `timbre demo "<request>"` | Cadence's own picks frozen out, then handed back an audio-only embedding |
+| segue | `segue demo` | a held-out playlist continued, against what the person really played next |
+| gamut | `gamut demo` | one query before and after the exposure-aware re-rank |
+
 ## Running any of it
 
 Cadence is the base; the other three install it editable as a sibling.

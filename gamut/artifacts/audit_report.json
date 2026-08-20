@@ -138,6 +138,38 @@
       "ndcg": 0.03007436689442673
     }
   },
+  "query_diversity": {
+    "distinct_artists_per_query": {
+      "median": 17.0,
+      "p10": 11.0,
+      "p90": 20.0
+    },
+    "single_artist_queries": 5,
+    "n_queries_measured": 400,
+    "histogram": [
+      0,
+      5,
+      5,
+      3,
+      4,
+      1,
+      4,
+      5,
+      3,
+      5,
+      2,
+      10,
+      11,
+      19,
+      21,
+      18,
+      37,
+      54,
+      64,
+      68,
+      61
+    ]
+  },
   "frontier": [
     {
       "penalty": 0.0,
@@ -337,5 +369,5 @@
       "ndcg": 0.07023219919683016
     }
   ],
-  "seconds": 1.5
+  "seconds": 1.4
 }

@@ -3,7 +3,13 @@ __pycache__/
 *.py[cod]
 data/raw/
 data/processed/
-artifacts/
+# Excluding the directory outright would also block the re-includes below:
+# git cannot resurrect a file once a parent directory is excluded.
+artifacts/*
+!artifacts/results.html
+!artifacts/demo.json
+!artifacts/*_report.json
+!artifacts/*_meta.json
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/

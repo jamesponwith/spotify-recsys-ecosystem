@@ -1,0 +1,318 @@
+{
+  "cases": [
+    {
+      "query": "throwback",
+      "penalty": 0.3,
+      "n": 8,
+      "before": {
+        "rows": [
+          {
+            "rank": 1,
+            "index": 32,
+            "name": "Replay",
+            "artist": "Iyaz",
+            "playlists": 1251,
+            "tail": false
+          },
+          {
+            "rank": 2,
+            "index": 2749,
+            "name": "Down",
+            "artist": "Jay Sean",
+            "playlists": 1027,
+            "tail": false
+          },
+          {
+            "rank": 3,
+            "index": 1720,
+            "name": "Umbrella",
+            "artist": "Rihanna",
+            "playlists": 1265,
+            "tail": false
+          },
+          {
+            "rank": 4,
+            "index": 5708,
+            "name": "Kiss Me Thru The Phone",
+            "artist": "Soulja Boy",
+            "playlists": 1454,
+            "tail": false
+          },
+          {
+            "rank": 5,
+            "index": 13,
+            "name": "Leavin'",
+            "artist": "Jesse McCartney",
+            "playlists": 521,
+            "tail": false
+          },
+          {
+            "rank": 6,
+            "index": 2194,
+            "name": "Girlfriend (German Version - Explicit) - German Version - Explicit",
+            "artist": "Avril Lavigne",
+            "playlists": 682,
+            "tail": false
+          },
+          {
+            "rank": 7,
+            "index": 1703,
+            "name": "Beautiful Girls",
+            "artist": "Sean Kingston",
+            "playlists": 1181,
+            "tail": false
+          },
+          {
+            "rank": 8,
+            "index": 1706,
+            "name": "In My Head",
+            "artist": "Jason Derulo",
+            "playlists": 610,
+            "tail": false
+          }
+        ],
+        "tail_share": 0.0,
+        "distinct_artists": 8,
+        "median_playlists": 1104.0
+      },
+      "after": {
+        "rows": [
+          {
+            "rank": 1,
+            "index": 129734,
+            "name": "Strippin The Walk",
+            "artist": "Kstylis",
+            "playlists": 5,
+            "tail": true,
+            "new": true
+          },
+          {
+            "rank": 2,
+            "index": 130538,
+            "name": "Chasing The Night",
+            "artist": "Every Avenue",
+            "playlists": 4,
+            "tail": true,
+            "new": true
+          },
+          {
+            "rank": 3,
+            "index": 133950,
+            "name": "Money Goes, Honey Stay (When The Money Goes Remix)",
+            "artist": "Fabolous",
+            "playlists": 4,
+            "tail": true,
+            "new": true
+          },
+          {
+            "rank": 4,
+            "index": 32,
+            "name": "Replay",
+            "artist": "Iyaz",
+            "playlists": 1251,
+            "tail": false,
+            "new": false
+          },
+          {
+            "rank": 5,
+            "index": 2749,
+            "name": "Down",
+            "artist": "Jay Sean",
+            "playlists": 1027,
+            "tail": false,
+            "new": false
+          },
+          {
+            "rank": 6,
+            "index": 13,
+            "name": "Leavin'",
+            "artist": "Jesse McCartney",
+            "playlists": 521,
+            "tail": false,
+            "new": false
+          },
+          {
+            "rank": 7,
+            "index": 1720,
+            "name": "Umbrella",
+            "artist": "Rihanna",
+            "playlists": 1265,
+            "tail": false,
+            "new": false
+          },
+          {
+            "rank": 8,
+            "index": 2194,
+            "name": "Girlfriend (German Version - Explicit) - German Version - Explicit",
+            "artist": "Avril Lavigne",
+            "playlists": 682,
+            "tail": false,
+            "new": false
+          }
+        ],
+        "tail_share": 0.375,
+        "distinct_artists": 8,
+        "median_playlists": 601.5
+      },
+      "held_out": 45
+    },
+    {
+      "query": "Nickelback",
+      "penalty": 0.3,
+      "n": 8,
+      "before": {
+        "rows": [
+          {
+            "rank": 1,
+            "index": 155076,
+            "name": "Breathe",
+            "artist": "Nickelback",
+            "playlists": 4,
+            "tail": true
+          },
+          {
+            "rank": 2,
+            "index": 20845,
+            "name": "This Afternoon",
+            "artist": "Nickelback",
+            "playlists": 110,
+            "tail": false
+          },
+          {
+            "rank": 3,
+            "index": 25975,
+            "name": "Hangnail",
+            "artist": "Nickelback",
+            "playlists": 8,
+            "tail": true
+          },
+          {
+            "rank": 4,
+            "index": 25972,
+            "name": "Shakin' Hands",
+            "artist": "Nickelback",
+            "playlists": 36,
+            "tail": false
+          },
+          {
+            "rank": 5,
+            "index": 93658,
+            "name": "Midnight Queen",
+            "artist": "Nickelback",
+            "playlists": 9,
+            "tail": true
+          },
+          {
+            "rank": 6,
+            "index": 22017,
+            "name": "Savin' Me",
+            "artist": "Nickelback",
+            "playlists": 193,
+            "tail": false
+          },
+          {
+            "rank": 7,
+            "index": 25971,
+            "name": "Hollywood",
+            "artist": "Nickelback",
+            "playlists": 4,
+            "tail": true
+          },
+          {
+            "rank": 8,
+            "index": 24836,
+            "name": "Next Contestant",
+            "artist": "Nickelback",
+            "playlists": 90,
+            "tail": false
+          }
+        ],
+        "tail_share": 0.5,
+        "distinct_artists": 1,
+        "median_playlists": 22.5
+      },
+      "after": {
+        "rows": [
+          {
+            "rank": 1,
+            "index": 155076,
+            "name": "Breathe",
+            "artist": "Nickelback",
+            "playlists": 4,
+            "tail": true,
+            "new": false
+          },
+          {
+            "rank": 2,
+            "index": 25975,
+            "name": "Hangnail",
+            "artist": "Nickelback",
+            "playlists": 8,
+            "tail": true,
+            "new": false
+          },
+          {
+            "rank": 3,
+            "index": 25971,
+            "name": "Hollywood",
+            "artist": "Nickelback",
+            "playlists": 4,
+            "tail": true,
+            "new": false
+          },
+          {
+            "rank": 4,
+            "index": 93658,
+            "name": "Midnight Queen",
+            "artist": "Nickelback",
+            "playlists": 9,
+            "tail": true,
+            "new": false
+          },
+          {
+            "rank": 5,
+            "index": 18994,
+            "name": "Coin For The Ferryman",
+            "artist": "Nickelback",
+            "playlists": 4,
+            "tail": true,
+            "new": true
+          },
+          {
+            "rank": 6,
+            "index": 113920,
+            "name": "For The River",
+            "artist": "Nickelback",
+            "playlists": 5,
+            "tail": true,
+            "new": true
+          },
+          {
+            "rank": 7,
+            "index": 25972,
+            "name": "Shakin' Hands",
+            "artist": "Nickelback",
+            "playlists": 36,
+            "tail": false,
+            "new": false
+          },
+          {
+            "rank": 8,
+            "index": 113919,
+            "name": "After The Rain",
+            "artist": "Nickelback",
+            "playlists": 5,
+            "tail": true,
+            "new": true
+          }
+        ],
+        "tail_share": 0.875,
+        "distinct_artists": 1,
+        "median_playlists": 5.0
+      },
+      "held_out": 33
+    }
+  ],
+  "penalty": 0.3,
+  "n": 8
+}

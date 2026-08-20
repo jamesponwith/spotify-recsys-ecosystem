@@ -114,6 +114,35 @@ def run(cfg: AuditConfig | None = None, verbose: bool = True) -> dict[str, Any]:
                 f"R-prec={acc['r_precision']:.4f}",
                 flush=True,
             )
+    # --- how concentration is distributed across queries -------------------
+    # The aggregate Gini hides a split worth naming: a query that is an artist's
+    # name *should* return that artist. Reporting the distribution separates
+    # concentration that is a defect from concentration that is the right answer.
+    per_query = []
+    for i in range(collected.indices.shape[0]):
+        top = collected.indices[i, : cfg.cut]
+        top = top[top >= 0].astype(np.int64)
+        if top.size == 0:
+            continue
+        per_query.append(int(np.unique(facts.artists[top]).size))
+    pq = np.asarray(per_query)
+    report["query_diversity"] = {
+        "distinct_artists_per_query": {
+            "median": float(np.median(pq)),
+            "p10": float(np.percentile(pq, 10)),
+            "p90": float(np.percentile(pq, 90)),
+        },
+        "single_artist_queries": int((pq == 1).sum()),
+        "n_queries_measured": int(pq.size),
+        "histogram": np.bincount(pq, minlength=cfg.cut + 1).tolist(),
+    }
+    if verbose:
+        print(
+            f"per-query artists: median {np.median(pq):.0f}, "
+            f"{int((pq == 1).sum())} queries return a single artist",
+            flush=True,
+        )
+
     report["frontier"] = frontier
 
     # --- the other knob ---------------------------------------------------

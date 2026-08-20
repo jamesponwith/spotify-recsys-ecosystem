@@ -1,0 +1,25 @@
+{
+  "n_tracks": 159338,
+  "n_train_playlists": 96334,
+  "n_holdout_playlists": 2000,
+  "collab_dim": 160,
+  "collab_explained_energy": 0.0683,
+  "tag_dim": 128,
+  "tag_explained_energy": 0.1838,
+  "n_tags": 4569,
+  "lexical_features": 146131,
+  "audio_valid_fraction": 0.9998,
+  "train_seconds": 103.4,
+  "seed": 20260815,
+  "embedding_config": {
+    "dim": 160,
+    "shift_k": 5.0,
+    "popularity_damping": 0.75,
+    "max_pairs_per_playlist": 4000
+  },
+  "tag_config": {
+    "dim": 128,
+    "shift_k": 2.0,
+    "min_token_len": 2
+  }
+}

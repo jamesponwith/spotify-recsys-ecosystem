@@ -1,0 +1,23 @@
+{
+  "n_queries": 1932,
+  "n_rows": 418716,
+  "n_positive": 50683,
+  "train_auc": 0.8773,
+  "valid_auc": 0.8493,
+  "valid_ndcg_uplift": 0.21,
+  "seconds": 236.6,
+  "feature_importance": {
+    "tag_hits": 0.18796,
+    "tag_exact_score": 0.10359,
+    "tag_exact_rank": 0.03668,
+    "n_tag_cols": 0.02857,
+    "tag_rank": 0.02264,
+    "collaborative_rank": 0.0158,
+    "collaborative_score": 0.01171,
+    "log_popularity": 0.01073,
+    "cooccurrence_score": 0.00545,
+    "fusion_score": 0.005,
+    "log_tag_mass": 0.0043,
+    "tag_score": 0.00319
+  }
+}

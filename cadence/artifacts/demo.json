@@ -1,0 +1,613 @@
+{
+  "cases": [
+    {
+      "query": "chill acoustic songs for a rainy sunday",
+      "title": "Acoustic Chill",
+      "description": "20 tracks, for acoustic, chill, rainy day.",
+      "n_tracks": 20,
+      "duration_min": 80.6,
+      "mean_energy": 0.322050005197525,
+      "mean_valence": 0.3955499827861786,
+      "constraint_report": {
+        "artist_cap": true
+      },
+      "latency_ms": 4454.4,
+      "intent": {
+        "themes": [
+          "acoustic",
+          "chill",
+          "rainy day",
+          "sunday"
+        ],
+        "genres": [],
+        "eras": []
+      },
+      "tracks": [
+        {
+          "position": 1,
+          "name": "Here We Go Again",
+          "artist": "Ray Charles",
+          "energy": 0.3059999942779541,
+          "reasons": [
+            "acoustic (acousticness 0.66 vs target 0.67)"
+          ],
+          "transition_note": null
+        },
+        {
+          "position": 2,
+          "name": "Sacred Vision",
+          "artist": "Iron & Wine",
+          "energy": 0.31200000643730164,
+          "reasons": [
+            "low-energy (energy 0.31 vs target 0.32)"
+          ],
+          "transition_note": "100->98 BPM, 6B->7B (harmonic)"
+        },
+        {
+          "position": 3,
+          "name": "Winter Wonderland",
+          "artist": "Diana Krall",
+          "energy": 0.30799999833106995,
+          "reasons": [
+            "acoustic (acousticness 0.68 vs target 0.67)"
+          ],
+          "transition_note": "98->114 BPM, 7B->7B (harmonic)"
+        },
+        {
+          "position": 4,
+          "name": "Untouchable Face",
+          "artist": "Ani DiFranco",
+          "energy": 0.33500000834465027,
+          "reasons": [
+            "melancholy (valence 0.39 vs target 0.39)"
+          ],
+          "transition_note": "114->112 BPM, 7B->9B (near)"
+        },
+        {
+          "position": 5,
+          "name": "The Most Beautiful Girl",
+          "artist": "Charlie Rich",
+          "energy": 0.3179999887943268,
+          "reasons": [
+            "low-energy (energy 0.32 vs target 0.32)"
+          ],
+          "transition_note": "112->103 BPM, 9B->9B (harmonic)"
+        },
+        {
+          "position": 6,
+          "name": "Holly Holy - Single Version",
+          "artist": "Neil Diamond",
+          "energy": 0.3140000104904175,
+          "reasons": [
+            "melancholy (valence 0.39 vs target 0.39)"
+          ],
+          "transition_note": "103->103 BPM, 9B->11B (near)"
+        },
+        {
+          "position": 7,
+          "name": "Estos Celos",
+          "artist": "Vicente Fern\u00e1ndez",
+          "energy": 0.3240000009536743,
+          "reasons": [
+            "melancholy (valence 0.38 vs target 0.39)"
+          ],
+          "transition_note": "103->105 BPM, 11B->12B (harmonic)"
+        },
+        {
+          "position": 8,
+          "name": "The World As I See It - Live",
+          "artist": "Jason Mraz",
+          "energy": 0.30399999022483826,
+          "reasons": [
+            "melancholy (valence 0.39 vs target 0.39)"
+          ],
+          "transition_note": "105->119 BPM, 12B->11B (harmonic)"
+        },
+        {
+          "position": 9,
+          "name": "Cambridge",
+          "artist": "Kina Grannis",
+          "energy": 0.3199999928474426,
+          "reasons": [
+            "melancholy (valence 0.38 vs target 0.39)"
+          ],
+          "transition_note": "119->122 BPM, 11B->1B (near)"
+        },
+        {
+          "position": 10,
+          "name": "More Of You",
+          "artist": "Chris Stapleton",
+          "energy": 0.3109999895095825,
+          "reasons": [
+            "on 3 playlists tagged \u201cchill\u201d",
+            "low-energy (energy 0.31 vs target 0.32)"
+          ],
+          "transition_note": "122->135 BPM, 1B->12B (harmonic)"
+        },
+        {
+          "position": 11,
+          "name": "Heaven - MTV Unplugged Version",
+          "artist": "Bryan Adams",
+          "energy": 0.34200000762939453,
+          "reasons": [
+            "melancholy (valence 0.37 vs target 0.39)"
+          ],
+          "transition_note": "135->135 BPM, 12B->8B (contrast)"
+        },
+        {
+          "position": 12,
+          "name": "Strangers (Acoustic Version)",
+          "artist": "Wave & Rome",
+          "energy": 0.33000001311302185,
+          "reasons": [
+            "low-energy (energy 0.33 vs target 0.32)"
+          ],
+          "transition_note": "135->142 BPM, 8B->7B (harmonic)"
+        },
+        {
+          "position": 13,
+          "name": "When I Fall",
+          "artist": "Elephant Revival",
+          "energy": 0.3230000138282776,
+          "reasons": [
+            "low-energy (energy 0.32 vs target 0.32)"
+          ],
+          "transition_note": "142->73 BPM, 7B->7A (harmonic)"
+        },
+        {
+          "position": 14,
+          "name": "Chocolate Legs",
+          "artist": "Eric Ben\u00e9t",
+          "energy": 0.3240000009536743,
+          "reasons": [
+            "low-energy (energy 0.32 vs target 0.32)"
+          ],
+          "transition_note": "73->144 BPM, 7A->4A (contrast)"
+        },
+        {
+          "position": 15,
+          "name": "Please Don't Pass Me By",
+          "artist": "Fred Hammond",
+          "energy": 0.30000001192092896,
+          "reasons": [
+            "acoustic (acousticness 0.66 vs target 0.67)"
+          ],
+          "transition_note": "144->85 BPM, 4A->4B (harmonic)"
+        },
+        {
+          "position": 16,
+          "name": "Don't Say",
+          "artist": "This Wild Life",
+          "energy": 0.46000000834465027,
+          "reasons": [
+            "on 3 playlists tagged \u201cacoustic\u201d",
+            "melancholy (valence 0.42 vs target 0.39)"
+          ],
+          "transition_note": "85->83 BPM, 4B->2B (near)"
+        },
+        {
+          "position": 17,
+          "name": "The A Team",
+          "artist": "Ed Sheeran",
+          "energy": 0.289000004529953,
+          "reasons": [
+            "on 114 playlists tagged \u201cchill\u201d",
+            "acoustic (acousticness 0.67 vs target 0.67)"
+          ],
+          "transition_note": "83->85 BPM, 2B->11B (contrast)"
+        },
+        {
+          "position": 18,
+          "name": "Blackbird",
+          "artist": "Boyce Avenue",
+          "energy": 0.3019999861717224,
+          "reasons": [
+            "on 3 playlists tagged \u201cacoustic\u201d",
+            "melancholy (valence 0.40 vs target 0.39)"
+          ],
+          "transition_note": "85->93 BPM, 11B->9B (near)"
+        },
+        {
+          "position": 19,
+          "name": "Fall for You (Acoustic)",
+          "artist": "Secondhand Serenade",
+          "energy": 0.3070000112056732,
+          "reasons": [
+            "on 5 playlists tagged \u201cchill\u201d",
+            "melancholy (valence 0.38 vs target 0.39)"
+          ],
+          "transition_note": "93->178 BPM, 9B->8B (harmonic)"
+        },
+        {
+          "position": 20,
+          "name": "The Graveyard Near The House",
+          "artist": "The Airborne Toxic Event",
+          "energy": 0.31200000643730164,
+          "reasons": [
+            "low-energy (energy 0.31 vs target 0.32)"
+          ],
+          "transition_note": "178->98 BPM, 8B->5A (contrast)"
+        }
+      ]
+    },
+    {
+      "query": "high energy workout, nothing explicit, about 45 minutes",
+      "title": "High Energy Workout",
+      "description": "11 tracks, for high energy, workout, gym, 120-160 bpm, build arc.",
+      "n_tracks": 11,
+      "duration_min": 45.8,
+      "mean_energy": 0.8517272472381592,
+      "mean_valence": 0.6426363587379456,
+      "constraint_report": {
+        "no_known_explicit": true,
+        "duration_within_10pct": true,
+        "artist_cap": true,
+        "tempo_range": true
+      },
+      "latency_ms": 446.9,
+      "intent": {
+        "themes": [
+          "high energy",
+          "workout",
+          "gym",
+          "about"
+        ],
+        "genres": [],
+        "eras": []
+      },
+      "tracks": [
+        {
+          "position": 1,
+          "name": "Rap God",
+          "artist": "Eminem",
+          "energy": 0.8379999995231628,
+          "reasons": [
+            "on 57 playlists tagged \u201cworkout\u201d",
+            "danceable (danceability 0.71 vs target 0.70)"
+          ],
+          "transition_note": null
+        },
+        {
+          "position": 2,
+          "name": "Addicted - Radio Edit",
+          "artist": "DJ Assad",
+          "energy": 0.8240000009536743,
+          "reasons": [
+            "danceable (danceability 0.67 vs target 0.70)",
+            "130 BPM"
+          ],
+          "transition_note": "148->130 BPM, 9B->8B (harmonic)"
+        },
+        {
+          "position": 3,
+          "name": "Ma'amin Benisim",
+          "artist": "Yaakov Shwekey",
+          "energy": 0.8790000081062317,
+          "reasons": [
+            "danceable (danceability 0.71 vs target 0.70)",
+            "127 BPM"
+          ],
+          "transition_note": "130->127 BPM, 8B->9B (harmonic)"
+        },
+        {
+          "position": 4,
+          "name": "We Speak Chinese",
+          "artist": "Mike Ault",
+          "energy": 0.8619999885559082,
+          "reasons": [
+            "high-energy (energy 0.86 vs target 0.86)",
+            "128 BPM"
+          ],
+          "transition_note": "127->128 BPM, 9B->11B (near)"
+        },
+        {
+          "position": 5,
+          "name": "Crazy About You",
+          "artist": "Mtbrd",
+          "energy": 0.8690000176429749,
+          "reasons": [
+            "high-energy (energy 0.87 vs target 0.86)",
+            "131 BPM"
+          ],
+          "transition_note": "128->131 BPM, 11B->11A (harmonic)"
+        },
+        {
+          "position": 6,
+          "name": "I Got This",
+          "artist": "Big K.R.I.T.",
+          "energy": 0.875,
+          "reasons": [
+            "danceable (danceability 0.70 vs target 0.70)",
+            "136 BPM"
+          ],
+          "transition_note": "131->136 BPM, 11A->12A (harmonic)"
+        },
+        {
+          "position": 7,
+          "name": "Freak",
+          "artist": "Little Mix",
+          "energy": 0.871999979019165,
+          "reasons": [
+            "upbeat (valence 0.63 vs target 0.62)",
+            "125 BPM"
+          ],
+          "transition_note": "136->125 BPM, 12A->1A (harmonic)"
+        },
+        {
+          "position": 8,
+          "name": "Ruleta Rusa",
+          "artist": "Tony Dize",
+          "energy": 0.8519999980926514,
+          "reasons": [
+            "danceable (danceability 0.70 vs target 0.70)",
+            "120 BPM"
+          ],
+          "transition_note": "125->120 BPM, 1A->3B (contrast)"
+        },
+        {
+          "position": 9,
+          "name": "When We Were Young - Grandtheft Remix",
+          "artist": "Dillon Francis",
+          "energy": 0.8690000176429749,
+          "reasons": [
+            "upbeat (valence 0.62 vs target 0.62)",
+            "144 BPM"
+          ],
+          "transition_note": "120->144 BPM, 3B->3B (harmonic)"
+        },
+        {
+          "position": 10,
+          "name": "Energy",
+          "artist": "Famous Dex",
+          "energy": 0.7680000066757202,
+          "reasons": [
+            "danceable (danceability 0.66 vs target 0.70)",
+            "135 BPM"
+          ],
+          "transition_note": "144->135 BPM, 3B->4B (harmonic)"
+        },
+        {
+          "position": 11,
+          "name": "Yeah - Crass Version",
+          "artist": "LCD Soundsystem",
+          "energy": 0.8610000014305115,
+          "reasons": [
+            "high-energy (energy 0.86 vs target 0.86)",
+            "132 BPM"
+          ],
+          "transition_note": "135->132 BPM, 4B->6B (near)"
+        }
+      ]
+    },
+    {
+      "query": "90s alternative rock for a road trip",
+      "title": "Road Trip Alternative Rock 1990s",
+      "description": "20 tracks, for road trip, alternative rock, leaning 1990s.",
+      "n_tracks": 20,
+      "duration_min": 73.2,
+      "mean_energy": 0.6829000115394592,
+      "mean_valence": 0.6664000153541565,
+      "constraint_report": {
+        "artist_cap": true
+      },
+      "latency_ms": 378.3,
+      "intent": {
+        "themes": [
+          "road trip",
+          "alternative rock"
+        ],
+        "genres": [],
+        "eras": [
+          "1990s"
+        ]
+      },
+      "tracks": [
+        {
+          "position": 1,
+          "name": "Golden Ocean",
+          "artist": "Miner",
+          "energy": 0.6779999732971191,
+          "reasons": [
+            "upbeat (valence 0.68 vs target 0.68)"
+          ],
+          "transition_note": null
+        },
+        {
+          "position": 2,
+          "name": "Olivia",
+          "artist": "One Direction",
+          "energy": 0.6809999942779541,
+          "reasons": [
+            "on 6 playlists tagged \u201croad trip\u201d",
+            "high-energy (energy 0.68 vs target 0.68)"
+          ],
+          "transition_note": "120->118 BPM, 2B->2B (harmonic)"
+        },
+        {
+          "position": 3,
+          "name": "Shadrack (Fonograff Rework)",
+          "artist": "Louis Prima",
+          "energy": 0.6779999732971191,
+          "reasons": [
+            "high-energy (energy 0.68 vs target 0.68)"
+          ],
+          "transition_note": "118->115 BPM, 2B->3B (harmonic)"
+        },
+        {
+          "position": 4,
+          "name": "The Choice Is Yours (Revisited)",
+          "artist": "Black Sheep",
+          "energy": 0.6790000200271606,
+          "reasons": [
+            "upbeat (valence 0.68 vs target 0.68)"
+          ],
+          "transition_note": "115->101 BPM, 3B->3A (harmonic)"
+        },
+        {
+          "position": 5,
+          "name": "Jumpin', Jumpin'",
+          "artist": "Destiny's Child",
+          "energy": 0.6850000023841858,
+          "reasons": [
+            "on 69 playlists tagged \u201c1990s\u201d",
+            "upbeat (valence 0.68 vs target 0.68)"
+          ],
+          "transition_note": "101->89 BPM, 3A->3B (harmonic)"
+        },
+        {
+          "position": 6,
+          "name": "Meanwhile Back At Mama's",
+          "artist": "Tim McGraw",
+          "energy": 0.6790000200271606,
+          "reasons": [
+            "on 3 playlists tagged \u201croad trip\u201d",
+            "high-energy (energy 0.68 vs target 0.68)"
+          ],
+          "transition_note": "89->173 BPM, 3B->2B (harmonic)"
+        },
+        {
+          "position": 7,
+          "name": "Stay (I Missed You) - Storytellers",
+          "artist": "Lisa Loeb",
+          "energy": 0.628000020980835,
+          "reasons": [
+            "high-energy (energy 0.63 vs target 0.68)"
+          ],
+          "transition_note": "173->162 BPM, 2B->3B (harmonic)"
+        },
+        {
+          "position": 8,
+          "name": "Affirmation",
+          "artist": "Savage Garden",
+          "energy": 0.7749999761581421,
+          "reasons": [
+            "upbeat (valence 0.67 vs target 0.68)"
+          ],
+          "transition_note": "162->170 BPM, 3B->4B (harmonic)"
+        },
+        {
+          "position": 9,
+          "name": "You Disappear",
+          "artist": "La Luz",
+          "energy": 0.6809999942779541,
+          "reasons": [
+            "upbeat (valence 0.68 vs target 0.68)"
+          ],
+          "transition_note": "170->83 BPM, 4B->4A (harmonic)"
+        },
+        {
+          "position": 10,
+          "name": "Santeria",
+          "artist": "Sublime",
+          "energy": 0.753000020980835,
+          "reasons": [
+            "on 135 playlists tagged \u201c1990s\u201d",
+            "high-energy (energy 0.75 vs target 0.68)"
+          ],
+          "transition_note": "83->90 BPM, 4A->12A (contrast)"
+        },
+        {
+          "position": 11,
+          "name": "Three-Thirty",
+          "artist": "AJR",
+          "energy": 0.6809999942779541,
+          "reasons": [
+            "high-energy (energy 0.68 vs target 0.68)"
+          ],
+          "transition_note": "90->96 BPM, 12A->11A (harmonic)"
+        },
+        {
+          "position": 12,
+          "name": "Feelin' Single",
+          "artist": "R. Kelly",
+          "energy": 0.6819999814033508,
+          "reasons": [
+            "high-energy (energy 0.68 vs target 0.68)"
+          ],
+          "transition_note": "96->107 BPM, 11A->11B (harmonic)"
+        },
+        {
+          "position": 13,
+          "name": "Snow Globe",
+          "artist": "Matt Wertz",
+          "energy": 0.6790000200271606,
+          "reasons": [
+            "upbeat (valence 0.68 vs target 0.68)"
+          ],
+          "transition_note": "107->128 BPM, 11B->11B (harmonic)"
+        },
+        {
+          "position": 14,
+          "name": "You Took The Words Right Out of My Mouth (Hot Summer Night)",
+          "artist": "Meat Loaf",
+          "energy": 0.6809999942779541,
+          "reasons": [
+            "on 4 playlists tagged \u201croad trip\u201d",
+            "upbeat (valence 0.68 vs target 0.68)"
+          ],
+          "transition_note": "128->125 BPM, 11B->10B (harmonic)"
+        },
+        {
+          "position": 15,
+          "name": "Felicit\u00e0 (Happyness)",
+          "artist": "Al Bano",
+          "energy": 0.6779999732971191,
+          "reasons": [
+            "high-energy (energy 0.68 vs target 0.68)"
+          ],
+          "transition_note": "125->113 BPM, 10B->8B (near)"
+        },
+        {
+          "position": 16,
+          "name": "Wrist Motion (feat. Fat Nick)",
+          "artist": "Wifisfuneral",
+          "energy": 0.6779999732971191,
+          "reasons": [
+            "upbeat (valence 0.68 vs target 0.68)"
+          ],
+          "transition_note": "113->85 BPM, 8B->10B (near)"
+        },
+        {
+          "position": 17,
+          "name": "Underwater",
+          "artist": "Goldroom",
+          "energy": 0.6809999942779541,
+          "reasons": [
+            "high-energy (energy 0.68 vs target 0.68)"
+          ],
+          "transition_note": "85->100 BPM, 10B->7A (contrast)"
+        },
+        {
+          "position": 18,
+          "name": "Make a Cake (feat. Lindee Link)",
+          "artist": "Jolly Ol' Brits",
+          "energy": 0.6809999942779541,
+          "reasons": [
+            "high-energy (energy 0.68 vs target 0.68)"
+          ],
+          "transition_note": "100->80 BPM, 7A->7B (harmonic)"
+        },
+        {
+          "position": 19,
+          "name": "Mannequins",
+          "artist": "Bazanji",
+          "energy": 0.6819999814033508,
+          "reasons": [
+            "high-energy (energy 0.68 vs target 0.68)"
+          ],
+          "transition_note": "80->142 BPM, 7B->6B (harmonic)"
+        },
+        {
+          "position": 20,
+          "name": "It Feels so Good",
+          "artist": "DJ Redbi",
+          "energy": 0.6179999709129333,
+          "reasons": [
+            "upbeat (valence 0.64 vs target 0.68)"
+          ],
+          "transition_note": "142->134 BPM, 6B->4A (contrast)"
+        }
+      ]
+    }
+  ]
+}
