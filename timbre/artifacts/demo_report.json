@@ -1,0 +1,1046 @@
+{
+  "top_n": 200,
+  "n_cold_per_query": 20,
+  "n_queries": 6,
+  "runs": [
+    {
+      "query": "rainy day study",
+      "n_cold": 20,
+      "tracks": [
+        {
+          "index": 134803,
+          "name": "Going Home",
+          "artist": "Intrinsic Focus",
+          "warm_rank": 1,
+          "cold_rank": 789,
+          "timbre_rank": 789
+        },
+        {
+          "index": 65649,
+          "name": "Time - Ambient",
+          "artist": "The American Dollar",
+          "warm_rank": 2,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 136670,
+          "name": "Crouching Tiger, Hidden Dragon",
+          "artist": "Tan Dun",
+          "warm_rank": 3,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 155512,
+          "name": "What Have We Done to Each Other?",
+          "artist": "Trent Reznor and Atticus Ross",
+          "warm_rank": 4,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 155375,
+          "name": "The Druid's Prayer",
+          "artist": "Michele McLaughlin",
+          "warm_rank": 5,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 52270,
+          "name": "New Star In The Sky",
+          "artist": "Air",
+          "warm_rank": 6,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 141486,
+          "name": "Dreams",
+          "artist": "14?",
+          "warm_rank": 7,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 115242,
+          "name": "Smoke & Mirrors",
+          "artist": "Agnes Obel",
+          "warm_rank": 8,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 129456,
+          "name": "Symphony No. 5 in C Minor, Op. 67: I. Allegro con brio",
+          "artist": "Ludwig van Beethoven",
+          "warm_rank": 9,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 73316,
+          "name": "Vale Decem",
+          "artist": "Murray Gold",
+          "warm_rank": 10,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 125220,
+          "name": "Home",
+          "artist": "Will Hanson",
+          "warm_rank": 11,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 104825,
+          "name": "Love Actually",
+          "artist": "Jeffrey Michael",
+          "warm_rank": 12,
+          "cold_rank": 0,
+          "timbre_rank": 1349
+        },
+        {
+          "index": 153847,
+          "name": "A Kiss",
+          "artist": "Kyle Dixon & Michael Stein",
+          "warm_rank": 13,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 153848,
+          "name": "Papa",
+          "artist": "Kyle Dixon & Michael Stein",
+          "warm_rank": 14,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 117089,
+          "name": "I Could Hear the Water at the Edge of All Things",
+          "artist": "Hammock",
+          "warm_rank": 15,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 157266,
+          "name": "After Sarah",
+          "artist": "Kyle Dixon & Michael Stein",
+          "warm_rank": 16,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 139830,
+          "name": "California",
+          "artist": "Ed Prosek",
+          "warm_rank": 17,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 156916,
+          "name": "A Thorough Education",
+          "artist": "Dario Marianelli",
+          "warm_rank": 18,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 37240,
+          "name": "In the Middle of This Nowhere",
+          "artist": "Hammock",
+          "warm_rank": 19,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 40875,
+          "name": "Never Forget - Midnight Version",
+          "artist": "Kazuma Jinnouchi",
+          "warm_rank": 20,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        }
+      ],
+      "cold_in_top_n": 0,
+      "timbre_in_top_n": 0,
+      "cold_fraction": 0.0,
+      "timbre_fraction": 0.0,
+      "timbre_median_rank": null
+    },
+    {
+      "query": "high energy gym workout",
+      "n_cold": 20,
+      "tracks": [
+        {
+          "index": 140267,
+          "name": "Plan My Attack",
+          "artist": "Rob Bailey & The Hustle Standard",
+          "warm_rank": 1,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 102365,
+          "name": "Godless",
+          "artist": "Angelmaker",
+          "warm_rank": 2,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 40017,
+          "name": "Addicted - Radio Edit",
+          "artist": "DJ Assad",
+          "warm_rank": 3,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 140266,
+          "name": "Cuz They Get It",
+          "artist": "Rob Bailey & The Hustle Standard",
+          "warm_rank": 4,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 127994,
+          "name": "Watch Me Sink",
+          "artist": "Have Heart",
+          "warm_rank": 5,
+          "cold_rank": 0,
+          "timbre_rank": 1397
+        },
+        {
+          "index": 19483,
+          "name": "Buss It Down",
+          "artist": "Young Buck",
+          "warm_rank": 6,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 100114,
+          "name": "Pariah",
+          "artist": "For Today",
+          "warm_rank": 7,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 83989,
+          "name": "F**k Sh*t (feat.Trouble & Wooh Da Kid)",
+          "artist": "Waka Flocka Flame",
+          "warm_rank": 8,
+          "cold_rank": 0,
+          "timbre_rank": 1387
+        },
+        {
+          "index": 53863,
+          "name": "Sleep with One Eye Open - Tek-One Remix",
+          "artist": "Bring Me The Horizon",
+          "warm_rank": 9,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 87041,
+          "name": "I'm Not Introducing You",
+          "artist": "Hopsin",
+          "warm_rank": 10,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 109911,
+          "name": "Square Up",
+          "artist": "Rob Bailey & The Hustle Standard",
+          "warm_rank": 11,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 5779,
+          "name": "Timber (Workout Mix + 130 BPM)",
+          "artist": "Workout Remix Factory",
+          "warm_rank": 12,
+          "cold_rank": 158,
+          "timbre_rank": 158
+        },
+        {
+          "index": 114373,
+          "name": "Anti-pattern",
+          "artist": "After The Burial",
+          "warm_rank": 13,
+          "cold_rank": 0,
+          "timbre_rank": 1241
+        },
+        {
+          "index": 135332,
+          "name": "Heaven - Cascada Radio Edit",
+          "artist": "Manian",
+          "warm_rank": 14,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 147403,
+          "name": "I Heart You",
+          "artist": "Toni Braxton",
+          "warm_rank": 15,
+          "cold_rank": 0,
+          "timbre_rank": 1275
+        },
+        {
+          "index": 5631,
+          "name": "Rap God",
+          "artist": "Eminem",
+          "warm_rank": 16,
+          "cold_rank": 197,
+          "timbre_rank": 197
+        },
+        {
+          "index": 71216,
+          "name": "Bang Bang - Kat Krazy Remix",
+          "artist": "Jessie J",
+          "warm_rank": 17,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 137042,
+          "name": "The Hounds Of Anubis",
+          "artist": "The Word Alive",
+          "warm_rank": 18,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 77158,
+          "name": "Starting To Turn",
+          "artist": "Tech N9ne",
+          "warm_rank": 19,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 135939,
+          "name": "Frogman",
+          "artist": "Whiskey Myers",
+          "warm_rank": 20,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        }
+      ],
+      "cold_in_top_n": 2,
+      "timbre_in_top_n": 2,
+      "cold_fraction": 0.1,
+      "timbre_fraction": 0.1,
+      "timbre_median_rank": 177.5
+    },
+    {
+      "query": "90s alternative rock",
+      "n_cold": 20,
+      "tracks": [
+        {
+          "index": 62056,
+          "name": "Your Woman",
+          "artist": "Dj 97",
+          "warm_rank": 1,
+          "cold_rank": 128,
+          "timbre_rank": 128
+        },
+        {
+          "index": 140538,
+          "name": "Father Of Mine (Re-Recorded)",
+          "artist": "Everclear",
+          "warm_rank": 2,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 138229,
+          "name": "I Alone - New Edit",
+          "artist": "Live",
+          "warm_rank": 3,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 35732,
+          "name": "Father Of Mine - 2004 Digital Remaster",
+          "artist": "Everclear",
+          "warm_rank": 4,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 105345,
+          "name": "Feel The Silence - Remix",
+          "artist": "The Goo Goo Dolls",
+          "warm_rank": 5,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 90546,
+          "name": "Frogs",
+          "artist": "Alice In Chains",
+          "warm_rank": 6,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 100572,
+          "name": "Danger",
+          "artist": "Third Eye Blind",
+          "warm_rank": 7,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 107579,
+          "name": "Self Righteous",
+          "artist": "Third Eye Blind",
+          "warm_rank": 8,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 77110,
+          "name": "An Ode to Maybe - 2008 Version",
+          "artist": "Third Eye Blind",
+          "warm_rank": 9,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 77111,
+          "name": "Wake For Young Souls",
+          "artist": "Third Eye Blind",
+          "warm_rank": 10,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 147573,
+          "name": "Jane Says - 2006 Remastered Version Live Version",
+          "artist": "Jane's Addiction",
+          "warm_rank": 11,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 107576,
+          "name": "My Hit And Run",
+          "artist": "Third Eye Blind",
+          "warm_rank": 12,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 93109,
+          "name": "Anthem",
+          "artist": "zebrahead",
+          "warm_rank": 13,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 685,
+          "name": "All Star",
+          "artist": "Smash Mouth",
+          "warm_rank": 14,
+          "cold_rank": 329,
+          "timbre_rank": 329
+        },
+        {
+          "index": 70386,
+          "name": "Company",
+          "artist": "Third Eye Blind",
+          "warm_rank": 15,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 125831,
+          "name": "Anything - 2008 Version",
+          "artist": "Third Eye Blind",
+          "warm_rank": 16,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 125832,
+          "name": "Darkness - 2008 Version",
+          "artist": "Third Eye Blind",
+          "warm_rank": 17,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 62057,
+          "name": "Possum Kingdom",
+          "artist": "Dj Top Picks",
+          "warm_rank": 18,
+          "cold_rank": 176,
+          "timbre_rank": 176
+        },
+        {
+          "index": 103596,
+          "name": "Fitter Happier",
+          "artist": "Radiohead",
+          "warm_rank": 19,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 684,
+          "name": "Under The Bridge",
+          "artist": "Red Hot Chili Peppers",
+          "warm_rank": 20,
+          "cold_rank": 514,
+          "timbre_rank": 514
+        }
+      ],
+      "cold_in_top_n": 2,
+      "timbre_in_top_n": 2,
+      "cold_fraction": 0.1,
+      "timbre_fraction": 0.1,
+      "timbre_median_rank": 152.0
+    },
+    {
+      "query": "late night jazz for reading",
+      "n_cold": 20,
+      "tracks": [
+        {
+          "index": 113657,
+          "name": "A Love Supreme, Pt. IV - Psalm",
+          "artist": "John Coltrane",
+          "warm_rank": 1,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 141608,
+          "name": "Too Young To Go Steady",
+          "artist": "John Coltrane Quartet",
+          "warm_rank": 2,
+          "cold_rank": 0,
+          "timbre_rank": 1432
+        },
+        {
+          "index": 14420,
+          "name": "Chitlins Con Carne",
+          "artist": "Kenny Burrell",
+          "warm_rank": 3,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 123499,
+          "name": "Nancy (With The Laughing Face)",
+          "artist": "John Coltrane Quartet",
+          "warm_rank": 4,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 101810,
+          "name": "A Love Supreme, Pt. II - Resolution",
+          "artist": "John Coltrane",
+          "warm_rank": 5,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 143208,
+          "name": "It's Easy To Remember",
+          "artist": "John Coltrane Quartet",
+          "warm_rank": 6,
+          "cold_rank": 0,
+          "timbre_rank": 1434
+        },
+        {
+          "index": 102691,
+          "name": "Maputo",
+          "artist": "Bob James",
+          "warm_rank": 7,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 143213,
+          "name": "Tranquillity - Digitally Remastered",
+          "artist": "Bobby Hutcherson",
+          "warm_rank": 8,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 117750,
+          "name": "Because of You",
+          "artist": "Tony Bennett",
+          "warm_rank": 9,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 116390,
+          "name": "Blue Train - 2003 Digital Remaster",
+          "artist": "John Coltrane",
+          "warm_rank": 10,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 102690,
+          "name": "Isn't She Lovely",
+          "artist": "David Sanborn",
+          "warm_rank": 11,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 155935,
+          "name": "Almost Like Being In Love",
+          "artist": "Lester Young",
+          "warm_rank": 12,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 7051,
+          "name": "Blue in Green",
+          "artist": "Miles Davis",
+          "warm_rank": 13,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 129868,
+          "name": "Almost Like Being In Love - From Brigadoon",
+          "artist": "Chet Baker",
+          "warm_rank": 14,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 41489,
+          "name": "Take Five",
+          "artist": "The Dave Brubeck Quartet",
+          "warm_rank": 15,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 158514,
+          "name": "Will O' the Wisp",
+          "artist": "Miles Davis",
+          "warm_rank": 16,
+          "cold_rank": 0,
+          "timbre_rank": 1250
+        },
+        {
+          "index": 54354,
+          "name": "So What",
+          "artist": "Miles Davis",
+          "warm_rank": 17,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 136252,
+          "name": "One O'Clock Jump",
+          "artist": "Count Basie",
+          "warm_rank": 18,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 123501,
+          "name": "Let\u00b4s Fall in Love",
+          "artist": "Wawau Adler",
+          "warm_rank": 19,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 137002,
+          "name": "Black Bottom Stomp",
+          "artist": "Jelly Roll Morton",
+          "warm_rank": 20,
+          "cold_rank": 0,
+          "timbre_rank": 1058
+        }
+      ],
+      "cold_in_top_n": 0,
+      "timbre_in_top_n": 0,
+      "cold_fraction": 0.0,
+      "timbre_fraction": 0.0,
+      "timbre_median_rank": null
+    },
+    {
+      "query": "upbeat indie pop for a road trip",
+      "n_cold": 20,
+      "tracks": [
+        {
+          "index": 36519,
+          "name": "I Look Fuckin Cool (feat. Alaska Thunderfuck)",
+          "artist": "Adore Delano",
+          "warm_rank": 1,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 116610,
+          "name": "D T F",
+          "artist": "Adore Delano",
+          "warm_rank": 2,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 139954,
+          "name": "Travelling Song (feat. Gabrielle Huber & Cameron Potts)",
+          "artist": "Passenger",
+          "warm_rank": 3,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 90216,
+          "name": "Those Who Can't, Cheat",
+          "artist": "Clarence Clarity",
+          "warm_rank": 4,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 123906,
+          "name": "Keep Pace",
+          "artist": "Christopher Norman",
+          "warm_rank": 5,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 142380,
+          "name": "Tim I Wish You Were Born a Girl",
+          "artist": "of Montreal",
+          "warm_rank": 6,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 145864,
+          "name": "Stepping Into Tomorrow",
+          "artist": "Madlib",
+          "warm_rank": 7,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 1411,
+          "name": "I'm Taking You With Me",
+          "artist": "Relient K",
+          "warm_rank": 8,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 122676,
+          "name": "Peace Tonight",
+          "artist": "Elephant Revival",
+          "warm_rank": 9,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 114700,
+          "name": "Just My Kind",
+          "artist": "The Julie Ruin",
+          "warm_rank": 10,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 132551,
+          "name": "Cowgirl In The Sand - Live At Massey Hall 1971",
+          "artist": "Neil Young",
+          "warm_rank": 11,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 64380,
+          "name": "\u05e2\u05db\u05e9\u05d9\u05d5 \u05e7\u05e8\u05d5\u05d1",
+          "artist": "The Idan Raichel Project",
+          "warm_rank": 12,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 64371,
+          "name": "Az Halachti",
+          "artist": "Omer Adam",
+          "warm_rank": 13,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 146220,
+          "name": "All I Want",
+          "artist": "SaddiqyTheNyeGuy",
+          "warm_rank": 14,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 36506,
+          "name": "Now That I Found You",
+          "artist": "Britney Spears",
+          "warm_rank": 15,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 136876,
+          "name": "Icing",
+          "artist": "Charity Vance",
+          "warm_rank": 16,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 137506,
+          "name": "If I Needed You",
+          "artist": "Lyle Lovett",
+          "warm_rank": 17,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 133312,
+          "name": "Fool Like Me - feat. Plastiscines",
+          "artist": "Cobra Starship",
+          "warm_rank": 18,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 125785,
+          "name": "Hearing Voices",
+          "artist": "Anberlin",
+          "warm_rank": 19,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 134955,
+          "name": "You Told the Drunls I Knew Karate",
+          "artist": "Zoey Van Goey",
+          "warm_rank": 20,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        }
+      ],
+      "cold_in_top_n": 0,
+      "timbre_in_top_n": 0,
+      "cold_fraction": 0.0,
+      "timbre_fraction": 0.0,
+      "timbre_median_rank": null
+    },
+    {
+      "query": "mellow acoustic sunday morning",
+      "n_cold": 20,
+      "tracks": [
+        {
+          "index": 114766,
+          "name": "Only One Acoustic",
+          "artist": "Yellowcard",
+          "warm_rank": 1,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 133922,
+          "name": "The '59 Sound - Acoustic",
+          "artist": "The Gaslight Anthem",
+          "warm_rank": 2,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 78767,
+          "name": "Fallin' - Unplugged",
+          "artist": "Alicia Keys",
+          "warm_rank": 3,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 107206,
+          "name": "Take The Skinheads Bowling (Camper Van Beethoven)",
+          "artist": "Camper Van Beethoven",
+          "warm_rank": 4,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 69938,
+          "name": "The Sun - Acoustic",
+          "artist": "Maroon 5",
+          "warm_rank": 5,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 60978,
+          "name": "Moving On - Acoustic",
+          "artist": "Asking Alexandria",
+          "warm_rank": 6,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 18489,
+          "name": "Dog Days Are Over - MTV Unplugged, 2012",
+          "artist": "Florence + The Machine",
+          "warm_rank": 7,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 98911,
+          "name": "The Rhine",
+          "artist": "Corey Kilgannon",
+          "warm_rank": 8,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 63833,
+          "name": "Bird Set Free - Live from The Village",
+          "artist": "Sia",
+          "warm_rank": 9,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 2990,
+          "name": "Sunday Morning",
+          "artist": "Maroon 5",
+          "warm_rank": 10,
+          "cold_rank": 211,
+          "timbre_rank": 211
+        },
+        {
+          "index": 1428,
+          "name": "Creep - Acoustic",
+          "artist": "Radiohead",
+          "warm_rank": 11,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 131011,
+          "name": "I Hate Everything About You - Acoustic Version",
+          "artist": "Three Days Grace",
+          "warm_rank": 12,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 76160,
+          "name": "Come Back Home",
+          "artist": "Christian Carcamo",
+          "warm_rank": 13,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 76134,
+          "name": "Waterfall",
+          "artist": "Caroline Glaser",
+          "warm_rank": 14,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 101533,
+          "name": "Come Home",
+          "artist": "Wolf Prize",
+          "warm_rank": 15,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 95415,
+          "name": "Untitled (Bonus Track)",
+          "artist": "John Vincent III",
+          "warm_rank": 16,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 53006,
+          "name": "Never Too Late - Acoustic Version",
+          "artist": "Three Days Grace",
+          "warm_rank": 17,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 135543,
+          "name": "She Loves You",
+          "artist": "The Gaslight Anthem",
+          "warm_rank": 18,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 110957,
+          "name": "More Than You Know - Acoustic",
+          "artist": "Axwell /\\ Ingrosso",
+          "warm_rank": 19,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        },
+        {
+          "index": 69934,
+          "name": "I'm Not The Only One - Live From Spotify London / 2016",
+          "artist": "Dua Lipa",
+          "warm_rank": 20,
+          "cold_rank": 0,
+          "timbre_rank": 0
+        }
+      ],
+      "cold_in_top_n": 0,
+      "timbre_in_top_n": 0,
+      "cold_fraction": 0.0,
+      "timbre_fraction": 0.0,
+      "timbre_median_rank": null
+    }
+  ],
+  "aggregate": {
+    "total_frozen": 120,
+    "recovered_without_timbre": 4,
+    "recovered_with_timbre": 4,
+    "recovery_rate_without": 0.03333333333333333,
+    "recovery_rate_with": 0.03333333333333333,
+    "median_timbre_rank": 164.75
+  },
+  "predictor": {
+    "kind": "mlp",
+    "mean_cosine": 0.24299132823944092
+  },
+  "seconds": 18.0
+}

@@ -1,0 +1,320 @@
+<title>Cold Start by Ear</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --surface: #F6F7F9;
+    --raised: #FFFFFF;
+    --ink: #161A1F;
+    --ink_soft: #3C4650;
+    --muted: #5C6570;
+    --hairline: #DDE1E6;
+    --grid: #E8EBEF;
+    --timbre: #CE7A0E;
+    --cadence: #0D8AA0;
+    --floor: #8C959F;
+    --good: #2E7D4F;
+    --critical: #B3261E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --surface: #12171C;
+    --raised: #181E25;
+    --ink: #E6EAEE;
+    --ink_soft: #C2CAD2;
+    --muted: #93A0AC;
+    --hairline: #242C34;
+    --grid: #1E262E;
+    --timbre: #C57F22;
+    --cadence: #1E9CB2;
+    --floor: #7A8794;
+    --good: #4CAF7D;
+    --critical: #E5766D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --surface: #12171C;
+    --raised: #181E25;
+    --ink: #E6EAEE;
+    --ink_soft: #C2CAD2;
+    --muted: #93A0AC;
+    --hairline: #242C34;
+    --grid: #1E262E;
+    --timbre: #C57F22;
+    --cadence: #1E9CB2;
+    --floor: #7A8794;
+    --good: #4CAF7D;
+    --critical: #E5766D;
+  }
+  body {
+    margin: 0;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
+  h1, h2, h3 {
+    font-family: ui-serif, "Iowan Old Style", "Source Serif 4", Palatino, Georgia, serif;
+    font-weight: 600;
+    text-wrap: balance;
+    margin: 0;
+  }
+  h1 { font-size: 2.35rem; letter-spacing: -0.018em; line-height: 1.15; }
+  h2 { font-size: 1.4rem; letter-spacing: -0.01em; }
+  h3 { font-size: 1.03rem; }
+  p { margin: 0; max-width: 68ch; }
+  a { color: var(--cadence); }
+  section { display: flex; flex-direction: column; gap: 16px; }
+  main { display: flex; flex-direction: column; gap: 52px; }
+  header { display: flex; flex-direction: column; gap: 14px; }
+  .eyebrow {
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .lede { font-size: 1.1rem; color: var(--ink_soft); max-width: 64ch; }
+  .meta {
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-size: 0.76rem; color: var(--muted);
+    border-top: 1px solid var(--hairline); padding-top: 12px;
+    display: flex; flex-wrap: wrap; gap: 6px 20px;
+  }
+  .verdict {
+    background: var(--raised); border: 1px solid var(--hairline);
+    border-radius: 10px; padding: 26px 28px;
+    display: grid; grid-template-columns: minmax(180px, auto) 1fr; gap: 28px 36px;
+    align-items: start;
+  }
+  @media (max-width: 620px) { .verdict { grid-template-columns: 1fr; } }
+  .hero-num {
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-size: 3.4rem; line-height: 1; font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em; color: var(--timbre);
+  }
+  .hero-cap { font-size: 0.8rem; color: var(--muted); margin-top: 8px; max-width: 24ch; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-size: 0.74rem; letter-spacing: 0.09em; text-transform: uppercase;
+    padding: 5px 11px; border-radius: 999px; border: 1px solid currentColor;
+    margin-bottom: 14px;
+  }
+  .chip.pass { color: var(--good); }
+  .chip.fail { color: var(--critical); }
+  .checks { display: flex; flex-direction: column; gap: 10px; }
+  .check {
+    display: grid; grid-template-columns: 20px 1fr auto; gap: 12px;
+    align-items: baseline; font-size: 0.92rem;
+    border-bottom: 1px dotted var(--hairline); padding-bottom: 9px;
+  }
+  .check:last-child { border-bottom: none; }
+  .check .mark { font-weight: 700; }
+  .check .num {
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-variant-numeric: tabular-nums; font-size: 0.86rem; color: var(--ink_soft);
+  }
+  .figure { display: flex; flex-direction: column; gap: 12px; }
+  .scroll { overflow-x: auto; }
+  .chart { display: block; max-width: 100%; height: auto; }
+  .chart .tick, .chart .blabel, .chart .bvalue {
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  .chart .tick { font-size: 10px; fill: var(--muted); }
+  .chart .blabel { font-size: 12px; fill: var(--ink_soft); }
+  .chart .bvalue { font-size: 12px; fill: var(--ink); }
+  .chart .bvalue.small { font-size: 10.5px; }
+  .chart .bar rect:first-of-type { transition: opacity .12s ease; }
+  .chart .bar:hover rect:first-of-type { opacity: .78; }
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px 20px;
+    font-size: 0.8rem; color: var(--muted);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+  .caption { font-size: 0.83rem; color: var(--muted); max-width: 66ch; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.87rem; }
+  th, td {
+    text-align: left; padding: 8px 14px 8px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  th {
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-size: 0.7rem; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--muted); font-weight: 500; white-space: nowrap;
+  }
+  td.num, th.num {
+    text-align: right; font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-variant-numeric: tabular-nums; padding-right: 0;
+  }
+  tr:last-child td { border-bottom: none; }
+  .gone { color: var(--muted); }
+  .up { color: var(--timbre); font-weight: 600; }
+  .note {
+    border-left: 2px solid var(--timbre); padding: 2px 0 2px 18px;
+    color: var(--ink_soft); font-size: 0.93rem;
+  }
+  code {
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-size: 0.86em; background: var(--raised);
+    border: 1px solid var(--hairline); border-radius: 4px; padding: 1px 5px;
+  }
+  ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+  li { max-width: 66ch; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  a:focus-visible, .bar:focus-visible {
+    outline: 2px solid var(--cadence); outline-offset: 2px; border-radius: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">Timbre · Phase 0</span>
+      <h1>Cold start by ear</h1>
+      <p class="lede">Cadence recommends music from playlist history. Tracks with no
+      history are invisible to it — 76.6% of the catalog. Can audio alone stand in
+      for what the crowd would have said?</p>
+      <div class="meta">
+        <span>159,338 tracks</span><span>1,718 held-out queries</span>
+        <span>22 features → 128-d</span>
+        <span>seed 20260815</span><span>1011s total</span>
+      </div>
+    </header>
+
+    <main>
+      <section>
+    <div class="verdict">
+      <div>
+        <span class="chip fail">✗ Gate 0 failed</span>
+        <div class="hero-num">13%</div>
+        <div class="hero-cap">of the retrieval quality that full playlist history delivers, recovered from audio descriptors alone</div>
+      </div>
+      <div class="checks"><div class="check"><span class="mark" style="color:var(--good)" aria-hidden="true">✓</span><span>Beats the random floor<span class="sr-only"> — met</span></span><span class="num">floor is 0.0000  ·  ratio undefined</span></div><div class="check"><span class="mark" style="color:var(--critical)" aria-hidden="true">✗</span><span>Recovers enough of what full playlist history gives<span class="sr-only"> — not met</span></span><span class="num">13.2%  ·  need 25%</span></div></div>
+    </div></section>
+
+      <section>
+        <h2>The premise, and how to kill it cheaply</h2>
+        <p>Timbre's plan is to train an audio encoder so that new tracks get a
+        position in Cadence's folksonomy space — the 128-d space learned from how
+        people title playlists. Three weeks of work rests on one assumption:
+        <em>acoustic content predicts how humans tag music</em>. If that is false,
+        no architecture rescues it.</p>
+        <p>It is testable today, with no audio at all. Cadence already holds
+        Spotify's engineered descriptors for every track, and the folksonomy
+        embedding they would have to predict. Regress one onto the other, then ask
+        the only question that matters: does a track with a <em>predicted</em>
+        embedding still get retrieved for a query drawn from a playlist it genuinely
+        belongs to?</p>
+      </section>
+
+      <section>
+        <div class="figure">
+          <h3>Recall@100 on 1,718 held-out playlist titles</h3>
+          <div class="scroll"><svg viewBox="0 0 660 228" width="660" height="228" role="img" aria-label="Recall at 100 by system" class="chart"><line x1="150.0" y1="0" x2="150.0" y2="202" stroke="var(--grid)" stroke-width="1"/><text x="150.0" y="220" class="tick" text-anchor="middle">0.00</text><line x1="262.0" y1="0" x2="262.0" y2="202" stroke="var(--grid)" stroke-width="1"/><text x="262.0" y="220" class="tick" text-anchor="middle">0.01</text><line x1="374.0" y1="0" x2="374.0" y2="202" stroke="var(--grid)" stroke-width="1"/><text x="374.0" y="220" class="tick" text-anchor="middle">0.01</text><line x1="486.0" y1="0" x2="486.0" y2="202" stroke="var(--grid)" stroke-width="1"/><text x="486.0" y="220" class="tick" text-anchor="middle">0.02</text><line x1="598.0" y1="0" x2="598.0" y2="202" stroke="var(--grid)" stroke-width="1"/><text x="598.0" y="220" class="tick" text-anchor="middle">0.03</text><text x="138" y="21.0" class="blabel" text-anchor="end">Random vector</text><g class="bar"><title>Random vector: recall@100 = 0.0000</title><rect x="150" y="0" width="2.0" height="34" rx="4" fill="var(--floor)"/><rect x="150" y="0" width="448" height="34" fill="transparent"/></g><text x="162.0" y="21.0" class="bvalue">0.000</text><text x="138" y="63.0" class="blabel" text-anchor="end">Catalog mean</text><g class="bar"><title>Catalog mean: recall@100 = 0.0000</title><rect x="150" y="42" width="2.0" height="34" rx="4" fill="var(--floor)"/><rect x="150" y="42" width="448" height="34" fill="transparent"/></g><text x="162.0" y="63.0" class="bvalue">0.000</text><text x="138" y="105.0" class="blabel" text-anchor="end">Audio → ridge</text><g class="bar"><title>Audio → ridge: recall@100 = 0.0000</title><rect x="150" y="84" width="2.0" height="34" rx="4" fill="var(--timbre)"/><rect x="150" y="84" width="448" height="34" fill="transparent"/></g><text x="162.0" y="105.0" class="bvalue">0.000</text><text x="138" y="147.0" class="blabel" text-anchor="end">Audio → MLP</text><g class="bar"><title>Audio → MLP: recall@100 = 0.0037</title><rect x="150" y="126" width="59.3" height="34" rx="4" fill="var(--timbre)"/><rect x="150" y="126" width="448" height="34" fill="transparent"/></g><text x="219.3" y="147.0" class="bvalue">0.004</text><text x="138" y="189.0" class="blabel" text-anchor="end">True embedding</text><g class="bar"><title>True embedding: recall@100 = 0.0281</title><rect x="150" y="168" width="448.0" height="34" rx="4" fill="var(--cadence)"/><rect x="150" y="168" width="448" height="34" fill="transparent"/></g><text x="608.0" y="189.0" class="bvalue">0.028</text></svg></div>
+          <div class="legend"><span><i class="swatch" style="background:var(--floor)"></i>Baseline / ceiling reference</span><span><i class="swatch" style="background:var(--timbre)"></i>Predicted from audio</span><span><i class="swatch" style="background:var(--cadence)"></i>True embedding (ceiling)</span></div>
+          <p class="caption">One query per held-out playlist; the relevant set is the
+          test-split tracks it contains. Only those 31,837 tracks have their
+          embedding replaced — the rest of the catalog stays known, which is what
+          makes this a cold-start simulation rather than a catalog swap.</p>
+        </div>
+        <div class="scroll"><table>
+          <thead><tr><th>System</th><th class="num">Recall@100</th>
+          <th class="num">Queries with a hit</th><th class="num">Share of oracle</th></tr></thead>
+          <tbody><tr><td>Random vector</td><td class="num">0.0000</td><td class="num">0.0%</td><td class="num">0%</td></tr><tr><td>Catalog mean</td><td class="num">0.0000</td><td class="num">0.0%</td><td class="num">0%</td></tr><tr><td>Audio → ridge</td><td class="num">0.0000</td><td class="num">0.0%</td><td class="num">0%</td></tr><tr><td>Audio → MLP</td><td class="num">0.0037</td><td class="num">3.6%</td><td class="num">13%</td></tr><tr><td>True embedding</td><td class="num">0.0281</td><td class="num">16.6%</td><td class="num">100%</td></tr></tbody>
+        </table></div>
+      </section>
+
+      <section>
+        <h2>Why the metric is retrieval, not cosine</h2>
+        <p>Cosine similarity between predicted and true embeddings is the obvious
+        score and the wrong one: a prediction can sit close to the target and still
+        be useless, because retrieval only cares whether it beat 159,000 competitors
+        — not how near it landed.</p>
+        <div class="scroll"><table>
+          <thead><tr><th>Model</th><th class="num">Mean cosine</th>
+          <th class="num">Recall@100</th><th class="num">Fit time</th></tr></thead>
+          <tbody><tr><td>ridge</td><td class="num">0.198</td><td class="num">0.0000</td><td class="num">57s</td></tr><tr><td>mlp</td><td class="num">0.243</td><td class="num">0.0037</td><td class="num">855s</td></tr></tbody>
+        </table></div>
+        <p class="caption">The winner on the gate is <strong>Audio → MLP</strong>.
+        Both models are reported; picking the better one after the fact and showing
+        only that would make the number unreproducible.</p>
+      </section>
+      
+    <section>
+      <h2>The joint demo: a simulated release</h2>
+      <p>Phase 0 measures a premise. This measures a system. Cadence answers a
+      natural-language request, and then the 20 tracks it
+      just chose are stripped of everything it knows about them that came from
+      playlist history — collaborative vectors, co-occurrence counts, folksonomy
+      embedding, popularity. That is the exact state of a track uploaded this
+      morning.</p>
+      <p>Then Cadence is handed one thing back, for those tracks only: a
+      folksonomy embedding predicted from audio. The same query runs again.</p>
+      <div class="note">Across 6 queries and
+      120 frozen tracks, Cadence alone recovers
+      <strong>4</strong> (3%)
+      into the top&nbsp;200 candidates. With Timbre's predicted embedding
+      it recovers <strong>4</strong>
+      (3%) — the same tracks, by the lexical and audio
+      channels that never needed history in the first place.</div>
+      <p>The graft is not inert. <strong>9 of 120</strong>
+      frozen tracks went from unranked to a real position once Timbre supplied an
+      embedding — but the best of them landed at rank
+      <strong>1,058</strong>, and the cut is 200. The wiring works
+      end to end; the signal behind it is an order of magnitude short of mattering.
+      That is Gate 0's verdict reappearing downstream, which is exactly where a failed
+      premise should reappear.</p>
+      <div class="figure">
+        <h3>Frozen tracks recovered, by query</h3>
+        <div class="scroll"><svg viewBox="0 0 660 428" width="660" height="428" role="img" aria-label="Frozen tracks recovered per query" class="chart"><line x1="0.0" y1="0" x2="0.0" y2="402" stroke="var(--grid)" stroke-width="1"/><text x="0.0" y="420" class="tick" text-anchor="middle">0</text><line x1="154.0" y1="0" x2="154.0" y2="402" stroke="var(--grid)" stroke-width="1"/><text x="154.0" y="420" class="tick" text-anchor="middle">5</text><line x1="308.0" y1="0" x2="308.0" y2="402" stroke="var(--grid)" stroke-width="1"/><text x="308.0" y="420" class="tick" text-anchor="middle">10</text><line x1="462.0" y1="0" x2="462.0" y2="402" stroke="var(--grid)" stroke-width="1"/><text x="462.0" y="420" class="tick" text-anchor="middle">15</text><line x1="616.0" y1="0" x2="616.0" y2="402" stroke="var(--grid)" stroke-width="1"/><text x="616.0" y="420" class="tick" text-anchor="middle">20</text><text x="0" y="12" class="blabel">rainy day study</text><g class="bar"><title>rainy day study — 0 of 20 recovered without Timbre</title><rect x="0" y="19" width="2.0" height="15" rx="4" fill="var(--floor)"/><rect x="0" y="19" width="616" height="15" fill="transparent"/></g><text x="10.0" y="31" class="bvalue small">0</text><g class="bar"><title>rainy day study — 0 of 20 recovered with Timbre</title><rect x="0" y="37" width="2.0" height="15" rx="4" fill="var(--timbre)"/><rect x="0" y="37" width="616" height="15" fill="transparent"/></g><text x="10.0" y="49" class="bvalue small">0</text><text x="0" y="82" class="blabel">high energy gym workout</text><g class="bar"><title>high energy gym workout — 2 of 20 recovered without Timbre</title><rect x="0" y="89" width="61.6" height="15" rx="4" fill="var(--floor)"/><rect x="0" y="89" width="616" height="15" fill="transparent"/></g><text x="69.6" y="101" class="bvalue small">2</text><g class="bar"><title>high energy gym workout — 2 of 20 recovered with Timbre</title><rect x="0" y="107" width="61.6" height="15" rx="4" fill="var(--timbre)"/><rect x="0" y="107" width="616" height="15" fill="transparent"/></g><text x="69.6" y="119" class="bvalue small">2</text><text x="0" y="152" class="blabel">90s alternative rock</text><g class="bar"><title>90s alternative rock — 2 of 20 recovered without Timbre</title><rect x="0" y="159" width="61.6" height="15" rx="4" fill="var(--floor)"/><rect x="0" y="159" width="616" height="15" fill="transparent"/></g><text x="69.6" y="171" class="bvalue small">2</text><g class="bar"><title>90s alternative rock — 2 of 20 recovered with Timbre</title><rect x="0" y="177" width="61.6" height="15" rx="4" fill="var(--timbre)"/><rect x="0" y="177" width="616" height="15" fill="transparent"/></g><text x="69.6" y="189" class="bvalue small">2</text><text x="0" y="222" class="blabel">late night jazz for reading</text><g class="bar"><title>late night jazz for reading — 0 of 20 recovered without Timbre</title><rect x="0" y="229" width="2.0" height="15" rx="4" fill="var(--floor)"/><rect x="0" y="229" width="616" height="15" fill="transparent"/></g><text x="10.0" y="241" class="bvalue small">0</text><g class="bar"><title>late night jazz for reading — 0 of 20 recovered with Timbre</title><rect x="0" y="247" width="2.0" height="15" rx="4" fill="var(--timbre)"/><rect x="0" y="247" width="616" height="15" fill="transparent"/></g><text x="10.0" y="259" class="bvalue small">0</text><text x="0" y="292" class="blabel">upbeat indie pop for a road trip</text><g class="bar"><title>upbeat indie pop for a road trip — 0 of 20 recovered without Timbre</title><rect x="0" y="299" width="2.0" height="15" rx="4" fill="var(--floor)"/><rect x="0" y="299" width="616" height="15" fill="transparent"/></g><text x="10.0" y="311" class="bvalue small">0</text><g class="bar"><title>upbeat indie pop for a road trip — 0 of 20 recovered with Timbre</title><rect x="0" y="317" width="2.0" height="15" rx="4" fill="var(--timbre)"/><rect x="0" y="317" width="616" height="15" fill="transparent"/></g><text x="10.0" y="329" class="bvalue small">0</text><text x="0" y="362" class="blabel">mellow acoustic sunday morning</text><g class="bar"><title>mellow acoustic sunday morning — 0 of 20 recovered without Timbre</title><rect x="0" y="369" width="2.0" height="15" rx="4" fill="var(--floor)"/><rect x="0" y="369" width="616" height="15" fill="transparent"/></g><text x="10.0" y="381" class="bvalue small">0</text><g class="bar"><title>mellow acoustic sunday morning — 0 of 20 recovered with Timbre</title><rect x="0" y="387" width="2.0" height="15" rx="4" fill="var(--timbre)"/><rect x="0" y="387" width="616" height="15" fill="transparent"/></g><text x="10.0" y="399" class="bvalue small">0</text></svg></div>
+        <div class="legend"><span><i class="swatch" style="background:var(--floor)"></i>Cadence alone (no history, no Timbre)</span><span><i class="swatch" style="background:var(--timbre)"></i>Cadence + Timbre</span></div>
+        <p class="caption">Out of 20 frozen tracks per query.
+        The lexical and audio channels are left intact, so the grey bar is not zero
+        — some tracks survive on title text alone. Timbre is credited only with
+        the difference.</p>
+      </div>
+      <div class="figure">
+        <h3>Rank transitions — <em>high energy gym workout</em></h3>
+        <div class="scroll"><table>
+          <thead><tr><th>Track</th><th>Artist</th><th class="num">Warm</th>
+          <th class="num">Frozen</th><th class="num">+ Timbre</th></tr></thead>
+          <tbody><tr><td>Plan My Attack</td><td>Rob Bailey &amp; The Hustle Standard</td><td class="num">1</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>Godless</td><td>Angelmaker</td><td class="num">2</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>Addicted - Radio Edit</td><td>DJ Assad</td><td class="num">3</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>Cuz They Get It</td><td>Rob Bailey &amp; The Hustle Standard</td><td class="num">4</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>Watch Me Sink</td><td>Have Heart</td><td class="num">5</td><td class="num gone">—</td><td class="num gone">1397</td></tr><tr><td>Buss It Down</td><td>Young Buck</td><td class="num">6</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>Pariah</td><td>For Today</td><td class="num">7</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>F**k Sh*t (feat.Trouble &amp; Wooh Da Kid)</td><td>Waka Flocka Flame</td><td class="num">8</td><td class="num gone">—</td><td class="num gone">1387</td></tr><tr><td>Sleep with One Eye Open - Tek-One Remix</td><td>Bring Me The Horizon</td><td class="num">9</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>I'm Not Introducing You</td><td>Hopsin</td><td class="num">10</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>Square Up</td><td>Rob Bailey &amp; The Hustle Standard</td><td class="num">11</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>Timber (Workout Mix + 130 BPM)</td><td>Workout Remix Factory</td><td class="num">12</td><td class="num gone">158</td><td class="num up">158</td></tr><tr><td>Anti-pattern</td><td>After The Burial</td><td class="num">13</td><td class="num gone">—</td><td class="num gone">1241</td></tr><tr><td>Heaven - Cascada Radio Edit</td><td>Manian</td><td class="num">14</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>I Heart You</td><td>Toni Braxton</td><td class="num">15</td><td class="num gone">—</td><td class="num gone">1275</td></tr><tr><td>Rap God</td><td>Eminem</td><td class="num">16</td><td class="num gone">197</td><td class="num up">197</td></tr><tr><td>Bang Bang - Kat Krazy Remix</td><td>Jessie J</td><td class="num">17</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>The Hounds Of Anubis</td><td>The Word Alive</td><td class="num">18</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>Starting To Turn</td><td>Tech N9ne</td><td class="num">19</td><td class="num gone">—</td><td class="num gone">—</td></tr><tr><td>Frogman</td><td>Whiskey Myers</td><td class="num">20</td><td class="num gone">—</td><td class="num gone">—</td></tr></tbody>
+        </table></div>
+        <p class="caption">Rank among fused candidates. “—” means the track fell out
+        of the candidate set entirely. Warm ranks are 1–20 by
+        construction: these are the tracks Cadence itself picked.</p>
+      </div>
+    </section>
+      <section>
+        <h2>What this does and does not establish</h2>
+        <ul>
+          <li><strong>Does not establish the premise.</strong> Audio descriptors predict the folksonomy embedding above chance, but not by enough to clear the bar set before the experiment was run. The honest reading is that playlist-title vocabulary is driven more by context and social convention than by sound. The pivots are named in docs/EVALUATION.md; the result is recorded rather than retried until it passes.</li>
+          <li><strong>Does not establish:</strong> that a CNN reading raw audio reaches
+          the same place. Spotify's descriptors are already an engineered, semantically
+          loaded summary; an encoder has to learn that summary from waveforms, on a
+          different corpus that shares no tracks with this one.</li>
+          <li><strong>Does not establish:</strong> that the demo's recovered tracks are
+          the objectively right answer. The target set is “what Cadence chose when
+          warm”, which makes Cadence its own ground truth — a demo, not an evaluation.</li>
+          <li>The <em>catalog mean</em> floor is a single vector repeated across every
+          cold track, so all of them tie exactly and tie-breaking decides who enters
+          the top 100. That is correct behaviour for a no-information floor, and it is
+          why <em>random</em> is the floor the gate is written against.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Reproduce</h2>
+        <p>Both numbers on this page come from JSON written by the code, not typed
+        by hand.</p>
+        <p><code>timbre phase0</code> · <code>timbre demo-report</code> ·
+        <code>python scripts/build_report.py</code></p>
+      </section>
+    </main>
+  </div>

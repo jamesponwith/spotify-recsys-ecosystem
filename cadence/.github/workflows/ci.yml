@@ -1,0 +1,50 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv venv --python 3.12 .venv
+
+      - name: Install
+        run: uv pip install --python .venv/bin/python -e ".[dev]"
+
+      - name: Lint
+        run: |
+          .venv/bin/ruff check src tests
+          .venv/bin/ruff format --check src tests
+
+      - name: Type check
+        run: .venv/bin/mypy src/cadence
+
+      # Unit tests run without the corpus. Integration tests that need the built
+      # catalog skip themselves cleanly, so CI stays fast and hermetic.
+      - name: Test
+        run: .venv/bin/pytest tests/ -q --cov=cadence --cov-report=term-missing
+
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Build a tiny catalog end to end
+        run: |
+          uv venv --python 3.12 .venv
+          uv pip install --python .venv/bin/python -e ".[dev]"
+          .venv/bin/python scripts/download_data.py --slices 2 --skip-audio
+          .venv/bin/cadence build --min-tag-playlists 2
+          .venv/bin/cadence splits --n-eval 50
+          .venv/bin/cadence train
+          .venv/bin/cadence play "chill acoustic evening" --n 5

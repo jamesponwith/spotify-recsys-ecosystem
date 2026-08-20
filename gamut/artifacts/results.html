@@ -1,0 +1,253 @@
+<title>Who Gets Heard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --surface: #F8F7F7;
+    --raised: #FFFFFF;
+    --ink: #1B181A;
+    --ink_soft: #443E42;
+    --muted: #665F63;
+    --hairline: #E2DEE0;
+    --grid: #EDE9EB;
+    --penalty: #C2456B;
+    --cap: #3A78B5;
+    --floor: #948C90;
+    --good: #2E7D4F;
+    --critical: #B3261E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --surface: #15141A;
+    --raised: #1D1B23;
+    --ink: #ECE8EC;
+    --ink_soft: #C9C2C8;
+    --muted: #9A9199;
+    --hairline: #2A2730;
+    --grid: #232029;
+    --penalty: #D4658A;
+    --cap: #4F94D4;
+    --floor: #867E86;
+    --good: #4CAF7D;
+    --critical: #E5766D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --surface: #15141A;
+    --raised: #1D1B23;
+    --ink: #ECE8EC;
+    --ink_soft: #C9C2C8;
+    --muted: #9A9199;
+    --hairline: #2A2730;
+    --grid: #232029;
+    --penalty: #D4658A;
+    --cap: #4F94D4;
+    --floor: #867E86;
+    --good: #4CAF7D;
+    --critical: #E5766D;
+  }
+  body {
+    margin: 0; background: var(--surface); color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 56px 24px 96px; }
+  h1, h2, h3 {
+    font-family: ui-serif, "Iowan Old Style", "Source Serif 4", Palatino, Georgia, serif;
+    font-weight: 600; text-wrap: balance; margin: 0;
+  }
+  h1 { font-size: 2.4rem; letter-spacing: -0.018em; line-height: 1.14; }
+  h2 { font-size: 1.42rem; letter-spacing: -0.01em; }
+  h3 { font-size: 1.02rem; }
+  p { margin: 0; max-width: 68ch; }
+  section { display: flex; flex-direction: column; gap: 16px; }
+  main { display: flex; flex-direction: column; gap: 54px; }
+  header { display: flex; flex-direction: column; gap: 14px; }
+  .eyebrow, .tick, .dlabel, .blabel, .bvalue, td.num, th.num, .hero-num, .chip, code, .mono {
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+  .eyebrow { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .lede { font-size: 1.1rem; color: var(--ink_soft); max-width: 64ch; }
+  .meta {
+    font-size: 0.76rem; color: var(--muted); border-top: 1px solid var(--hairline);
+    padding-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 20px;
+  }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+  .stat {
+    background: var(--raised); border: 1px solid var(--hairline); border-radius: 10px;
+    padding: 18px 20px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .hero-num { font-size: 2.1rem; line-height: 1.1; font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em; color: var(--penalty); }
+  .stat .cap { font-size: 0.78rem; color: var(--muted); }
+  .figure { display: flex; flex-direction: column; gap: 12px; }
+  .scroll { overflow-x: auto; }
+  .chart { display: block; max-width: 100%; height: auto; }
+  .chart .tick { font-size: 10.5px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+  .chart .dlabel { font-size: 11.5px; fill: var(--ink_soft); }
+  .chart .blabel { font-size: 12px; fill: var(--ink_soft); }
+  .chart .bvalue { font-size: 12px; fill: var(--ink); font-variant-numeric: tabular-nums; }
+  .chart .bar rect { transition: opacity .12s ease; }
+  .chart .bar:hover rect { opacity: .8; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 0.8rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .caption { font-size: 0.83rem; color: var(--muted); max-width: 66ch; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+  th, td { text-align: left; padding: 8px 14px 8px 0; border-bottom: 1px solid var(--hairline); }
+  th { font-size: 0.7rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted);
+    font-weight: 500; white-space: nowrap; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 0; }
+  tr:last-child td { border-bottom: none; }
+  .note { border-left: 2px solid var(--penalty); padding: 2px 0 2px 18px; color: var(--ink_soft); font-size: 0.93rem; }
+  code { font-size: 0.86em; background: var(--raised); border: 1px solid var(--hairline);
+    border-radius: 4px; padding: 1px 5px; }
+  ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+  li { max-width: 66ch; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">Gamut · exposure audit</span>
+      <h1>Who actually gets heard</h1>
+      <p class="lede">Cadence, Timbre and Segue all measure whether the <em>listener</em>
+      was served. None of them asks which artists were served at all. This is that
+      measurement, run over Cadence's own held-out queries.</p>
+      <div class="meta">
+        <span>400 title-only queries</span>
+        <span>159,338 tracks · 27,442 artists</span>
+        <span>top 20 counted as shown</span>
+        <span>seed 20260815</span>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <div class="stats">
+          <div class="stat">
+            <div class="hero-num">44%</div>
+            <div class="cap">of all exposure goes to the top 1% of artists
+            (274 of 27,442)</div>
+          </div>
+          <div class="stat">
+            <div class="hero-num">3.0%</div>
+            <div class="cap">of the catalog is ever shown across all
+            400 queries</div>
+          </div>
+          <div class="stat">
+            <div class="hero-num">0.951</div>
+            <div class="cap">artist exposure Gini &mdash; 0 is perfectly even, 1 is
+            one artist taking everything</div>
+          </div>
+          <div class="stat">
+            <div class="hero-num">1.09&times;</div>
+            <div class="cap">long-tail share relative to the tail's share of the
+            catalog &mdash; above 1.0 means the tail is <em>over</em>-served</div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>The funnel is the story</h2>
+        <p>Retrieval reaches 10.7% of the catalog. By the time
+        the list is cut to what a listener sees, 3.0% remains. Most of
+        the catalog is not being ranked badly — it is never a candidate at all.</p>
+        <div class="figure">
+          <div class="scroll"><svg viewBox="0 0 660 110" width="660" height="110" role="img" aria-label="Catalog reach funnel" class="chart"><text x="178" y="19.0" class="blabel" text-anchor="end">Catalog</text><g class="bar"><title>Catalog: 159,338 tracks</title><rect x="190" y="0" width="340.0" height="30" rx="4" fill="var(--floor)"/></g><text x="540.0" y="19.0" class="bvalue">159,338 tracks</text><text x="178" y="59.0" class="blabel" text-anchor="end">Reached by retrieval</text><g class="bar"><title>Reached by retrieval: 10.7%</title><rect x="190" y="40" width="36.4" height="30" rx="4" fill="var(--cap)"/></g><text x="236.4" y="59.0" class="bvalue">10.7%</text><text x="178" y="99.0" class="blabel" text-anchor="end">Shown to the listener</text><g class="bar"><title>Shown to the listener: 3.0%</title><rect x="190" y="80" width="10.2" height="30" rx="4" fill="var(--penalty)"/></g><text x="210.2" y="99.0" class="bvalue">3.0%</text></svg></div>
+          <p class="caption">Distinct tracks appearing at least once across all
+          400 queries. The catalog is already the filtered one: Cadence
+          discards tracks on fewer than four playlists before any of this runs.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>One surprise, in Cadence's favour</h2>
+        <div class="note">58.5% of what Cadence shows comes from the long
+        tail — the bottom half of the catalog by playlist count — against
+        54% of the catalog being tail. A tail lift of
+        <strong>1.09&times;</strong>. The system is <em>not</em>
+        popularity-biased in the usual sense. Its concentration problem is about
+        <em>artists</em>, not about hits.</div>
+      </section>
+
+      <section>
+        <h2>Which channel concentrates exposure</h2>
+        <p>Cadence fuses seven candidate sources. Auditing them separately names the
+        trade rather than blaming the system as a whole.</p>
+        <div class="scroll"><table><thead><tr><th>Channel</th><th class="num">R-precision</th><th class="num">Catalog reach</th><th class="num">Long-tail share</th><th class="num">Artist gini</th></tr></thead><tbody><tr><td>tag_exact</td><td class="num">0.0598</td><td class="num">1.48%</td><td class="num">4.7%</td><td class="num">0.987</td></tr><tr><td>lexical</td><td class="num">0.0227</td><td class="num">2.87%</td><td class="num">55.4%</td><td class="num">0.953</td></tr><tr><td>popularity</td><td class="num">0.0083</td><td class="num">0.49%</td><td class="num">11.6%</td><td class="num">0.994</td></tr><tr><td>tag</td><td class="num">0.0078</td><td class="num">2.65%</td><td class="num">67.6%</td><td class="num">0.952</td></tr><tr><td>audio</td><td class="num">0.0011</td><td class="num">0.34%</td><td class="num">58.6%</td><td class="num">0.990</td></tr><tr><td>collaborative</td><td class="num">0.0000</td><td class="num">0.01%</td><td class="num">45.0%</td><td class="num">1.000</td></tr><tr><td>cooccurrence</td><td class="num">0.0000</td><td class="num">0.01%</td><td class="num">70.0%</td><td class="num">1.000</td></tr></tbody></table></div>
+        <p class="caption"><code>collaborative</code> and <code>cooccurrence</code> are
+        absent: these are title-only cold queries with no seed tracks, so two of the
+        seven channels contribute essentially nothing to the case the system exists
+        for. The most accurate channel, <code>tag_exact</code>, is also the most
+        head-concentrated — its long-tail share is
+        4.7% against
+        58.5% overall. Accuracy here is bought with concentration.</p>
+      </section>
+
+      <section>
+        <h2>What it costs to intervene</h2>
+        <p>Two knobs, swept over the same cached candidates so the only thing differing
+        between conditions is the intervention. A popularity penalty asks <em>is this
+        track popular?</em>; an artist cap asks <em>has this artist been heard
+        already?</em></p>
+        <div class="figure">
+          <div class="scroll"><svg viewBox="0 0 660 330" width="660" height="330" role="img" aria-label="Accuracy against long-tail exposure" class="chart"><line x1="62" y1="286.0" x2="634" y2="286.0" stroke="var(--grid)" stroke-width="1"/><text x="52" y="290.0" class="tick" text-anchor="end">0.0122</text><line x1="62" y1="219.0" x2="634" y2="219.0" stroke="var(--grid)" stroke-width="1"/><text x="52" y="223.0" class="tick" text-anchor="end">0.0151</text><line x1="62" y1="152.0" x2="634" y2="152.0" stroke="var(--grid)" stroke-width="1"/><text x="52" y="156.0" class="tick" text-anchor="end">0.0181</text><line x1="62" y1="85.0" x2="634" y2="85.0" stroke="var(--grid)" stroke-width="1"/><text x="52" y="89.0" class="tick" text-anchor="end">0.0210</text><line x1="62" y1="18.0" x2="634" y2="18.0" stroke="var(--grid)" stroke-width="1"/><text x="52" y="22.0" class="tick" text-anchor="end">0.0240</text><text x="62.0" y="306" class="tick" text-anchor="middle">57%</text><text x="205.0" y="306" class="tick" text-anchor="middle">63%</text><text x="348.0" y="306" class="tick" text-anchor="middle">69%</text><text x="491.0" y="306" class="tick" text-anchor="middle">75%</text><text x="634.0" y="306" class="tick" text-anchor="middle">80%</text><text x="348.0" y="324" class="tick" text-anchor="middle">share of recommendations going to the long tail &#8594;</text><polyline points="92.2,43.8 151.0,67.4 203.0,90.2 239.8,120.0 315.3,149.7 389.2,168.3 452.7,204.0 551.1,227.3 595.0,255.5" fill="none" stroke="var(--penalty)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>Popularity penalty 0.0: 58.5% tail, R-prec 0.0229, artist gini 0.951</title><circle cx="92.2" cy="43.8" r="4.5" fill="var(--penalty)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="92.2" cy="43.8" r="10" fill="transparent"/></g><g class="pt"><title>Popularity penalty 0.1: 60.9% tail, R-prec 0.0218, artist gini 0.950</title><circle cx="151.0" cy="67.4" r="4.5" fill="var(--penalty)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="151.0" cy="67.4" r="10" fill="transparent"/></g><g class="pt"><title>Popularity penalty 0.2: 62.9% tail, R-prec 0.0208, artist gini 0.949</title><circle cx="203.0" cy="90.2" r="4.5" fill="var(--penalty)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="203.0" cy="90.2" r="10" fill="transparent"/></g><g class="pt"><title>Popularity penalty 0.3: 64.4% tail, R-prec 0.0195, artist gini 0.948</title><circle cx="239.8" cy="120.0" r="4.5" fill="var(--penalty)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="239.8" cy="120.0" r="10" fill="transparent"/></g><g class="pt"><title>Popularity penalty 0.5: 67.5% tail, R-prec 0.0182, artist gini 0.946</title><circle cx="315.3" cy="149.7" r="4.5" fill="var(--penalty)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="315.3" cy="149.7" r="10" fill="transparent"/></g><g class="pt"><title>Popularity penalty 0.75: 70.5% tail, R-prec 0.0174, artist gini 0.945</title><circle cx="389.2" cy="168.3" r="4.5" fill="var(--penalty)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="389.2" cy="168.3" r="10" fill="transparent"/></g><g class="pt"><title>Popularity penalty 1.0: 73.0% tail, R-prec 0.0158, artist gini 0.944</title><circle cx="452.7" cy="204.0" r="4.5" fill="var(--penalty)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="452.7" cy="204.0" r="10" fill="transparent"/></g><g class="pt"><title>Popularity penalty 1.5: 77.0% tail, R-prec 0.0148, artist gini 0.942</title><circle cx="551.1" cy="227.3" r="4.5" fill="var(--penalty)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="551.1" cy="227.3" r="10" fill="transparent"/></g><g class="pt"><title>Popularity penalty 2.0: 78.8% tail, R-prec 0.0135, artist gini 0.941</title><circle cx="595.0" cy="255.5" r="4.5" fill="var(--penalty)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="595.0" cy="255.5" r="10" fill="transparent"/></g><text x="589.0" y="273.5" class="dlabel" text-anchor="end">Popularity penalty</text><polyline points="108.1,178.1 94.3,143.0 91.3,133.1 90.9,119.4" fill="none" stroke="var(--cap)" stroke-width="2" stroke-linejoin="round"/><g class="pt"><title>Artist cap 1: 59.1% tail, R-prec 0.0169, artist gini 0.936</title><circle cx="108.1" cy="178.1" r="4.5" fill="var(--cap)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="108.1" cy="178.1" r="10" fill="transparent"/></g><g class="pt"><title>Artist cap 2: 58.6% tail, R-prec 0.0185, artist gini 0.943</title><circle cx="94.3" cy="143.0" r="4.5" fill="var(--cap)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="94.3" cy="143.0" r="10" fill="transparent"/></g><g class="pt"><title>Artist cap 3: 58.4% tail, R-prec 0.0189, artist gini 0.946</title><circle cx="91.3" cy="133.1" r="4.5" fill="var(--cap)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="91.3" cy="133.1" r="10" fill="transparent"/></g><g class="pt"><title>Artist cap 5: 58.4% tail, R-prec 0.0195, artist gini 0.948</title><circle cx="90.9" cy="119.4" r="4.5" fill="var(--cap)" stroke="var(--surface)" stroke-width="1.5"/><circle cx="90.9" cy="119.4" r="10" fill="transparent"/></g><text x="84.9" y="137.4" class="dlabel" text-anchor="end">Artist cap</text><circle cx="92.2" cy="43.8" r="7" fill="none" stroke="var(--ink)" stroke-width="1.5"/><text x="104.2" y="35.8" class="dlabel">today</text></svg></div>
+          <div class="legend">
+            <span><i class="swatch" style="background:var(--penalty)"></i>Popularity penalty</span>
+            <span><i class="swatch" style="background:var(--cap)"></i>Artist cap</span>
+          </div>
+          <p class="caption">Up and to the right is better: more long-tail exposure at
+          less accuracy cost. The circled point is the system as it ships.</p>
+        </div>
+        <div class="note">The best cheap trade on offer: a penalty of
+        <strong>0.2</strong> moves long-tail share
+        <strong>58.5% &rarr; 62.9%</strong>
+        (+4.5 points) for <strong>-9.0%</strong> R-precision.
+        Whether that is worth paying is a product decision, which is the point of
+        measuring it instead of guessing.</div>
+      </section>
+
+      <section>
+        <h2>The finding that matters</h2>
+        <div class="note">Across <em>every</em> intervention tested — nine penalty
+        strengths and four artist caps — artist Gini moves only from
+        <strong>0.951</strong> to <strong>0.936</strong>.
+        You cannot re-rank your way out of a retrieval problem.</div>
+        <p>Concentration is not being created by the ranking function. It is already
+        present in the candidate pool, and re-ordering a hundred candidates cannot
+        introduce the 89% of the catalog that
+        never became a candidate. The popularity penalty does move long-tail share
+        substantially — it works on the metric it targets — and barely touches artist
+        equality, because a few artists owning many catalog entries is not a fact about
+        any single track's popularity.</p>
+        <p>That lines up with Timbre's result from the other direction: 76.6% of
+        distinct tracks are filtered out before Cadence's index is even built. The
+        exposure ceiling is set upstream of everything measured here.</p>
+      </section>
+
+      <section>
+        <h2>Honest limits</h2>
+        <ul>
+          <li>This audits the <strong>retrieval and ranking</strong> stage. Cadence's
+          final assembly applies MMR and a two-per-artist cap of its own, so the shipped
+          playlist is more diverse than the top-20 measured here. The funnel
+          numbers are about candidate reach, which is the binding constraint either way.</li>
+          <li>Exposure is counted over 400 queries. Coverage grows with
+          query volume — the concentration ratios are the stable quantities, the absolute
+          coverage percentages are not.</li>
+          <li>Popularity is proxied by playlist count in the MPD sample. It is a
+          reasonable stand-in for exposure, not a measurement of streams or revenue.</li>
+          <li>The interventions are deliberately simple. A calibrated or provider-fair
+          re-ranker would likely find better points on this frontier; the contribution
+          here is the frontier itself, and a measurement harness to place any future
+          method on it.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Reproduce</h2>
+        <p><code>gamut collect</code> · <code>gamut audit</code> ·
+        <code>python scripts/build_report.py</code></p>
+      </section>
+    </main>
+  </div>

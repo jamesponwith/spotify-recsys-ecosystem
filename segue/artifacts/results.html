@@ -1,0 +1,277 @@
+<title>Playlist Order Study</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --surface: #F7F7FA;
+    --raised: #FFFFFF;
+    --ink: #17171D;
+    --ink_soft: #3D3D4A;
+    --muted: #5E5E6E;
+    --hairline: #DEDEE6;
+    --grid: #E9E9F0;
+    --segue: #8259E0;
+    --control: #2E8F5E;
+    --floor: #8E8EA0;
+    --good: #2E7D4F;
+    --critical: #B3261E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --surface: #131318;
+    --raised: #1A1A22;
+    --ink: #E8E8EF;
+    --ink_soft: #C5C5D2;
+    --muted: #9595A8;
+    --hairline: #26262F;
+    --grid: #20202A;
+    --segue: #8F6DE6;
+    --control: #35A06E;
+    --floor: #7C7C90;
+    --good: #4CAF7D;
+    --critical: #E5766D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --surface: #131318;
+    --raised: #1A1A22;
+    --ink: #E8E8EF;
+    --ink_soft: #C5C5D2;
+    --muted: #9595A8;
+    --hairline: #26262F;
+    --grid: #20202A;
+    --segue: #8F6DE6;
+    --control: #35A06E;
+    --floor: #7C7C90;
+    --good: #4CAF7D;
+    --critical: #E5766D;
+  }
+  body {
+    margin: 0; background: var(--surface); color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 56px 24px 96px; }
+  h1, h2, h3 {
+    font-family: ui-serif, "Iowan Old Style", "Source Serif 4", Palatino, Georgia, serif;
+    font-weight: 600; text-wrap: balance; margin: 0;
+  }
+  h1 { font-size: 2.4rem; letter-spacing: -0.018em; line-height: 1.14; }
+  h2 { font-size: 1.42rem; letter-spacing: -0.01em; }
+  h3 { font-size: 1.02rem; }
+  p { margin: 0; max-width: 68ch; }
+  section { display: flex; flex-direction: column; gap: 16px; }
+  main { display: flex; flex-direction: column; gap: 54px; }
+  header { display: flex; flex-direction: column; gap: 14px; }
+  .mono, .eyebrow, .tick, .dlabel, td.num, th.num, .hero-num, .chip, code {
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+  .eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  }
+  .lede { font-size: 1.1rem; color: var(--ink_soft); max-width: 64ch; }
+  .meta {
+    font-size: 0.76rem; color: var(--muted); border-top: 1px solid var(--hairline);
+    padding-top: 12px; display: flex; flex-wrap: wrap; gap: 6px 20px;
+  }
+  .verdict {
+    background: var(--raised); border: 1px solid var(--hairline); border-radius: 10px;
+    padding: 26px 28px; display: grid; grid-template-columns: minmax(190px, auto) 1fr;
+    gap: 26px 36px; align-items: start;
+  }
+  @media (max-width: 640px) { .verdict { grid-template-columns: 1fr; } }
+  .hero-num {
+    font-size: 3.1rem; line-height: 1; font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em; color: var(--segue);
+  }
+  .hero-cap { font-size: 0.8rem; color: var(--muted); margin-top: 8px; max-width: 26ch; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px; font-size: 0.72rem;
+    letter-spacing: 0.09em; text-transform: uppercase; padding: 5px 11px;
+    border-radius: 999px; border: 1px solid currentColor; margin-bottom: 14px;
+  }
+  .chip.pass { color: var(--good); }
+  .chip.fail { color: var(--critical); }
+  .checks { display: flex; flex-direction: column; gap: 10px; }
+  .check {
+    display: grid; grid-template-columns: 20px 1fr auto; gap: 12px; align-items: baseline;
+    font-size: 0.92rem; border-bottom: 1px dotted var(--hairline); padding-bottom: 9px;
+  }
+  .check:last-child { border-bottom: none; }
+  .check .num { font-size: 0.86rem; color: var(--ink_soft); font-variant-numeric: tabular-nums; }
+  .figure { display: flex; flex-direction: column; gap: 12px; }
+  .scroll { overflow-x: auto; }
+  .chart { display: block; max-width: 100%; height: auto; }
+  .chart .tick { font-size: 10.5px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+  .chart .dlabel { font-size: 11.5px; fill: var(--ink_soft); }
+  .chart .pt circle { cursor: crosshair; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 0.8rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+  .caption { font-size: 0.83rem; color: var(--muted); max-width: 66ch; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+  th, td { text-align: left; padding: 8px 14px 8px 0; border-bottom: 1px solid var(--hairline); }
+  th {
+    font-size: 0.7rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted);
+    font-weight: 500; white-space: nowrap;
+    font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 0; }
+  tr:last-child td { border-bottom: none; }
+  tr.win td { background: color-mix(in oklab, var(--segue) 9%, transparent); }
+  .hit { color: var(--good); font-weight: 600; }
+  .note { border-left: 2px solid var(--segue); padding: 2px 0 2px 18px; color: var(--ink_soft); font-size: 0.93rem; }
+  code {
+    font-size: 0.86em; background: var(--raised); border: 1px solid var(--hairline);
+    border-radius: 4px; padding: 1px 5px;
+  }
+  ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+  li { max-width: 66ch; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  a:focus-visible { outline: 2px solid var(--segue); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">Segue · playlist continuation</span>
+      <h1>A playlist is not a bag of songs</h1>
+      <p class="lede">Cadence's collaborative channel sums the seed tracks and searches
+      that neighbourhood — shuffle the seeds and nothing changes. But playlists have an
+      arc. Does that order carry information a recommender can use?</p>
+      <div class="meta">
+        <span>98,334 ordered playlists</span><span>5,962,343 positions</span>
+        <span>2,000 held-out</span><span>RecSys Challenge 2018 metrics</span>
+        <span>seed 20260815</span>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <div class="verdict">
+          <div>
+            <span class="chip pass">
+              &#10003; order carries signal
+            </span>
+            <div class="hero-num">-13.7%</div>
+            <div class="hero-cap">fewer &ldquo;give me 10 more&rdquo; presses before the
+            listener hits a track they wanted, against the centroid Cadence uses today</div>
+          </div>
+          <div class="checks"><div class="check"><span class="mark" style="color:var(--good)" aria-hidden="true">&#10003;</span><span>Fewer Clicks than the centroid at every seed count<span class="sr-only"> — yes</span></span><span class="num">4/4</span></div><div class="check"><span class="mark" style="color:var(--good)" aria-hidden="true">&#10003;</span><span>Loses accuracy when prefix order is destroyed<span class="sr-only"> — yes</span></span><span class="num">+10.0% R-prec at 25 seeds</span></div><div class="check"><span class="mark" style="color:var(--good)" aria-hidden="true">&#10003;</span><span>R-precision: a wash, best on the longest prefixes<span class="sr-only"> — yes</span></span><span class="num">+3.4% at 25, wins 2/4</span></div></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="figure">
+          <h3>R-precision as the prefix grows</h3>
+          <div class="scroll"><svg viewBox="0 0 680 300" width="680" height="300" role="img" aria-label="R-precision by seed count" class="chart"><line x1="52" y1="266.0" x2="470" y2="266.0" stroke="var(--grid)" stroke-width="1"/><text x="42" y="270.0" class="tick" text-anchor="end">0.000</text><line x1="52" y1="203.5" x2="470" y2="203.5" stroke="var(--grid)" stroke-width="1"/><text x="42" y="207.5" class="tick" text-anchor="end">0.029</text><line x1="52" y1="141.0" x2="470" y2="141.0" stroke="var(--grid)" stroke-width="1"/><text x="42" y="145.0" class="tick" text-anchor="end">0.059</text><line x1="52" y1="78.5" x2="470" y2="78.5" stroke="var(--grid)" stroke-width="1"/><text x="42" y="82.5" class="tick" text-anchor="end">0.088</text><line x1="52" y1="16.0" x2="470" y2="16.0" stroke="var(--grid)" stroke-width="1"/><text x="42" y="20.0" class="tick" text-anchor="end">0.117</text><text x="52.0" y="290" class="tick" text-anchor="middle">1 seed</text><text x="191.3" y="290" class="tick" text-anchor="middle">5 seeds</text><text x="330.7" y="290" class="tick" text-anchor="middle">10 seeds</text><text x="470.0" y="290" class="tick" text-anchor="middle">25 seeds</text><polyline points="52.0,77.7 191.3,43.6 330.7,47.4 470.0,83.3" fill="none" stroke="var(--segue)" stroke-width="2" stroke-linejoin="round"/><circle cx="470.0" cy="83.3" r="4" fill="var(--segue)" stroke="var(--surface)" stroke-width="2"/><text x="482.0" y="87.3" class="dlabel">Segue (ordered)</text><g class="pt"><title>Segue (ordered) at 1 seeds: 0.0883</title><circle cx="52.0" cy="77.7" r="9" fill="transparent"/></g><g class="pt"><title>Segue (ordered) at 5 seeds: 0.1043</title><circle cx="191.3" cy="43.6" r="9" fill="transparent"/></g><g class="pt"><title>Segue (ordered) at 10 seeds: 0.1025</title><circle cx="330.7" cy="47.4" r="9" fill="transparent"/></g><g class="pt"><title>Segue (ordered) at 25 seeds: 0.0857</title><circle cx="470.0" cy="83.3" r="9" fill="transparent"/></g><polyline points="52.0,77.7 191.3,44.1 330.7,51.4 470.0,99.9" fill="none" stroke="var(--control)" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4"/><circle cx="470.0" cy="99.9" r="4" fill="var(--control)" stroke="var(--surface)" stroke-width="2"/><path d="M 475.0 99.9 L 479.0 111.3" stroke="var(--control)" stroke-width="1" fill="none" opacity="0.55"/><text x="482.0" y="115.3" class="dlabel">Segue, order destroyed</text><g class="pt"><title>Segue, order destroyed at 1 seeds: 0.0883</title><circle cx="52.0" cy="77.7" r="9" fill="transparent"/></g><g class="pt"><title>Segue, order destroyed at 5 seeds: 0.1041</title><circle cx="191.3" cy="44.1" r="9" fill="transparent"/></g><g class="pt"><title>Segue, order destroyed at 10 seeds: 0.1007</title><circle cx="330.7" cy="51.4" r="9" fill="transparent"/></g><g class="pt"><title>Segue, order destroyed at 25 seeds: 0.0779</title><circle cx="470.0" cy="99.9" r="9" fill="transparent"/></g><polyline points="52.0,87.9 191.3,42.8 330.7,46.4 470.0,89.3" fill="none" stroke="var(--floor)" stroke-width="2" stroke-linejoin="round"/><circle cx="470.0" cy="89.3" r="4" fill="var(--floor)" stroke="var(--surface)" stroke-width="2"/><path d="M 475.0 89.3 L 479.0 97.3" stroke="var(--floor)" stroke-width="1" fill="none" opacity="0.55"/><text x="482.0" y="101.3" class="dlabel">Centroid — Cadence today</text><g class="pt"><title>Centroid — Cadence today at 1 seeds: 0.0836</title><circle cx="52.0" cy="87.9" r="9" fill="transparent"/></g><g class="pt"><title>Centroid — Cadence today at 5 seeds: 0.1047</title><circle cx="191.3" cy="42.8" r="9" fill="transparent"/></g><g class="pt"><title>Centroid — Cadence today at 10 seeds: 0.1030</title><circle cx="330.7" cy="46.4" r="9" fill="transparent"/></g><g class="pt"><title>Centroid — Cadence today at 25 seeds: 0.0829</title><circle cx="470.0" cy="89.3" r="9" fill="transparent"/></g><polyline points="52.0,87.9 191.3,113.5 330.7,118.7 470.0,146.9" fill="none" stroke="var(--floor)" stroke-width="2" stroke-linejoin="round" stroke-dasharray="3 3"/><circle cx="470.0" cy="146.9" r="4" fill="var(--floor)" stroke="var(--surface)" stroke-width="2"/><text x="482.0" y="150.9" class="dlabel">Last track only</text><g class="pt"><title>Last track only at 1 seeds: 0.0836</title><circle cx="52.0" cy="87.9" r="9" fill="transparent"/></g><g class="pt"><title>Last track only at 5 seeds: 0.0716</title><circle cx="191.3" cy="113.5" r="9" fill="transparent"/></g><g class="pt"><title>Last track only at 10 seeds: 0.0691</title><circle cx="330.7" cy="118.7" r="9" fill="transparent"/></g><g class="pt"><title>Last track only at 25 seeds: 0.0559</title><circle cx="470.0" cy="146.9" r="9" fill="transparent"/></g><polyline points="52.0,188.5 191.3,193.0 330.7,198.2 470.0,211.9" fill="none" stroke="var(--floor)" stroke-width="2" stroke-linejoin="round" stroke-dasharray="1 4"/><circle cx="470.0" cy="211.9" r="4" fill="var(--floor)" stroke="var(--surface)" stroke-width="2"/><text x="482.0" y="215.9" class="dlabel">Popularity</text><g class="pt"><title>Popularity at 1 seeds: 0.0364</title><circle cx="52.0" cy="188.5" r="9" fill="transparent"/></g><g class="pt"><title>Popularity at 5 seeds: 0.0343</title><circle cx="191.3" cy="193.0" r="9" fill="transparent"/></g><g class="pt"><title>Popularity at 10 seeds: 0.0318</title><circle cx="330.7" cy="198.2" r="9" fill="transparent"/></g><g class="pt"><title>Popularity at 25 seeds: 0.0254</title><circle cx="470.0" cy="211.9" r="9" fill="transparent"/></g></svg></div>
+          <div class="legend"><span><i class="swatch" style="background:var(--segue)"></i>Segue (ordered)</span><span><i class="swatch" style="background:var(--control); opacity:.65"></i>Segue, order destroyed</span><span><i class="swatch" style="background:var(--floor)"></i>Centroid — Cadence today</span><span><i class="swatch" style="background:var(--floor); opacity:.65"></i>Last track only</span><span><i class="swatch" style="background:var(--floor); opacity:.65"></i>Popularity</span></div>
+          <p class="caption">2,000 held-out playlists per seed count. Dashed lines are
+          the controls. At one seed <em>last</em> and <em>centroid</em> are the same
+          system by definition, and shuffling a one-track prefix is a no-op — the lines
+          coincide there, which is the harness telling the truth about itself.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>The check that could have killed it</h2>
+        <p>A model given ordered slots will happily <em>look</em> order-aware while
+        having learned to ignore them. So the same fitted model is run twice on every
+        challenge: once on the real prefix, once with that prefix shuffled. Nothing
+        else differs — same tracks, same weights, same candidate pool.</p>
+        <div class="note">At 25 seeds, destroying order costs
+        <strong>+0.0078</strong> R-precision (+10.0%).
+        The model is genuinely reading sequence, not just consuming a richer bag.</div>
+      </section>
+
+      <section>
+        <h2>Every metric, every seed count</h2>
+        <p>Official RecSys Challenge 2018 definitions, reused from Cadence's own
+        <code>eval.metrics</code> rather than reimplemented. <strong>*</strong> marks
+        the best system in each column.</p>
+        <div class="scroll"><table><thead><tr><th>System</th><th class="num">1 seed</th><th class="num">5 seeds</th><th class="num">10 seeds</th><th class="num">25 seeds</th></tr></thead><tbody><tr><td colspan="5" class="mono" style="color:var(--muted);padding-top:16px;border-bottom:none">R-precision</td></tr><tr class="win"><td>Segue (ordered)</td><td class="num">0.0883 <strong>*</strong></td><td class="num">0.1043</td><td class="num">0.1025</td><td class="num">0.0857 <strong>*</strong></td></tr><tr><td>Segue, order destroyed</td><td class="num">0.0883</td><td class="num">0.1041</td><td class="num">0.1007</td><td class="num">0.0779</td></tr><tr><td>Centroid — Cadence today</td><td class="num">0.0836</td><td class="num">0.1047 <strong>*</strong></td><td class="num">0.1030 <strong>*</strong></td><td class="num">0.0829</td></tr><tr><td>Last track only</td><td class="num">0.0836</td><td class="num">0.0716</td><td class="num">0.0691</td><td class="num">0.0559</td></tr><tr><td>Popularity</td><td class="num">0.0364</td><td class="num">0.0343</td><td class="num">0.0318</td><td class="num">0.0254</td></tr><tr><td colspan="5" class="mono" style="color:var(--muted);padding-top:16px;border-bottom:none">R-prec (artist-aware)</td></tr><tr class="win"><td>Segue (ordered)</td><td class="num">0.1157 <strong>*</strong></td><td class="num">0.1363 <strong>*</strong></td><td class="num">0.1347 <strong>*</strong></td><td class="num">0.1143 <strong>*</strong></td></tr><tr><td>Segue, order destroyed</td><td class="num">0.1157</td><td class="num">0.1357</td><td class="num">0.1322</td><td class="num">0.1054</td></tr><tr><td>Centroid — Cadence today</td><td class="num">0.1102</td><td class="num">0.1358</td><td class="num">0.1343</td><td class="num">0.1115</td></tr><tr><td>Last track only</td><td class="num">0.1102</td><td class="num">0.0969</td><td class="num">0.0942</td><td class="num">0.0782</td></tr><tr><td>Popularity</td><td class="num">0.0506</td><td class="num">0.0480</td><td class="num">0.0451</td><td class="num">0.0365</td></tr><tr><td colspan="5" class="mono" style="color:var(--muted);padding-top:16px;border-bottom:none">NDCG@100</td></tr><tr class="win"><td>Segue (ordered)</td><td class="num">0.1289 <strong>*</strong></td><td class="num">0.1506</td><td class="num">0.1497 <strong>*</strong></td><td class="num">0.1329 <strong>*</strong></td></tr><tr><td>Segue, order destroyed</td><td class="num">0.1289</td><td class="num">0.1500</td><td class="num">0.1456</td><td class="num">0.1222</td></tr><tr><td>Centroid — Cadence today</td><td class="num">0.1218</td><td class="num">0.1508 <strong>*</strong></td><td class="num">0.1492</td><td class="num">0.1306</td></tr><tr><td>Last track only</td><td class="num">0.1218</td><td class="num">0.1054</td><td class="num">0.1025</td><td class="num">0.0890</td></tr><tr><td>Popularity</td><td class="num">0.0485</td><td class="num">0.0464</td><td class="num">0.0442</td><td class="num">0.0387</td></tr><tr><td colspan="5" class="mono" style="color:var(--muted);padding-top:16px;border-bottom:none">Clicks (lower is better)</td></tr><tr class="win"><td>Segue (ordered)</td><td class="num">6.23 <strong>*</strong></td><td class="num">2.87 <strong>*</strong></td><td class="num">2.79 <strong>*</strong></td><td class="num">4.85 <strong>*</strong></td></tr><tr><td>Segue, order destroyed</td><td class="num">6.23</td><td class="num">2.95</td><td class="num">3.07</td><td class="num">5.50</td></tr><tr><td>Centroid — Cadence today</td><td class="num">7.00</td><td class="num">3.48</td><td class="num">3.27</td><td class="num">5.50</td></tr><tr><td>Last track only</td><td class="num">7.00</td><td class="num">8.02</td><td class="num">8.69</td><td class="num">12.50</td></tr><tr><td>Popularity</td><td class="num">13.29</td><td class="num">13.89</td><td class="num">14.60</td><td class="num">17.96</td></tr></tbody></table></div>
+        <p class="caption">The metrics disagree, and the disagreement is the result.
+        R-precision and NDCG are <em>set</em> metrics: they ask which tracks appear in
+        the top |G|, not where. Segue and the centroid are within half a percent of each
+        other on both. Clicks asks where the <em>first</em> good track lands, and there
+        Segue is ahead at every seed count. Ordering the prefix better mostly moves good
+        tracks up the list rather than adding new ones — which is exactly what a
+        sequence model should do, and exactly what a set metric is blind to.</p>
+      </section>
+      
+    <section>
+      <h2>What it actually plays</h2>
+      <p>Held-out playlists, so every prediction has a ground truth: the tracks the
+      person really did add next. Both systems see the same 5 opening tracks.</p>
+      
+      <div class="figure">
+        <h3>&ldquo;Wedding&rdquo;</h3>
+        <p class="caption">First 5 tracks given; 70
+        tracks withheld. A tick marks a prediction that really does appear later in
+        the playlist. Centroid found 2, Segue found 5.</p>
+        <ul><li>Teach Me How to Dougie — Cali Swag District</li><li>Party In The U.S.A. — Miley Cyrus</li><li>Shots — LMFAO</li><li>Ice Ice Baby — Vanilla Ice</li><li>Shout - Parts 1 &amp; 2 — The Isley Brothers</li></ul>
+        <div class="scroll"><table>
+          <thead><tr><th class="num">#</th><th>What was actually played next</th>
+          <th>Centroid (Cadence today)</th><th>Segue</th></tr></thead>
+          <tbody><tr><td class="num">1</td><td>Low (feat T-Pain) - Feat T-Pain Album Version — Flo Rida</td><td><span class="hit">&#10003;</span> Low (feat T-Pain) - Feat T-Pain Album Version — Flo Rida</td><td><span class="hit">&#10003;</span> Yeah! — Usher</td></tr><tr><td class="num">2</td><td>The Time (Dirty Bit) — The Black Eyed Peas</td><td><span class="hit">&#10003;</span> Yeah! — Usher</td><td><span class="hit">&#10003;</span> Cupid Shuffle — Cupid</td></tr><tr><td class="num">3</td><td>OMG — Usher</td><td>Crank That (Soulja Boy) — Soulja Boy</td><td>Wobble — V.I.C.</td></tr><tr><td class="num">4</td><td>Thriller — Michael Jackson</td><td>Apple Bottom Jeans — Kevin Turk</td><td><span class="hit">&#10003;</span> Low (feat T-Pain) - Feat T-Pain Album Version — Flo Rida</td></tr><tr><td class="num">5</td><td>Baby Got Back — Sir Mix-A-Lot</td><td>Wobble — V.I.C.</td><td>Let's Get It Started - Spike Mix — The Black Eyed Peas</td></tr><tr><td class="num">6</td><td>Yeah! — Usher</td><td>Hotel Room Service — Pitbull</td><td><span class="hit">&#10003;</span> Cha Cha Slide - Original Live Platinum Band Mix — Mr. C The Slide Man</td></tr><tr><td class="num">7</td><td>Raise Your Glass — P!nk</td><td>Like A G6 — Far East Movement</td><td><span class="hit">&#10003;</span> Tootsie Roll — Old School Players</td></tr><tr><td class="num">8</td><td>Cha Cha Slide - Original Live Platinum Band Mix — Mr. C The Slide Man</td><td>Get Low - Street — Lil Jon &amp; The East Side Boyz</td><td>Hey Ya! - Radio Mix / Club Mix — OutKast</td></tr><tr><td class="num">9</td><td>Sweet Caroline — Neil Diamond</td><td>SexyBack — Justin Timberlake</td><td>Cha Cha Slide - Hardino Mix — DJ Casper</td></tr><tr><td class="num">10</td><td>Cupid Shuffle — Cupid</td><td>Lip Gloss — Lil Mama</td><td>Apple Bottom Jeans — Kevin Turk</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="figure">
+        <h3>&ldquo;party music&rdquo;</h3>
+        <p class="caption">First 5 tracks given; 169
+        tracks withheld. A tick marks a prediction that really does appear later in
+        the playlist. Centroid found 1, Segue found 1.</p>
+        <ul><li>Party In The U.S.A. — Miley Cyrus</li><li>Skateboard P — MadeinTYO</li><li>All Night Longer — Sammy Adams</li><li>Good Girls Go Bad (feat. Leighton Meester) — Cobra Starship</li><li>Gold Digger — Kanye West</li></ul>
+        <div class="scroll"><table>
+          <thead><tr><th class="num">#</th><th>What was actually played next</th>
+          <th>Centroid (Cadence today)</th><th>Segue</th></tr></thead>
+          <tbody><tr><td class="num">1</td><td>Watch Out — 2 Chainz</td><td><span class="hit">&#10003;</span> Low (feat T-Pain) - Feat T-Pain Album Version — Flo Rida</td><td><span class="hit">&#10003;</span> Low (feat T-Pain) - Feat T-Pain Album Version — Flo Rida</td></tr><tr><td class="num">2</td><td>Broccoli (feat. Lil Yachty) — DRAM</td><td>Fergalicious — Fergie</td><td>Crank That (Soulja Boy) — Soulja Boy</td></tr><tr><td class="num">3</td><td>Not Your Birthday - Movie Version — Allstar Weekend</td><td>Crank That (Soulja Boy) — Soulja Boy</td><td>American Boy — Estelle</td></tr><tr><td class="num">4</td><td>I Like It Like That — Hot Chelle Rae</td><td>Everytime We Touch - Radio Edit — Cascada</td><td>Fergalicious — Fergie</td></tr><tr><td class="num">5</td><td>Jumpman — Drake</td><td>Promiscuous — Nelly Furtado</td><td>Promiscuous — Nelly Furtado</td></tr><tr><td class="num">6</td><td>6 Foot 7 Foot — Lil Wayne</td><td>Lip Gloss — Lil Mama</td><td>Yeah! — Usher</td></tr><tr><td class="num">7</td><td>Sorry — Justin Bieber</td><td>Yeah! — Usher</td><td>DONTTRUSTME - Explicit Album Version — 3OH!3</td></tr><tr><td class="num">8</td><td>Roses — The Chainsmokers</td><td>American Boy — Estelle</td><td>Everytime We Touch - Radio Edit — Cascada</td></tr><tr><td class="num">9</td><td>679 (feat. Remy Boyz) — Fetty Wap</td><td>Hollaback Girl — Gwen Stefani</td><td>Paper Planes — M.I.A.</td></tr><tr><td class="num">10</td><td>I Love It (feat. Charli XCX) - feat. Charli XCX [Original Version] — Icona Pop</td><td>DONTTRUSTME - Explicit Album Version — 3OH!3</td><td>Lip Gloss — Lil Mama</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="figure">
+        <h3>&ldquo;picks&rdquo;</h3>
+        <p class="caption">First 5 tracks given; 37
+        tracks withheld. A tick marks a prediction that really does appear later in
+        the playlist. Centroid found 0, Segue found 1.</p>
+        <ul><li>Like a Star — Corinne Bailey Rae</li><li>Don't Know Why — Norah Jones</li><li>Come Away With Me — Norah Jones</li><li>Sunrise — Norah Jones</li><li>Turn Me On — Norah Jones</li></ul>
+        <div class="scroll"><table>
+          <thead><tr><th class="num">#</th><th>What was actually played next</th>
+          <th>Centroid (Cadence today)</th><th>Segue</th></tr></thead>
+          <tbody><tr><td class="num">1</td><td>Don't Stop The Music — Jamie Cullum</td><td>The Nearness Of You — Norah Jones</td><td>What Am I To You? — Norah Jones</td></tr><tr><td class="num">2</td><td>Baby I'm A Fool — Melody Gardot</td><td>What Am I To You? — Norah Jones</td><td>The Nearness Of You — Norah Jones</td></tr><tr><td class="num">3</td><td>If The Stars Were Mine — Melody Gardot</td><td>Feelin' The Same Way — Norah Jones</td><td>Nightingale — Norah Jones</td></tr><tr><td class="num">4</td><td>Your Heart Is As Black As Night — Melody Gardot</td><td>Nightingale — Norah Jones</td><td>Not Too Late — Norah Jones</td></tr><tr><td class="num">5</td><td>You Don't Know Me — Ray Charles</td><td>Shoot The Moon — Norah Jones</td><td><span class="hit">&#10003;</span> Arms Of A Woman — Amos Lee</td></tr><tr><td class="num">6</td><td>The Look Of Love — Diana Krall</td><td>One Flight Down — Norah Jones</td><td>Those Sweet Words — Norah Jones</td></tr><tr><td class="num">7</td><td>You Make It Real — James Morrison</td><td>Be Here To Love Me — Norah Jones</td><td>Shoot The Moon — Norah Jones</td></tr><tr><td class="num">8</td><td>Carry You Home — James Blunt</td><td>Cold Cold Heart — Norah Jones</td><td>You Give Me Something — James Morrison</td></tr><tr><td class="num">9</td><td>1973 — James Blunt</td><td>I've Got To See You Again — Norah Jones</td><td>Feelin' The Same Way — Norah Jones</td></tr><tr><td class="num">10</td><td>Same Mistake — James Blunt</td><td>Those Sweet Words — Norah Jones</td><td>Be Here To Love Me — Norah Jones</td></tr></tbody>
+        </table></div>
+      </div>
+    </section>
+      <section>
+        <h2>What this is and is not</h2>
+        <ul>
+          <li><strong>Is:</strong> a genuine held-out comparison against the exact
+          scoring function Cadence reports, on the same 2,000 withheld playlists, with
+          the order-free baseline reproducing Cadence's collaborative channel.</li>
+          <li><strong>Is not:</strong> a transformer. The model is a position-weighted
+          linear operator — ridge regression onto the next track's direction. It is the
+          smallest thing that can answer the order question, and calling it more than
+          that would be dressing up the result.</li>
+          <li><strong>Is not</strong> a full recommender. Segue replaces one channel.
+          Cadence's lexical, tag and audio channels are untouched, and the fused system
+          would need its own evaluation.</li>
+          <li>The first version trained on the obvious target — predict the very next
+          track — and lost to the centroid at every seed count above one. The RecSys task
+          scores against <em>all</em> withheld tracks, so that objective was strictly
+          narrower than the metric. Widening the target to the mean direction of the next
+          10 tracks moved validation cosine from 0.5625 to 0.7311. The ablation is kept
+          in <code>docs/FINDINGS.md</code> rather than deleted.</li>
+          <li>Order had to be rebuilt from raw MPD: Cadence's processed matrix returns
+          tracks in ascending id order, not playlist order. That dig turned up a real
+          defect in its evaluation harness — see <code>docs/FINDINGS.md</code>.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Reproduce</h2>
+        <p><code>make build</code> · <code>make train</code> · <code>make evaluate</code>
+        · <code>make demo</code> · <code>make report</code></p>
+      </section>
+    </main>
+  </div>

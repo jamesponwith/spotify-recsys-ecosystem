@@ -1,0 +1,38 @@
+# This repository is the four-app ecosystem only. The working directory it lives
+# in also holds unrelated projects, so the root is a whitelist rather than a
+# blocklist: anything not named below is never a candidate for a commit.
+/*
+!/.gitignore
+!/README.md
+!/cadence/
+!/timbre/
+!/segue/
+!/gamut/
+
+# Virtual environments
+.venv/
+*.egg-info/
+
+# Caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Corpora. The Million Playlist Dataset is licensed for research use and must
+# not be redistributed; the audio-feature dump is a 12 GB reproducible download.
+# Both are re-fetchable -- see cadence/scripts/download_data.py.
+data/
+
+# Build outputs. Model weights, cached sequences and embedding matrices are all
+# reproducible from a fixed seed, and several are hundreds of megabytes. The
+# rendered reports and the small JSON each is generated from are kept: they are
+# the evidence behind every number quoted in the docs.
+*/artifacts/*
+!*/artifacts/results.html
+!*/artifacts/*_report.json
+!*/artifacts/demo.json
+!*/artifacts/*_meta.json

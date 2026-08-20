@@ -1,0 +1,237 @@
+{
+  "cases": [
+    {
+      "title": "Wedding",
+      "seed_count": 5,
+      "seeds": [
+        {
+          "index": 227,
+          "label": "Teach Me How to Dougie \u2014 Cali Swag District"
+        },
+        {
+          "index": 30,
+          "label": "Party In The U.S.A. \u2014 Miley Cyrus"
+        },
+        {
+          "index": 228,
+          "label": "Shots \u2014 LMFAO"
+        },
+        {
+          "index": 229,
+          "label": "Ice Ice Baby \u2014 Vanilla Ice"
+        },
+        {
+          "index": 230,
+          "label": "Shout - Parts 1 & 2 \u2014 The Isley Brothers"
+        }
+      ],
+      "actual_next": [
+        {
+          "index": 231,
+          "label": "Low (feat T-Pain) - Feat T-Pain Album Version \u2014 Flo Rida"
+        },
+        {
+          "index": 232,
+          "label": "The Time (Dirty Bit) \u2014 The Black Eyed Peas"
+        },
+        {
+          "index": 233,
+          "label": "OMG \u2014 Usher"
+        },
+        {
+          "index": 234,
+          "label": "Thriller \u2014 Michael Jackson"
+        },
+        {
+          "index": 235,
+          "label": "Baby Got Back \u2014 Sir Mix-A-Lot"
+        },
+        {
+          "index": 5,
+          "label": "Yeah! \u2014 Usher"
+        },
+        {
+          "index": 236,
+          "label": "Raise Your Glass \u2014 P!nk"
+        },
+        {
+          "index": 237,
+          "label": "Cha Cha Slide - Original Live Platinum Band Mix \u2014 Mr. C The Slide Man"
+        }
+      ],
+      "predictions": {
+        "popularity": [
+          {
+            "index": 1182,
+            "label": "HUMBLE. \u2014 Kendrick Lamar",
+            "hit": false
+          },
+          {
+            "index": 3352,
+            "label": "One Dance \u2014 Drake",
+            "hit": false
+          },
+          {
+            "index": 1242,
+            "label": "Broccoli (feat. Lil Yachty) \u2014 DRAM",
+            "hit": false
+          },
+          {
+            "index": 1609,
+            "label": "Closer \u2014 The Chainsmokers",
+            "hit": false
+          },
+          {
+            "index": 2413,
+            "label": "Congratulations \u2014 Post Malone",
+            "hit": false
+          },
+          {
+            "index": 2399,
+            "label": "Caroline \u2014 Amin\u00e9",
+            "hit": false
+          },
+          {
+            "index": 1180,
+            "label": "iSpy (feat. Lil Yachty) \u2014 KYLE",
+            "hit": false
+          },
+          {
+            "index": 3201,
+            "label": "Location \u2014 Khalid",
+            "hit": false
+          }
+        ],
+        "last": [
+          {
+            "index": 54980,
+            "label": "Twist And Shout \u2014 The Beatles Tribute Band",
+            "hit": false
+          },
+          {
+            "index": 50683,
+            "label": "A Little Less Conversation \u2014 Elvis Presley",
+            "hit": false
+          },
+          {
+            "index": 12354,
+            "label": "Shout, Pts. 1 & 2 \u2014 The Isley Brothers",
+            "hit": false
+          },
+          {
+            "index": 17561,
+            "label": "Jump Jive An' Wail \u2014 The Brian Setzer Orchestra",
+            "hit": false
+          },
+          {
+            "index": 124381,
+            "label": "Everybody Needs Somebody to Love \u2014 C.C. Productions",
+            "hit": false
+          },
+          {
+            "index": 37448,
+            "label": "Electric Slide \u2014 Electric Slide Music Makers",
+            "hit": false
+          },
+          {
+            "index": 149663,
+            "label": "Jump (For My Love) - Single Remix \u2014 The Pointer Sisters",
+            "hit": false
+          },
+          {
+            "index": 12116,
+            "label": "I Got You (I Feel Good) \u2014 James Brown & The Famous Flames",
+            "hit": false
+          }
+        ],
+        "centroid": [
+          {
+            "index": 231,
+            "label": "Low (feat T-Pain) - Feat T-Pain Album Version \u2014 Flo Rida",
+            "hit": true
+          },
+          {
+            "index": 5,
+            "label": "Yeah! \u2014 Usher",
+            "hit": true
+          },
+          {
+            "index": 13163,
+            "label": "Crank That (Soulja Boy) \u2014 Soulja Boy",
+            "hit": false
+          },
+          {
+            "index": 2710,
+            "label": "Apple Bottom Jeans \u2014 Kevin Turk",
+            "hit": false
+          },
+          {
+            "index": 5794,
+            "label": "Wobble \u2014 V.I.C.",
+            "hit": false
+          },
+          {
+            "index": 9013,
+            "label": "Hotel Room Service \u2014 Pitbull",
+            "hit": false
+          },
+          {
+            "index": 5709,
+            "label": "Like A G6 \u2014 Far East Movement",
+            "hit": false
+          },
+          {
+            "index": 2410,
+            "label": "Get Low - Street \u2014 Lil Jon & The East Side Boyz",
+            "hit": false
+          }
+        ],
+        "segue": [
+          {
+            "index": 5,
+            "label": "Yeah! \u2014 Usher",
+            "hit": true
+          },
+          {
+            "index": 239,
+            "label": "Cupid Shuffle \u2014 Cupid",
+            "hit": true
+          },
+          {
+            "index": 5794,
+            "label": "Wobble \u2014 V.I.C.",
+            "hit": false
+          },
+          {
+            "index": 231,
+            "label": "Low (feat T-Pain) - Feat T-Pain Album Version \u2014 Flo Rida",
+            "hit": true
+          },
+          {
+            "index": 13282,
+            "label": "Let's Get It Started - Spike Mix \u2014 The Black Eyed Peas",
+            "hit": false
+          },
+          {
+            "index": 237,
+            "label": "Cha Cha Slide - Original Live Platinum Band Mix \u2014 Mr. C The Slide Man",
+            "hit": true
+          },
+          {
+            "index": 251,
+            "label": "Tootsie Roll \u2014 Old School Players",
+            "hit": true
+          },
+          {
+            "index": 9,
+            "label": "Hey Ya! - Radio Mix / Club Mix \u2014 OutKast",
+            "hit": false
+          }
+        ]
+      },
+      "n_held_out": 70
+    }
+  ],
+  "k": 5,
+  "n": 8
+}

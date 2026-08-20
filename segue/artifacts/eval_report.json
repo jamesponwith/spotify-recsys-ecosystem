@@ -1,0 +1,150 @@
+{
+  "config": {
+    "top_k": 500,
+    "window": 5,
+    "seed": 20260815
+  },
+  "seed_counts": {
+    "1": {
+      "n_challenges": 2000,
+      "systems": {
+        "popularity": {
+          "r_precision": 0.03637962679863224,
+          "r_precision_artist": 0.05056635074529875,
+          "ndcg": 0.048460219676135986,
+          "clicks": 13.295
+        },
+        "last": {
+          "r_precision": 0.0835582480357792,
+          "r_precision_artist": 0.11016433705431246,
+          "ndcg": 0.12182620881837423,
+          "clicks": 7.0
+        },
+        "centroid": {
+          "r_precision": 0.0835582480357792,
+          "r_precision_artist": 0.11016433705431246,
+          "ndcg": 0.12182620881837423,
+          "clicks": 7.0
+        },
+        "segue": {
+          "r_precision": 0.08832838884420008,
+          "r_precision_artist": 0.11574396192976413,
+          "ndcg": 0.128864252221605,
+          "clicks": 6.2265
+        },
+        "segue_shuffled": {
+          "r_precision": 0.08832838884420008,
+          "r_precision_artist": 0.11574396192976413,
+          "ndcg": 0.128864252221605,
+          "clicks": 6.2265
+        }
+      }
+    },
+    "5": {
+      "n_challenges": 2000,
+      "systems": {
+        "popularity": {
+          "r_precision": 0.03426220243739942,
+          "r_precision_artist": 0.048034128051223764,
+          "ndcg": 0.0464444081471065,
+          "clicks": 13.887
+        },
+        "last": {
+          "r_precision": 0.07156235220070133,
+          "r_precision_artist": 0.09686214231425466,
+          "ndcg": 0.10543330225269258,
+          "clicks": 8.016
+        },
+        "centroid": {
+          "r_precision": 0.10472063355803368,
+          "r_precision_artist": 0.13577857567749516,
+          "ndcg": 0.15077971262216347,
+          "clicks": 3.4765
+        },
+        "segue": {
+          "r_precision": 0.10434908648732469,
+          "r_precision_artist": 0.13625094311334382,
+          "ndcg": 0.15056803265716445,
+          "clicks": 2.8685
+        },
+        "segue_shuffled": {
+          "r_precision": 0.10408946241313732,
+          "r_precision_artist": 0.13574949783165027,
+          "ndcg": 0.14998961619277085,
+          "clicks": 2.9485
+        }
+      }
+    },
+    "10": {
+      "n_challenges": 2000,
+      "systems": {
+        "popularity": {
+          "r_precision": 0.03182556774255535,
+          "r_precision_artist": 0.04508705353612778,
+          "ndcg": 0.04419338140189149,
+          "clicks": 14.5975
+        },
+        "last": {
+          "r_precision": 0.06909634750015155,
+          "r_precision_artist": 0.09416677753717304,
+          "ndcg": 0.10251203693799084,
+          "clicks": 8.6915
+        },
+        "centroid": {
+          "r_precision": 0.10301254168401243,
+          "r_precision_artist": 0.13431071927241692,
+          "ndcg": 0.14921833752980165,
+          "clicks": 3.272
+        },
+        "segue": {
+          "r_precision": 0.10253882983143033,
+          "r_precision_artist": 0.13471772517905317,
+          "ndcg": 0.1497012709423739,
+          "clicks": 2.792
+        },
+        "segue_shuffled": {
+          "r_precision": 0.10068735464975208,
+          "r_precision_artist": 0.13216538124656807,
+          "ndcg": 0.1455993548956688,
+          "clicks": 3.0665
+        }
+      }
+    },
+    "25": {
+      "n_challenges": 2000,
+      "systems": {
+        "popularity": {
+          "r_precision": 0.025389364401155086,
+          "r_precision_artist": 0.036504839763605294,
+          "ndcg": 0.038693627120045676,
+          "clicks": 17.957
+        },
+        "last": {
+          "r_precision": 0.0558837961691155,
+          "r_precision_artist": 0.07815740915346805,
+          "ndcg": 0.08898850870671862,
+          "clicks": 12.503
+        },
+        "centroid": {
+          "r_precision": 0.08291263820011303,
+          "r_precision_artist": 0.11145928102374554,
+          "ndcg": 0.13061379238909934,
+          "clicks": 5.496
+        },
+        "segue": {
+          "r_precision": 0.08572526779008015,
+          "r_precision_artist": 0.11432961098135715,
+          "ndcg": 0.13286653906967252,
+          "clicks": 4.85
+        },
+        "segue_shuffled": {
+          "r_precision": 0.07793914247534525,
+          "r_precision_artist": 0.10539979841067502,
+          "ndcg": 0.12222822966889989,
+          "clicks": 5.501
+        }
+      }
+    }
+  },
+  "seconds": 180.8
+}

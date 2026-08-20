@@ -1,0 +1,84 @@
+{
+  "config": {
+    "seed": 20260815,
+    "test_fraction": 0.2,
+    "recall_k": 100
+  },
+  "data": {
+    "n_tracks": 159338,
+    "n_usable": 159183,
+    "n_train": 127346,
+    "n_test": 31837,
+    "excluded_no_audio": 30,
+    "excluded_zero_embedding": 125,
+    "n_queries": 1718,
+    "queries_dropped_no_vocab": 282,
+    "queries_dropped_no_relevant": 0,
+    "n_features": 22,
+    "tag_dim": 128
+  },
+  "fits": {
+    "ridge": {
+      "mean_cosine": 0.19812600314617157,
+      "seconds": 57.0,
+      "alpha": 100.0
+    },
+    "mlp": {
+      "mean_cosine": 0.24299132823944092,
+      "seconds": 854.6,
+      "hidden": [
+        256,
+        256
+      ],
+      "batch_size": 512,
+      "n_iter": 53,
+      "hit_iter_cap": false,
+      "best_validation_score": 0.0379
+    }
+  },
+  "retrieval": {
+    "random": {
+      "recall_at_100": 0.0,
+      "recall_std": 0.0,
+      "queries_with_any_hit": 0.0
+    },
+    "mean": {
+      "recall_at_100": 0.0,
+      "recall_std": 0.0,
+      "queries_with_any_hit": 0.0
+    },
+    "content_ridge": {
+      "recall_at_100": 0.0,
+      "recall_std": 0.0,
+      "queries_with_any_hit": 0.0
+    },
+    "content_mlp": {
+      "recall_at_100": 0.0037131669150239723,
+      "recall_std": 0.03325179242499881,
+      "queries_with_any_hit": 0.03550640279394645
+    },
+    "oracle": {
+      "recall_at_100": 0.028071992640958474,
+      "recall_std": 0.08961983673162381,
+      "queries_with_any_hit": 0.1658905704307334
+    }
+  },
+  "gate_0": {
+    "best_content_system": "content_mlp",
+    "content_recall": 0.0037131669150239723,
+    "random_recall": 0.0,
+    "oracle_recall": 0.028071992640958474,
+    "random_multiple": null,
+    "random_criterion_vacuous": true,
+    "beats_random_floor": true,
+    "oracle_recovery_ratio": 0.13227300827965707,
+    "threshold_random_multiple": 3.0,
+    "threshold_oracle_fraction": 0.25,
+    "passed": false
+  },
+  "seconds": 1010.9,
+  "predictor": {
+    "kind": "mlp",
+    "path": "/home/drspeedracer/Workspace/Spotify/timbre/artifacts/tag_predictor.pkl"
+  }
+}
