@@ -87,7 +87,20 @@ def select(
 
     relevance = _rank_normalize(raw)
     if affinity is not None and affinity_weight > 0:
-        aff = _minmax(np.asarray(affinity, dtype=np.float32)[: idx.size])
+        # Rank-normalise the affinity too, for the reason the docstring above
+        # gives about relevance -- the argument applies to both terms, and
+        # mixing the two scales was a real defect.
+        #
+        # Blending a rank-normalised relevance with a min-maxed affinity puts
+        # them on incomparable footings. Relevance is uniform across the pool,
+        # so the gap between the best candidate and the fiftieth is 50/500 =
+        # 0.1; a min-maxed affinity swings the full 0-1. At weight 0.35 the
+        # audio term could therefore overturn a hundred places of retrieval
+        # ranking. On "90s alternative rock for a road trip" it did exactly
+        # that: retrieval returned Pixies, Third Eye Blind and No Doubt, and
+        # selection replaced them with whatever best matched a valence target
+        # inferred from the words "road trip".
+        aff = _rank_normalize(np.asarray(affinity, dtype=np.float32)[: idx.size])
         relevance = ((1.0 - affinity_weight) * relevance + affinity_weight * aff).astype(np.float32)
     vectors = catalog.collab.vectors[idx]  # already unit-normalised
     artists = catalog.artist_ids[idx]

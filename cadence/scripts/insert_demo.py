@@ -80,11 +80,14 @@ def main() -> int:
 
     miss_note = (
         '<p style="font-size:13.5px;color:var(--ink-3);margin-top:12px;max-width:60ch">'
-        "<strong>This one is wrong, and the reasons say why.</strong> One Direction is not "
-        "90s alternative rock. The tag channel matched <code>road trip</code> strongly and "
-        "the era and genre tokens weakly, so the theme outvoted the constraint. That is a "
-        "real failure mode &mdash; and it is diagnosable in one line precisely because "
-        "every track carries a grounded reason instead of a similarity score.</p>"
+        "<strong>Still the weakest of the three, and the reasons say why.</strong> "
+        "Retrieval gets this right &mdash; it returns Pixies, Third Eye Blind and No Doubt. "
+        "Selection then trades some of that away for a valence target inferred from the "
+        "words <em>road trip</em>. Two defects found here have been fixed (see "
+        "<code>docs/FINDINGS.md</code>); what remains is that the audio weight is global "
+        "when it should depend on whether the request names a genre or a mood. That is "
+        "diagnosable in one line precisely because every track carries a grounded reason "
+        "rather than a similarity score.</p>"
     )
 
     section = f"""{START}
@@ -107,7 +110,7 @@ def main() -> int:
     <div class="demo-grid">
       {case_html(cases[0], 8)}
       {case_html(cases[1], 6)}
-      {case_html(cases[2], 5, miss_note)}
+      {case_html(cases[2], 8, miss_note)}
     </div>
   </section>
 

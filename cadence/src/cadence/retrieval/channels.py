@@ -264,9 +264,16 @@ def sparse_tag_channel(
         return ChannelResult.empty("tag_exact")
     cols = np.asarray(tag_cols, dtype=np.int64)
     sub = catalog.tag_matrix_csc[:, cols]
-    # log1p tames tracks that appear on thousands of playlists with one tag.
-    scores = np.asarray(sub.sum(axis=1)).ravel().astype(np.float32)
-    scores = np.log1p(scores)
+    # log1p *per concept*, then sum across concepts -- not log1p of the total.
+    #
+    # Summing raw counts first makes a multi-concept query an ANY-match: for
+    # "90s alternative rock for a road trip", a track on 500 playlists tagged
+    # `road trip` and none tagged `1990s` outscored one matching both at 50
+    # each, because 500 > 100. The era was parsed correctly and then had no
+    # force. Taking the log inside gives each concept diminishing returns of its
+    # own, so breadth of match beats depth in whichever concept happens to be
+    # the most popular tag in the corpus.
+    scores = np.asarray(sub.log1p().sum(axis=1)).ravel().astype(np.float32)
     idx, sc = _topk_from_scores(scores, k, mask)
     idx = idx[sc > 0]
     sc = sc[sc > 0]

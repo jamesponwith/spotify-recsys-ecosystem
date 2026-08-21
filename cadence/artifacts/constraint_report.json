@@ -23,15 +23,15 @@
     }
   },
   "mood_error": {
-    "acousticness": 0.0416,
-    "danceability": 0.036,
-    "energy": 0.0429,
-    "instrumentalness": 0.1302,
-    "speechiness": 0.012,
-    "valence": 0.0206
+    "acousticness": 0.0487,
+    "danceability": 0.0289,
+    "energy": 0.0482,
+    "instrumentalness": 0.1153,
+    "speechiness": 0.0133,
+    "valence": 0.0514
   },
-  "mean_latency_ms": 206.8,
-  "mean_long_tail_share": 0.0858,
-  "mean_intra_list_distance": 0.8877,
+  "mean_latency_ms": 248.4,
+  "mean_long_tail_share": 0.0851,
+  "mean_intra_list_distance": 0.8893,
   "failures": []
 }

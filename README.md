@@ -84,6 +84,16 @@ useful output.
 - **Cadence** shipped a ranking bug that only reading real output caught:
   min-max normalisation over a reranker whose probabilities are heavily skewed
   (median ~0.002, max ~0.7) silently nullified audio affinity at any weight.
+- **Cadence** shipped two more of the same kind, found the same way — by reading
+  generated playlists rather than a metric. Its exact-tag channel scored
+  multi-concept queries as an ANY-match, so one popular tag beat satisfying the
+  whole request; and its selection stage blended a rank-normalised score with a
+  min-maxed one, letting an inferred audio target overturn a hundred places of
+  correct retrieval. Both fixed. Neither was detectable in the aggregate metric —
+  and that turned out to be the real finding: at its default size the harness has
+  a **10% detection floor**, so most of the channel weights in `config.py` were
+  never validated against it and could not have been.
+  See [cadence/docs/FINDINGS.md](cadence/docs/FINDINGS.md).
 - **Segue's** first objective was wrong before it was tuned. Training on
   "predict the next track" lost to the order-free baseline everywhere above one
   seed, because the task scores against *all* withheld tracks. The losing run is
