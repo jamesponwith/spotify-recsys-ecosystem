@@ -1,6 +1,7 @@
 """Held-out challenge splits in the shape of the RecSys Challenge 2018 task.
 
-For each evaluation playlist we expose the title plus the first ``k`` tracks and
+For each evaluation playlist we expose the title plus the genuinely first ``k``
+tracks (see ``_load_order``: the interaction matrix cannot supply them) and
 withhold the rest. Sweeping ``k`` from 0 upward is the whole point:
 
 * ``k = 0`` is the pure cold-start natural-language task — title only, nothing
@@ -39,6 +40,39 @@ class Challenge:
     n_seed: int
 
 
+def _load_order(processed_dir: Path, interactions: sparse.csr_matrix) -> list[np.ndarray]:
+    """Per-playlist track sequence, in the order a human arranged it.
+
+    This exists because the interaction matrix cannot supply it. SciPy keeps CSR
+    column indices sorted within a row, so ``interactions.indices[start:stop]``
+    comes back in ascending track-id order. Slicing the first k of that yields
+    *the k lowest-numbered tracks in the playlist*, which is what this module used
+    to do while its docstring promised the first k. Track ids are assigned in
+    corpus-wide first-seen order during the build, so low id correlates with
+    popular-and-early: the old seeds were biased toward the catalog's head rather
+    than being a neutral prefix.
+
+    ``order.npz`` is written by the build from the same pass that fills the
+    matrix, so the two cannot disagree about which tracks a playlist contains.
+    """
+    path = processed_dir / "order.npz"
+    if not path.exists():
+        raise FileNotFoundError(
+            f"{path} not found. Playlist order is not recoverable from "
+            "interactions.npz -- rebuild the catalog with `cadence build` to "
+            "emit it. Refusing to fall back to track-id order, which silently "
+            "produces head-biased seeds."
+        )
+    z = np.load(path)
+    tracks, offsets = z["tracks"], z["offsets"]
+    if offsets.size - 1 != interactions.shape[0]:
+        raise ValueError(
+            f"order.npz has {offsets.size - 1} playlists but interactions.npz has "
+            f"{interactions.shape[0]}; rebuild both with `cadence build`."
+        )
+    return [tracks[offsets[r] : offsets[r + 1]].astype(np.int64) for r in range(offsets.size - 1)]
+
+
 def make_splits(
     processed_dir: Path = DATA_PROCESSED,
     n_eval: int = 2000,
@@ -49,6 +83,7 @@ def make_splits(
     """Draw the evaluation playlists and materialise one challenge per seed count."""
     playlists = pd.read_parquet(processed_dir / "playlists.parquet")
     interactions = sparse.load_npz(processed_dir / "interactions.npz").tocsr()
+    order = _load_order(processed_dir, interactions)
     rng = np.random.default_rng(seed)
 
     lengths = np.diff(interactions.indptr)
@@ -68,8 +103,7 @@ def make_splits(
     for k in seed_counts:
         items: list[Challenge] = []
         for row in chosen:
-            trs = interactions.indices[interactions.indptr[row] : interactions.indptr[row + 1]]
-            trs = trs.astype(np.int64)
+            trs = order[row]
             seed_tracks = trs[:k].tolist()
             held = trs[k:].tolist()
             if len(held) < min_held_out:

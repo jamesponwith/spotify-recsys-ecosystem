@@ -98,3 +98,123 @@ not validated against this harness, because they could not have been. The same
 lesson [Ostinato](../../ostinato) learned about its own dose applies here:
 before believing a null result, check whether the instrument could have detected
 a positive one.
+
+---
+
+## 3. The evaluation harness handed out the wrong seeds
+
+Found by [Segue](../../segue), which needed playlist order and discovered Cadence
+could not supply it.
+
+`eval/splits.py` documented itself as exposing *"the title plus the first `k`
+tracks"* and implemented:
+
+```python
+trs = interactions.indices[interactions.indptr[row] : interactions.indptr[row + 1]]
+seed_tracks = trs[:k].tolist()
+```
+
+`trs` comes back in ascending **track-id** order, so `trs[:k]` is *the k
+lowest-numbered tracks in the playlist*, not its first k. Because ids are assigned
+in corpus-wide first-seen order during the build, low id correlates with
+popular-and-early — the seeds were quietly biased toward the catalog's head rather
+than being a neutral prefix.
+
+**The cause was a layer deeper than it looked.** The obvious suspect is SciPy,
+which keeps CSR column indices sorted within a row. SciPy was innocent. The order
+had already been destroyed in `data/build.py`, pass 1:
+
+```python
+# A track counts once per playlist even if the playlist repeats it.
+rows.append(np.unique(row))
+```
+
+`np.unique` deduplicates — the stated intent — and **sorts as a side effect**,
+which was not. By the time the matrix was constructed there was no order left in
+the pipeline to preserve. Dedup by first occurrence instead:
+
+```python
+_, first = np.unique(row, return_index=True)
+rows.append(row[np.sort(first)])
+```
+
+The first attempt at this fix captured the per-playlist sequence from pass 2 and
+verified additive — identical counts, identical `track_uri` at every index. It
+would have shipped an `order.npz` that looked entirely correct and contained
+ascending ids, because what it faithfully captured was already sorted. A
+verifier written *before* trusting the rebuild caught it: 99 of 99 sampled rows
+came back ascending.
+
+**Why it survived a review.** Nothing is wrong with any line in isolation. The
+bug lives in the gap between a call chosen for one property and used for another,
+and a docstring three modules away that promised something the data no longer
+supported.
+
+**Fix.** Order now comes from the build rather than being re-derived:
+
+* `data/build.py` writes `order.npz`, the ragged per-playlist track sequence,
+  captured in the same pass that fills the matrix — so the matrix and the order
+  cannot disagree about which tracks a playlist contains.
+* `eval/splits.py` reads it and takes a genuinely first-k prefix. If the file is
+  absent it **raises**, rather than falling back to track-id order. A silent
+  fallback is how this lasted as long as it did.
+
+The rebuild was verified purely additive: identical track count, identical
+`track_uri` at every index, identical interaction count. That mattered because
+Timbre, Segue, Gamut and Ostinato all store track *indices* — a shifted index
+would have silently invalidated four downstream projects.
+
+**How biased were the old seeds?** Measured against the corrected ones, on the
+same 2,000 held-out playlists:
+
+| k | old seed popularity | true first-k | ratio | seed overlap |
+|---:|---:|---:|---:|---:|
+| 1 | 1103 | 640 | **1.72x** | 2.1% |
+| 5 | 1015 | 595 | 1.71x | 9.3% |
+| 10 | 962 | 573 | 1.68x | 18.1% |
+| 25 | 838 | 543 | 1.54x | 42.8% |
+
+(Catalog mean is 36.9 playlists per track, median 9. Any playlist track is
+popular by selection; the point is the *ratio* between the two seed sets.)
+
+The old seeds were **1.5–1.7x more popular** than the real ones, and at k = 1 the
+two sets shared **2.1%** of their tracks — they were very nearly different
+experiments. Popular seeds carry richer co-occurrence, so the prediction was that
+the published k >= 1 numbers were optimistic.
+
+**That prediction was wrong.** Re-running with correct seeds:
+
+| k | biased seeds | true first-k | delta | 2xSE |
+|---:|---:|---:|---:|---:|
+| 0 | 0.1429 | 0.1429 | +0.0000 | 0.0210 |
+| 1 | 0.1785 | 0.1962 | +0.0177 | 0.0252 |
+| 5 | 0.2472 | 0.2416 | -0.0056 | 0.0265 |
+| 10 | 0.2472 | 0.2457 | -0.0015 | 0.0262 |
+| 25 | 0.1925 | 0.2005 | +0.0081 | 0.0262 |
+
+No cell moves by more than two standard errors, and the direction is mixed rather
+than uniformly down. The k = 0 row is bit-identical, which is the control working:
+a title-only challenge has no seeds to select, so nothing there could change.
+
+So the harness was **wrong in method and, as far as this instrument can tell,
+right in value**. The seeds were drawn from a systematically more popular slice of
+each playlist and the headline metric did not notice. Clicks is the only measure
+with a consistent pattern — worse at k = 1, 5, 10 (+0.29, +0.19, +0.14) and better
+at k = 25 (-0.85) — which is suggestive and under-powered for the same reason
+everything else here is.
+
+The fix is kept regardless. A harness whose seeds do not mean what its docstring
+says is broken whether or not the breakage happens to move a number, and the next
+person to build a sequence-aware model on it — which is exactly what Segue is —
+would have been misled.
+
+**What it changes.** Every seeded cell (k >= 1) of the published evaluation. The
+k = 0 cell is untouched: a title-only challenge has no seeds to select, which is
+also why the two fixes above could be measured against it while this one was
+still outstanding.
+
+**Independently cross-checked.** Segue rebuilt playlist order from the raw MPD
+slices by a completely different path. On a 235-playlist sample the two agree on
+**100%** of sequences once duplicate policy is reconciled — Cadence dedups by
+first occurrence, Segue keeps repeats, and every one of the 55 initial
+disagreements was exactly that.

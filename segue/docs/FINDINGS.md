@@ -50,14 +50,26 @@ the identical seed set, so its ablations and channel comparisons stand. What is
 not safe is the docstring's claim, or any future work that reads order out of
 that matrix.
 
-**Recommended fix for Cadence:** either correct the docstring to say "k lowest
-track ids, a deterministic arbitrary subset", or persist a position vector
-alongside the matrix at build time. Segue does the latter for its own purposes,
-in `src/segue/sequences.py`, rebuilt from the raw slices in 36 s.
+**Fixed in Cadence, 2026-08-21 — and the cause was not the one named above.**
+SciPy's sorted CSR indices were a symptom, not the source. `data/build.py`
+destroyed the order in pass 1 with `np.unique(row)`, which deduplicates (the
+intent) and sorts (not the intent). Dedup is now by first occurrence, and
+`order.npz` — the per-playlist sequence — is written from the same pass that
+fills the matrix, so the two cannot disagree about membership. `eval/splits.py` reads it and takes a
+genuinely first-k prefix; if the file is missing it raises rather than falling
+back to track-id order, because a silent fallback is how this survived in the
+first place. Cadence's `eval_report.json` was regenerated from the corrected
+splits.
 
-Left as a finding rather than a patch: changing the seed selection would move
-every number in Cadence's published `eval_report.json`, and silently reissuing
-those is worse than documenting the caveat.
+This was originally left as a finding rather than a patch, on the grounds that
+changing seed selection moves every published number. That was the wrong call:
+the numbers were wrong, and reissuing them with the reason recorded beats leaving
+a known-bad harness in place. The before/after is in
+[cadence/docs/FINDINGS.md](../../cadence/docs/FINDINGS.md).
+
+Segue keeps its own `src/segue/sequences.py`, which rebuilds order from the raw
+slices in 36 s. It now duplicates what Cadence emits and should eventually read
+`order.npz` instead — noted, not yet done.
 
 ---
 

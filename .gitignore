@@ -1,4 +1,4 @@
-# This repository is the four-app ecosystem only. The working directory it lives
+# This repository is the six-app ecosystem only. The working directory it lives
 # in also holds unrelated projects, so the root is a whitelist rather than a
 # blocklist: anything not named below is never a candidate for a commit.
 /*
@@ -9,6 +9,7 @@
 !/segue/
 !/gamut/
 !/ostinato/
+!/concerto/
 
 # Virtual environments
 .venv/
@@ -26,7 +27,11 @@ htmlcov/
 # Corpora. The Million Playlist Dataset is licensed for research use and must
 # not be redistributed; the audio-feature dump is a 12 GB reproducible download.
 # Both are re-fetchable -- see cadence/scripts/download_data.py.
-data/
+# Anchored to the repo root on purpose. A bare `data/` matches a directory of
+# that name at ANY depth, which also swallowed cadence/src/cadence/data/ -- real
+# source code, silently absent from the first four commits. `cadence build`
+# could not have run from a fresh clone.
+/cadence/data/
 
 # Build outputs. Model weights, cached sequences and embedding matrices are all
 # reproducible from a fixed seed, and several are hundreds of megabytes. The
@@ -37,3 +42,11 @@ data/
 !*/artifacts/*_report.json
 !*/artifacts/demo.json
 !*/artifacts/*_meta.json
+# Concerto writes four: three are small, and sensitivity.json is ~430 KB because
+# it holds every one of the 180 parameter cells. It is kept anyway -- the claims
+# in the README are "held in N of 180", and without the cells that is an
+# assertion rather than evidence. It regenerates in about eight minutes.
+!*/artifacts/simulation.json
+!*/artifacts/sensitivity.json
+!*/artifacts/ledger.json
+!*/artifacts/calibration.json

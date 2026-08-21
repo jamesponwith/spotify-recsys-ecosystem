@@ -39,14 +39,19 @@ to work with, which is the actual natural-language cold-start case:
 
 | System | R-precision | NDCG@100 | Clicks ↓ |
 |---|---|---|---|
-| **Cadence** | **0.1422** | **0.1952** | **3.4** |
+| **Cadence** | **0.1429** | **0.1975** | **3.2** |
 | item-kNN baseline | 0.0404 | 0.0545 | 13.0 |
 | popularity baseline | 0.0404 | 0.0545 | 13.0 |
 | lexical title matching | 0.0197 | 0.0266 | 26.2 |
 
-**3.5× better than popularity**, using the official RecSys Challenge 2018
+**3.5x better than popularity**, using the official RecSys Challenge 2018
 metrics on 400 held-out playlists. With seeds revealed the margin holds:
-at k=5, R-precision **0.2483** vs **0.1621** for item-kNN (+53 %).
+at k=5, R-precision **0.2416** vs **0.1761** for item-kNN (+37 %).
+
+> Seeds are the playlist's genuine first k. They used not to be — the harness
+> handed out the k lowest track ids, which are 1.5-1.7x more popular. Fixing
+> that cut the margin over item-kNN from +53 % to +37 %, because the old
+> seeds flattered the comparison. See [docs/FINDINGS.md](docs/FINDINGS.md).
 
 Relevance is only half the promise. Across a 20-query battery of constrained
 requests, the assembly stage satisfies **100 %** of stated requirements — exact
