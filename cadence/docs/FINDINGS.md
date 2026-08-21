@@ -208,6 +208,13 @@ says is broken whether or not the breakage happens to move a number, and the nex
 person to build a sequence-aware model on it — which is exactly what Segue is —
 would have been misled.
 
+**The ablation claims survive unchanged.** Re-run against corrected seeds, removing
+the folksonomy channels still collapses k = 0 R-precision by **73%**, and both
+collaborative channels alone still score exactly **0.0000**. Worth stating because
+the first pass at checking this compared the ablations — which are fusion-level —
+against `full_reranked`, got 87%, and nearly "corrected" a number that was right.
+Ablations belong against `full_fusion`.
+
 **What it changes.** Every seeded cell (k >= 1) of the published evaluation. The
 k = 0 cell is untouched: a title-only challenge has no seeds to select, which is
 also why the two fixes above could be measured against it while this one was
