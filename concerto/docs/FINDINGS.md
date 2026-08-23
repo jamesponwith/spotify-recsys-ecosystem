@@ -114,6 +114,71 @@ Pair it with a closed resale channel and the claim holds in **180 of 180**.
 Which is why the recommendation is the pair, and why the pair is tested as a
 separate claim rather than assumed.
 
+## Three numbers that were asserted before anything measured them
+
+Writing the policy document before the last sweep turned out to be a useful
+mistake. It shipped three quantities with a number attached and nothing behind
+them, in a project whose entire discipline is not doing that: hold back "20% of
+the house" for an open draw, sell "15%" at a clearing price, and — worst — it
+called adding tour dates the strongest intervention available while leaving it
+out of the arm set entirely.
+
+`concerto frontier` measures all three. The results split three ways, which is
+about the right hit rate for guessing.
+
+**The 20% reserve was right, for a reason nobody had.** Superfan access is
+*completely flat* from 0% to 20% reserved — 96.0% either way — and only then
+starts to fall, reaching 65.2% at 50%. The mechanism is that top-decile demand
+only needs about 78% of the house, so a reserve up to roughly a fifth comes out
+of slack rather than out of anyone. The original justification was "so the door
+is not sealed", which is a sentiment. This is a reason.
+
+It also needed its size stated honestly: 20% reserved takes casual fans from
+0.0% to 2.8%, against 12.5% under a pure lottery. A fifth of the way back, not a
+restoration, and the document now says so.
+
+**The 15% cleared share had no optimum to be right about.** The curve has no
+knee. Revenue gained per point of low-income access lost falls monotonically
+from the very first seat, so the sweep does not identify a best share — it
+prices a choice. 15% buys $63 a seat while leaving 89% of low-income access and
+all superfan access intact; that is a defensible judgement and it is not a
+discovered optimum, and describing it as one would have been the more flattering
+error.
+
+**Naming the nights lever without measuring it was the real mistake.** It is the
+strongest result in the project and it sat in prose as an aside. One extra night
+takes what the average fan pays from 2.33x face to 1.75x. The entire verified-fan
+apparatus takes it to 1.74x. They are the same number, and the second night
+doubles the artist's revenue instead of wrongly rejecting 4% of applicants.
+
+A result that large does not belong in a paragraph that says "any honest account
+has to say it first" while the code says nothing at all.
+
+## A fourth assertion, and this one was half wrong
+
+The same pass caught one more. The policy document claimed a tight purchase cap
+does more damage to families than to brokers. Measuring it produced the most
+useful correction in the set, because the answer is *conditional* and the
+assertion was not.
+
+Tightening the cap from 8 to 2 truncates 20.1 points of family ticket demand
+regardless of arm — the same families, the same parties split. What it buys:
+
+| | family cost | broker capture saved | trade |
+|---|---:|---:|---|
+| Open queue | 20.1pp | 32.5pp | 0.6 : 1 |
+| Capped exchange | 20.1pp | 3.8pp | 5.4 : 1 |
+
+On an unprotected on-sale the cap is one of the better tools available and the
+assertion is simply wrong. On the arm this project actually recommends it is
+right and then some. The cap is not good or bad; it is worth something exactly to
+the extent the resale margin is still open.
+
+The methodological point is the one to keep: **the sweep was nearly run against a
+single arm.** Either arm alone would have produced a confident, publishable
+number, and which of the two contradictory conclusions got published would have
+been decided by which arm looked like the interesting one that afternoon.
+
 ## A zero that is exactly zero
 
 Market clearing serves **0.0%** of bottom-income-quartile demand, and a round

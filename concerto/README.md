@@ -26,9 +26,10 @@ You can ship a strictly better stack and have zero inventory.
 
 What *is* a real technical problem is the part underneath the complaints: ticket
 drops, bots and instant sellouts are an **allocation and arbitrage** problem.
-That is simulable, falsifiable, and it turned out to contain two results that
-contradict how the industry talks about it — and one that contradicted the
-hypothesis this project started from.
+That is simulable, falsifiable, and it turned out to contain three results that
+contradict how the industry talks about it — one that contradicted the hypothesis
+this project started from, and one that says the best answer is not an allocation
+mechanism at all.
 
 ## Results
 
@@ -51,6 +52,22 @@ charges every fan the market price, where the queue at least let a lucky third
 in at face — so the average fan pays *more*, not less. The surplus moves from a
 broker to the artist, which is a real improvement and an entirely different
 claim from the one usually made for it.
+
+### A second night is worth what the entire verified-fan apparatus is worth
+
+The strongest lever in the model is not an allocation policy. Hold total demand
+fixed and play the house twice, and what the average fan pays goes from 2.33x
+face to **1.75x**. Verified fan — identity checks, a 4% wrongful-rejection rate,
+an appeals process, a vendor contract — gets to **1.74x**.
+
+The same number, except the second night also doubles what the artist earns and
+takes the money burned on bot infrastructure from $146,500 to $88,600. At four
+nights brokers take 25.8% instead of 61.1% and low-income access goes from 4.9%
+to 37.2%. At eight, demand is met exactly and there is nothing left to
+arbitrage.
+
+No allocation rule changes across any of those rows. It is the same queue that
+ships today, played more times.
 
 ### Most of what scalping costs is not scalper income
 
@@ -77,6 +94,13 @@ Large, real, and still beaten outright by attacking the margin.
 Every price-rationed arm serves 13–22% of superfan demand. Rationing on verified
 listening depth instead serves **96%**, at face, with the income skew of who
 gets in falling to 1.01x — an essentially income-blind allocation.
+
+It also **shuts casual fans out completely** — 0.0% of their demand against 9.9%
+under the queue. A merit cut is absolute: a fan one place below it has no chance
+at all rather than a small one. Holding 20% of the house back for an open draw
+costs superfans literally nothing (their demand only fills about 78% of the
+room, so the reserve comes out of slack) and takes casual fans to 2.8% — about a
+fifth of the way back, not a restoration.
 
 **And it has a named failure region.** With resale left open, the claim held in
 177 of 180 cells. All three failures sit in one corner — hot demand paired with
@@ -126,11 +150,26 @@ can be audited by someone who does not trust us. Not on the on-sale path.
 
 ## What it recommends
 
-Ship the **capped face-value exchange** as the default — legal essentially
-everywhere, and it beat identity-hardening in every cell. Add affinity
-rationing where a listening signal exists, but only with resale closed. Reserve
-a lottery block so the casual fan is not sealed out, because affinity rationing
-shuts them out completely and that is a choice, not a side effect.
+**Ask how many nights the tour is playing before selling anyone an allocation
+mechanism.** A second night does what the whole verified-fan apparatus does, and
+pays the artist for it. Everything below is what to do when supply really is
+fixed.
+
+Then: ship the **capped face-value exchange** as the default — legal essentially
+everywhere, and it beat identity-hardening in every cell. Add affinity rationing
+where a listening signal exists, but only with resale closed. **Reserve 20% of
+the face seats for an open draw** — measured, not guessed: superfan access is
+identical at 0% and 20% because their demand only fills about 78% of the room,
+so those seats come out of slack rather than out of anyone. And clear a slice of
+the house at market if the artist wants the revenue, knowing that curve has no
+knee — 15% buys $63 a seat and costs 11% of low-income access, and any share you
+pick is a judgement rather than an optimum.
+
+**Set the purchase cap by what else you have shipped.** Going from a cap of 8 to
+a cap of 2 splits the same 20.1% of family demand either way. On an open queue
+that buys back 32.5% of the house from brokers and is well worth it; on the
+capped exchange it buys back 3.8% and is not. Cap tightly while resale is open,
+cap at party size once it is closed.
 
 And note what the strictest arm costs: the identity-bound design that shows zero
 broker entry is restricted by law in New York and several other US states, and
@@ -156,7 +195,7 @@ project is asking to be believed.**
 
 | Document | |
 |---|---|
-| [RESULTS.md](docs/RESULTS.md) | every arm, every claim, generated from the JSON |
+| [RESULTS.md](docs/RESULTS.md) | every arm, every claim, every sweep, generated from the JSON |
 | [FINDINGS.md](docs/FINDINGS.md) | the hypothesis that was backwards, the metric that reads backwards, three solver bugs |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | the full stack, and why a waiting room is the wrong primitive |
 | [CARDANO.md](docs/CARDANO.md) | CIP-68 ticket, the validator, the wallet-sale hole, eUTxO contention |
@@ -173,6 +212,7 @@ make all         # lint, test, simulate, sensitivity, ledger, report
 concerto simulate                     # every arm at equilibrium
 concerto demo queue affinity_bound    # twelve people, followed across two policies
 concerto ledger                       # the enforcement ladder and eUTxO contention
+concerto frontier                     # the reserve block, the cleared share, the nights
 concerto sensitivity                  # 180 cells, ~8 minutes
 concerto calibrate                    # the one fitted parameter, in the open
 ```

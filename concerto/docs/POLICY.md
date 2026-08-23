@@ -57,10 +57,28 @@ connection and running fifty browser tabs are all worth exactly nothing.
 verifiable afterwards, so the draw can be checked by someone who does not trust
 us. This is the one part of the system where a public chain earns its place.
 
-**Purchase caps are set at party size, not lower.** Caps below 4 do more damage
-to families than to brokers, whose constraint is identity cost rather than
-per-identity limit. The cap is a blunt instrument and the simulation prices its
-bluntness.
+**Purchase caps depend on what else you have shipped.** The first draft of this
+document said caps below four do more damage to families than to brokers, whose
+constraint is identity cost rather than per-identity limit. `concerto frontier`
+says that is half right, and the wrong half matters.
+
+Tightening the cap from 8 to 2 truncates **20.1 points** of family ticket demand
+either way — the same families, the same parties split. What it buys depends
+entirely on whether the resale margin is still open:
+
+| | family cost | broker capture saved | trade |
+|---|---:|---:|---|
+| Open queue, no resale cap | 20.1pp | **32.5pp** | 0.6 : 1 — worth it |
+| Capped face-value exchange | 20.1pp | 3.8pp | 5.4 : 1 — expensive |
+
+So: **cap tightly if the exchange is open, and at party size once it is closed.**
+On an unprotected on-sale the purchase cap is one of the better tools available.
+Once resale is capped the brokers are mostly gone already, and the cap has almost
+nothing left to do while still charging families full price.
+
+Brokers do not absorb it proportionally either — halving the cap from 8 to 2 only
+cuts the identities they buy by 46%, because the sector re-optimises against a
+margin the cap never touched.
 
 **Every rejection is appealable inside the window.** A 4% false-reject rate on a
 verification step is thousands of real people per major on-sale. If there is no
@@ -100,11 +118,22 @@ than on money. It is the only thing in the set that moves that axis, and it
 carries three costs that have to be stated.
 
 **It shuts out the casual fan completely.** Under a lottery, someone who
-discovered the artist last month has a small chance. Under affinity rationing
-they have none. That is not a bug in the implementation; it is what rationing on
-merit means, and whether it is right depends on what a concert is for. Reserve a
-lottery block — 20% of the house drawn among everyone — so the door is not
-sealed.
+discovered the artist last month gets 9.9% of what they asked for. Under affinity
+rationing they get **0.0%**. That is not an implementation bug; it is what
+rationing on merit means, and whether it is right depends on what a concert is
+for.
+
+The fix is to hold part of the house back for an open draw, and
+`concerto frontier` prices it. **Reserve 20%.** Superfan access is completely flat
+from 0% to 20% reserved — 96.0% either way — because top-decile demand only needs
+about 78% of the house, so the reserve comes out of slack rather than out of
+anyone. Past roughly 25% it starts costing superfans close to one-for-one: at 50%
+reserved they drop to 65.2%.
+
+Size the claim honestly, though. A 20% reserve takes casual fans from 0.0% to
+**2.8%**, against 12.5% under a pure lottery. It is about a fifth of the way back,
+not a restoration. What it buys is that the door is not sealed, which is a smaller
+and more defensible thing than "casual fans still have a fair shot".
 
 **It is only safe with resale closed.** This is the sharpest boundary the
 sensitivity grid found. With resale left open, affinity rationing beat every
@@ -126,6 +155,32 @@ since an automated decision determining access is close enough to the line drawn
 by GDPR Article 22 that it should not be tested; retention limits; and a
 standing refusal to sell or share it. The failure mode is a fandom credit score,
 and it arrives by drift, not by decision.
+
+## Before any of this: play the room twice
+
+Every rule above is an allocation mechanism, and allocation is what you reach for
+when supply is fixed. It usually is not.
+
+Holding total demand constant and playing the house a second night takes what the
+average fan pays from 2.33x face to **1.75x**. The entire verified-fan
+apparatus — identity verification, its 4% wrongful-rejection rate, the appeals
+staffing, the vendor contract — takes it to **1.74x**. They are the same number.
+The second night also doubles what the artist earns and takes the money burned on
+bot infrastructure from $146,500 to $88,600, where verification does neither.
+
+At four nights the average fan pays 1.41x, brokers take 25.8% instead of 61.1%,
+and low-income access goes from 4.9% to 37.2%. At eight — demand met exactly —
+brokers take nothing, 99.8% of the house goes at face, and there is no anti-bot
+programme at all because there is nothing left to arbitrage.
+
+No allocation rule changes across any of those rows. It is the same queue that
+ships today, played more times.
+
+This does not make the mechanisms pointless: routing belongs to the promoter and
+the artist rather than the platform, and tours have real constraints on how many
+nights they can play. But a platform selling anti-scalping technology into a
+one-night booking is selling the second-best fix for a problem the booking
+created, and should say so.
 
 ## Accessibility
 

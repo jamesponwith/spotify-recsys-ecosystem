@@ -155,13 +155,27 @@ Concerts are the right first niche because they are the worst case: fixed
 capacity, a single night, and demand that cannot be met at any price. Everything
 adjacent is easier, and in instructive ways.
 
-**The strongest intervention is not in the arm set.** Demand multiple is the
-single most powerful lever in the whole model — resale markup runs 1.9x at 3x
-oversubscription and 6.0x at 30x — and the way to move it is to *add dates*.
-No allocation policy in this repository comes close to what a second night does.
-It is left out of the arm set because it is a promoter's routing decision rather
-than a platform's mechanism, but any honest account has to say it first: a tour
-that plays one night in a city has chosen the scalping.
+**The strongest intervention is not an allocation policy at all.** It was named
+here before it was measured, which was the wrong way round; `concerto frontier`
+now measures it. Hold total demand fixed and play the house more than once:
+
+| Nights | Oversubscribed | Fan pays | Broker takes | At face | Low income served | Burned on bots |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 8.00x | 2.33x | 61.1% | 35.8% | 4.9% | $146,500 |
+| 2 | 4.00x | **1.75x** | 53.1% | 39.8% | 11.7% | $88,600 |
+| 4 | 2.00x | 1.41x | 25.8% | 59.1% | 37.2% | $14,000 |
+| 8 | 1.00x | 1.27x | 0.0% | 99.8% | 100.0% | $0 |
+
+**One extra night moves what the average fan pays to 1.75x face. The entire
+verified-fan apparatus moves it to 1.74x.** They are the same number — except the
+second night also doubles what the artist earns, where verification costs a 4%
+wrongful-rejection rate, an appeals process and a vendor contract.
+
+No allocation rule changes across those rows. It is the same queue that ships
+today, played more times. Routing is the promoter's decision and not the
+platform's, and tours have real constraints on how many nights they can play —
+but a platform selling anti-scalping technology into a one-night booking is
+selling the second-best fix for a problem the booking created, and should say so.
 
 | Vertical | What changes | Which findings transfer |
 |---|---|---|

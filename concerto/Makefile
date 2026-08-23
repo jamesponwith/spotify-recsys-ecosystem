@@ -1,6 +1,6 @@
 VENV := .venv/bin
 
-.PHONY: help install lint test simulate sensitivity ledger report all clean
+.PHONY: help install lint test simulate sensitivity frontier calibrate ledger report all clean
 
 help:
 	@grep -E '^[a-z-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -24,13 +24,19 @@ simulate: ## Every allocation arm at equilibrium, over N seeded trials
 sensitivity: ## Re-run every arm across the assumed-parameter grid
 	$(VENV)/python -m concerto.cli sensitivity
 
+frontier: ## Sweep the reserve block, the purchase cap, the cleared share and the nights
+	$(VENV)/python -m concerto.cli frontier
+
+calibrate: ## Refit the one free parameter and publish the sweep it was fitted on
+	$(VENV)/python -m concerto.cli calibrate
+
 ledger: ## Cardano enforcement model: what the validator holds, what leaks around it
 	$(VENV)/python -m concerto.cli ledger
 
 report: ## Render artifacts/results.html and docs/RESULTS.md
 	$(VENV)/python scripts/build_report.py
 
-all: lint test simulate sensitivity ledger report ## Everything, from a fixed seed
+all: lint test simulate sensitivity frontier calibrate ledger report ## Everything, from a fixed seed
 
 clean:
 	rm -rf artifacts/*.json artifacts/results.html

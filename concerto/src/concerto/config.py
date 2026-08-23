@@ -180,6 +180,13 @@ class Arm:
     transfer: str = "open"  # open | capped | bound
     # Share of the house sold at a market-clearing price rather than face.
     clearing_share: float = 0.0
+    # Share of the *face-priced* seats drawn by open lottery among everyone who
+    # registered, ignoring the arm's rule. Only meaningful under a merit rule:
+    # an affinity cut is absolute, so a fan below it has no chance at all rather
+    # than a small one, and this is the knob that gives it back.
+    # `frontier.reserve_curve` is what sets it -- 20% was asserted in the first
+    # draft of the policy document and measured afterwards.
+    reserve_share: float = 0.0
     note: str = ""
 
 
@@ -276,12 +283,14 @@ ARMS: tuple[Arm, ...] = (
         false_reject=0.04,
         transfer="bound",
         clearing_share=0.15,
-        note="The best mechanism in the set, and not the one to ship first: "
-        "affinity-rationed at face and unresellable for 85% of the house, the "
-        "remaining 15% priced at what it will bear so the artist's upside goes "
-        "to the artist rather than a broker. Bound tickets are restricted by law "
-        "in several US states -- see docs/POLICY.md -- so the shippable default "
-        "is `capped`, which is legal everywhere and gets most of the way.",
+        note="The best mechanism in the set, and not the one to ship first. "
+        "Affinity-rationed at face and unresellable for 85% of the house; the "
+        "remaining 15% priced at what it will bear, so the artist's upside goes "
+        "to the artist rather than a broker. 15% is a judgement, not an optimum "
+        "-- `concerto frontier` shows the clearing curve has no knee, and that "
+        "this share buys $63 a seat while leaving 89% of low-income access and "
+        "all superfan access intact. Bound tickets are also restricted by law in "
+        "several US states, so the shippable default is `capped`.",
     ),
 )
 

@@ -55,7 +55,7 @@
        text-wrap: balance; }
   h2 { font-size: 1.3rem; letter-spacing: -0.012em; margin: 3.2rem 0 .8rem;
        padding-top: 1.4rem; border-top: 1px solid var(--hairline); text-wrap: balance; }
-  h3 { font-size: 1.02rem; margin: 2rem 0 .5rem; color: var(--ink-soft); }
+  h3 { font-size: 1.02rem; margin: 2rem 0 .5rem; color: var(--ink_soft); }
   p { margin: 0 0 1rem; color: var(--ink_soft); }
   .lede { font-size: 1.1rem; color: var(--muted); margin-bottom: 2rem; }
   .key { background: var(--raised); border: 1px solid var(--hairline); border-left: 3px solid var(--fan);
@@ -130,6 +130,76 @@ claim below was written down before the grid ran, and tested in every one of
 180 cells spanning demand, broker cost convexity, off-platform leakage and the
 cost of forging a listening history.</p>
 <div class='scroll'><table><thead><tr><th>Claim, written before the grid ran</th><th>Cells</th><th></th><th>Where it fails</th></tr></thead><tbody><tr><th scope='row'>Verified fan takes less of the house than an open queue</th><td>180/180</td><td class='good'>survives</td><td class='muted'></td></tr><tr><th scope='row'>Capping resale beats hardening identity, on broker capture</th><td>180/180</td><td class='good'>survives</td><td class='muted'></td></tr><tr><th scope='row'>Market clearing leaves brokers less of the house than any face-price arm</th><td>180/180</td><td class='good'>survives</td><td class='muted'></td></tr><tr><th scope='row'>Market clearing serves the bottom income quartile worse than the capped arm</th><td>180/180</td><td class='good'>survives</td><td class='muted'></td></tr><tr><th scope='row'>Affinity rationing serves superfans better than every price-rationed arm</th><td>177/180</td><td class='warn'>breaks</td><td class='muted'>demand 15–15x, leak 0.65–0.90</td></tr><tr><th scope='row'>...and it only holds once resale is closed as well</th><td>180/180</td><td class='good'>survives</td><td class='muted'></td></tr><tr><th scope='row'>No arm gets the median fan in at close to face once demand is hot</th><td>180/180</td><td class='good'>survives</td><td class='muted'></td></tr></tbody></table></div>
+
+<h2>The intervention that is not a policy</h2>
+<p>Total demand held fixed, the same queue that ships today, the room played more
+than once. Nothing about the allocation rule changes across these points — and one
+extra night moves what the average fan pays about as far as the entire verified-fan
+identity apparatus does, while doubling what the artist takes rather than wrongly
+rejecting 4% of applicants.</p>
+<svg viewBox="0 0 680 320" width="680" height="320" role="img" aria-label="What a fan pays as more nights are played" class="chart"><line x1="58" y1="274.0" x2="530" y2="274.0" class="grid"/><text x="48" y="278.0" class="tick" text-anchor="end">1.0x</text><line x1="58" y1="188.3" x2="530" y2="188.3" class="grid"/><text x="48" y="192.3" class="tick" text-anchor="end">1.5x</text><line x1="58" y1="102.6" x2="530" y2="102.6" class="grid"/><text x="48" y="106.6" class="tick" text-anchor="end">2.0x</text><line x1="58" y1="147.7" x2="530" y2="147.7" stroke="var(--broker)" stroke-width="1.5" stroke-dasharray="5 4"/><text x="538" y="151.7" class="plabel" fill="var(--broker)">verified fan</text><polyline points="58.0,46.0 125.4,144.8 192.9,185.5 260.3,203.8 395.1,220.1 530.0,227.7" fill="none" stroke="var(--fan)" stroke-width="2.5"/><g class="dot"><title>1 night(s): 8.00x oversubscribed, fan pays 2.33x face, brokers take 61.1%, 4.9% of low-income demand served</title><circle cx="58.0" cy="46.0" r="5" fill="var(--fan)"/></g><text x="58.0" y="294" class="tick" text-anchor="middle">1</text><g class="dot"><title>2 night(s): 4.00x oversubscribed, fan pays 1.75x face, brokers take 53.2%, 11.7% of low-income demand served</title><circle cx="125.4" cy="144.8" r="5" fill="var(--fan)"/></g><text x="125.4" y="294" class="tick" text-anchor="middle">2</text><g class="dot"><title>3 night(s): 2.67x oversubscribed, fan pays 1.52x face, brokers take 38.9%, 22.9% of low-income demand served</title><circle cx="192.9" cy="185.5" r="5" fill="var(--fan)"/></g><text x="192.9" y="294" class="tick" text-anchor="middle">3</text><g class="dot"><title>4 night(s): 2.00x oversubscribed, fan pays 1.41x face, brokers take 25.8%, 37.2% of low-income demand served</title><circle cx="260.3" cy="203.8" r="5" fill="var(--fan)"/></g><text x="260.3" y="294" class="tick" text-anchor="middle">4</text><g class="dot"><title>6 night(s): 1.33x oversubscribed, fan pays 1.31x face, brokers take 9.1%, 68.2% of low-income demand served</title><circle cx="395.1" cy="220.1" r="5" fill="var(--fan)"/></g><text x="395.1" y="294" class="tick" text-anchor="middle">6</text><g class="dot"><title>8 night(s): 1.00x oversubscribed, fan pays 1.27x face, brokers take 0.0%, 99.9% of low-income demand served</title><circle cx="530.0" cy="227.7" r="5" fill="var(--fan)"/></g><text x="530.0" y="294" class="tick" text-anchor="middle">8</text><text x="294" y="312" class="axis" text-anchor="middle">nights played, with total demand held fixed &#8594;</text></svg>
+<div class="scroll"><table><thead><tr><th>Nights</th><th>Oversubscribed</th>
+<th>Fan pays</th><th>Broker</th><th>At face</th><th>Low income</th>
+<th>Artist</th><th>Burned on bots</th></tr></thead><tbody>
+<tr><th scope='row'>1</th><td>8.00x</td><td>2.33x</td><td>61.1%</td><td>35.8%</td><td>4.9%</td><td>1.00x</td><td>$146,463</td></tr><tr><th scope='row'>2</th><td>4.00x</td><td>1.75x</td><td>53.2%</td><td>39.8%</td><td>11.7%</td><td>2.00x</td><td>$88,632</td></tr><tr><th scope='row'>3</th><td>2.67x</td><td>1.52x</td><td>38.9%</td><td>49.5%</td><td>22.9%</td><td>3.00x</td><td>$36,165</td></tr><tr><th scope='row'>4</th><td>2.00x</td><td>1.41x</td><td>25.8%</td><td>59.0%</td><td>37.2%</td><td>4.00x</td><td>$14,093</td></tr><tr><th scope='row'>6</th><td>1.33x</td><td>1.31x</td><td>9.1%</td><td>71.4%</td><td>68.2%</td><td>6.00x</td><td>$2,045</td></tr><tr><th scope='row'>8</th><td>1.00x</td><td>1.27x</td><td>0.0%</td><td>99.9%</td><td>99.9%</td><td>7.99x</td><td>$0</td></tr>
+</tbody></table></div>
+
+<h2>Three knobs, priced</h2>
+<p>The policy document recommended holding 20% of the house back for an open draw,
+selling 15% at a clearing price, and setting the purchase cap at party size —
+before any of the three had been measured. One turned out right for a reason that
+was not the reason given, one turned out to have no optimum at all, and one turned
+out to be conditional on something the assertion never mentioned.</p>
+
+<h3>Holding seats back for an open draw</h3>
+<p>Affinity rationing serves 96% of
+superfan demand and <strong>0.0%</strong> of
+casual demand — a merit cut is absolute, so a fan one place below it has no chance
+at all rather than a small one. Superfan access is completely flat until
+20% is reserved, because top-decile demand
+does not fill the house: the reserve is free until it eats into the slack, and
+roughly one-for-one after that.</p>
+<svg viewBox="0 0 680 300" width="680" height="300" role="img" aria-label="Superfan and casual access against the reserved share" class="chart"><line x1="58" y1="254.0" x2="550" y2="254.0" class="grid"/><text x="48" y="258.0" class="tick" text-anchor="end">0%</text><line x1="58" y1="196.0" x2="550" y2="196.0" class="grid"/><text x="48" y="200.0" class="tick" text-anchor="end">25%</text><line x1="58" y1="138.0" x2="550" y2="138.0" class="grid"/><text x="48" y="142.0" class="tick" text-anchor="end">50%</text><line x1="58" y1="80.0" x2="550" y2="80.0" class="grid"/><text x="48" y="84.0" class="tick" text-anchor="end">75%</text><line x1="58" y1="22.0" x2="550" y2="22.0" class="grid"/><text x="48" y="26.0" class="tick" text-anchor="end">100%</text><polyline points="58.0,31.3 82.6,31.3 107.2,31.3 156.4,31.3 205.6,49.9 304.0,103.4 427.0,166.3 550.0,225.0" fill="none" stroke="var(--artist)" stroke-width="2.5"/><text x="559.0" y="229.0" class="plabel" fill="var(--artist)">superfans</text><g class="dot"><title>0% reserved — superfans: 96.0% of demand served</title><circle cx="58.0" cy="31.3" r="4" fill="var(--artist)"/></g><g class="dot"><title>5% reserved — superfans: 96.0% of demand served</title><circle cx="82.6" cy="31.3" r="4" fill="var(--artist)"/></g><g class="dot"><title>10% reserved — superfans: 96.0% of demand served</title><circle cx="107.2" cy="31.3" r="4" fill="var(--artist)"/></g><g class="dot"><title>20% reserved — superfans: 96.0% of demand served</title><circle cx="156.4" cy="31.3" r="4" fill="var(--artist)"/></g><g class="dot"><title>30% reserved — superfans: 88.0% of demand served</title><circle cx="205.6" cy="49.9" r="4" fill="var(--artist)"/></g><g class="dot"><title>50% reserved — superfans: 64.9% of demand served</title><circle cx="304.0" cy="103.4" r="4" fill="var(--artist)"/></g><g class="dot"><title>75% reserved — superfans: 37.8% of demand served</title><circle cx="427.0" cy="166.3" r="4" fill="var(--artist)"/></g><g class="dot"><title>100% reserved — superfans: 12.5% of demand served</title><circle cx="550.0" cy="225.0" r="4" fill="var(--artist)"/></g><polyline points="58.0,254.0 82.6,252.3 107.2,250.7 156.4,247.5 205.6,244.4 304.0,238.5 427.0,231.5 550.0,225.0" fill="none" stroke="var(--fan)" stroke-width="2.5"/><text x="559.0" y="229.0" class="plabel" fill="var(--fan)">casual fans</text><g class="dot"><title>0% reserved — casual fans: 0.0% of demand served</title><circle cx="58.0" cy="254.0" r="4" fill="var(--fan)"/></g><g class="dot"><title>5% reserved — casual fans: 0.7% of demand served</title><circle cx="82.6" cy="252.3" r="4" fill="var(--fan)"/></g><g class="dot"><title>10% reserved — casual fans: 1.4% of demand served</title><circle cx="107.2" cy="250.7" r="4" fill="var(--fan)"/></g><g class="dot"><title>20% reserved — casual fans: 2.8% of demand served</title><circle cx="156.4" cy="247.5" r="4" fill="var(--fan)"/></g><g class="dot"><title>30% reserved — casual fans: 4.1% of demand served</title><circle cx="205.6" cy="244.4" r="4" fill="var(--fan)"/></g><g class="dot"><title>50% reserved — casual fans: 6.7% of demand served</title><circle cx="304.0" cy="238.5" r="4" fill="var(--fan)"/></g><g class="dot"><title>75% reserved — casual fans: 9.7% of demand served</title><circle cx="427.0" cy="231.5" r="4" fill="var(--fan)"/></g><g class="dot"><title>100% reserved — casual fans: 12.5% of demand served</title><circle cx="550.0" cy="225.0" r="4" fill="var(--fan)"/></g><text x="58.0" y="274" class="tick" text-anchor="middle">0%</text><text x="181.0" y="274" class="tick" text-anchor="middle">25%</text><text x="304.0" y="274" class="tick" text-anchor="middle">50%</text><text x="427.0" y="274" class="tick" text-anchor="middle">75%</text><text x="550.0" y="274" class="tick" text-anchor="middle">100%</text><text x="304" y="292" class="axis" text-anchor="middle">share of face seats held back for an open draw &#8594;</text></svg>
+<p class="muted">At 20% reserved, casual fans get
+2.8% of their demand against
+12.5% under a pure lottery — about a fifth of the
+way back, not a restoration.</p>
+
+<h3>How tight to set the purchase cap</h3>
+<p>Tightening the cap from 8 to 2 truncates
+20.1% of family ticket demand either way — the same families,
+the same parties split. What it buys depends entirely on whether the resale
+margin is still open, which is why this sweep runs against two arms. A single-arm
+version would have produced a confident number and a coin-flip as to which of two
+contradictory conclusions got published.</p>
+<div class="scroll"><table><thead><tr><th>Cap</th>
+<th>Family demand cut</th><th>Broker takes (open queue)</th>
+<th>Broker takes (capped exchange)</th></tr></thead><tbody>
+<tr><th scope='row'>1</th><td>56.1%</td><td>18.8%</td><td>0.5%</td></tr><tr><th scope='row'>2</th><td>20.1%</td><td>28.6%</td><td>0.8%</td></tr><tr><th scope='row'>3</th><td>7.0%</td><td>36.9%</td><td>1.2%</td></tr><tr><th scope='row'>4</th><td>0.0%</td><td>43.7%</td><td>1.8%</td></tr><tr><th scope='row'>6</th><td>0.0%</td><td>54.1%</td><td>3.2%</td></tr><tr><th scope='row'>8</th><td>0.0%</td><td>61.1%</td><td>4.5%</td></tr>
+</tbody></table></div>
+<div class="key">
+<p>Going 8 &#8594; 2 on an open queue costs 20.1% of family
+demand and saves <strong>32.5%</strong> of the house from
+brokers — 0.6 points spent per point saved, which
+is worth it. On the capped exchange the identical cost saves
+<strong>3.8%</strong>, at
+5.4 points per point. Cap tightly while the
+exchange is open; cap at party size once it is closed.</p>
+</div>
+
+<h3>Selling part of the house at a clearing price</h3>
+<div class="scroll"><table><thead><tr><th>Cleared</th><th>Artist/seat</th>
+<th>Fan pays</th><th>Low income</th><th>Access kept</th>
+<th>Superfans</th></tr></thead><tbody>
+<tr><th scope='row'>0%</th><td>$95</td><td>1.27x</td><td>12.5%</td><td>100%</td><td>96.0%</td></tr><tr><th scope='row'>5%</th><td>$127</td><td>1.70x</td><td>12.0%</td><td>96%</td><td>96.0%</td></tr><tr><th scope='row'>10%</th><td>$144</td><td>1.93x</td><td>11.5%</td><td>93%</td><td>96.0%</td></tr><tr><th scope='row'>15%</th><td>$158</td><td>2.11x</td><td>11.0%</td><td>89%</td><td>96.0%</td></tr><tr><th scope='row'>25%</th><td>$177</td><td>2.36x</td><td>10.1%</td><td>81%</td><td>96.0%</td></tr><tr><th scope='row'>40%</th><td>$196</td><td>2.62x</td><td>8.4%</td><td>67%</td><td>85.4%</td></tr><tr><th scope='row'>60%</th><td>$212</td><td>2.83x</td><td>5.9%</td><td>48%</td><td>64.6%</td></tr><tr><th scope='row'>100%</th><td>$224</td><td>3.00x</td><td>0.0%</td><td>0%</td><td>22.2%</td></tr>
+</tbody></table></div>
+<div class="key">
+<p><strong>This curve has no knee.</strong> Revenue gained per point of low-income
+access lost falls monotonically from the very first seat, so the sweep does not
+identify an optimum — it prices a choice. Any share picked here is a judgement
+about what artist revenue is worth, and has to be defended as one rather than as
+a discovered optimum.</p>
+</div>
 
 <h2>What the chain can enforce</h2>
 <p>A Cardano validator can refuse any transfer, cap any resale price and take a royalty on

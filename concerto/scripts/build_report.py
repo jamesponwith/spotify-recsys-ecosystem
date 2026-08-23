@@ -259,6 +259,121 @@ def contention_chart(rows: list[dict], *, width: int = 680, height: int = 300) -
     return "".join(parts)
 
 
+def nights_chart(
+    rows: list[dict], reference: float, ref_label: str, *, width: int = 680, height: int = 320
+) -> str:
+    """What a fan pays as the city is played more times, against a policy line.
+
+    The reference rule is the whole point of the chart: it puts the entire
+    verified-fan apparatus on the same axis as "book the room twice" and lets
+    the reader see they land in the same place.
+    """
+    left, right, top, bottom = 58, 150, 22, 46
+    pw, ph = width - left - right, height - top - bottom
+    xs = [r["nights"] for r in rows]
+    ys = [r["price_multiple"] for r in rows]
+    x0, x1 = min(xs), max(xs)
+    y0, y1 = 1.0, max(max(ys), reference) * 1.06
+
+    def px(v: float) -> float:
+        return left + (v - x0) / (x1 - x0) * pw
+
+    def py(v: float) -> float:
+        return top + ph - (v - y0) / (y1 - y0) * ph
+
+    parts = [
+        f'<svg viewBox="0 0 {width} {height}" width="{width}" height="{height}" '
+        f'role="img" aria-label="What a fan pays as more nights are played" class="chart">'
+    ]
+    for tick in (1.0, 1.5, 2.0, 2.5, 3.0):
+        if y0 <= tick <= y1:
+            parts.append(
+                f'<line x1="{left}" y1="{py(tick):.1f}" x2="{left + pw}" y2="{py(tick):.1f}" class="grid"/>'
+            )
+            parts.append(
+                f'<text x="{left - 10}" y="{py(tick) + 4:.1f}" class="tick" text-anchor="end">{tick:.1f}x</text>'
+            )
+    parts.append(
+        f'<line x1="{left}" y1="{py(reference):.1f}" x2="{left + pw}" y2="{py(reference):.1f}" '
+        f'stroke="var(--broker)" stroke-width="1.5" stroke-dasharray="5 4"/>'
+    )
+    parts.append(
+        f'<text x="{left + pw + 8}" y="{py(reference) + 4:.1f}" class="plabel" '
+        f'fill="var(--broker)">{esc(ref_label)}</text>'
+    )
+    pts = " ".join(f"{px(x):.1f},{py(y):.1f}" for x, y in zip(xs, ys, strict=True))
+    parts.append(f'<polyline points="{pts}" fill="none" stroke="var(--fan)" stroke-width="2.5"/>')
+    for r, x, y in zip(rows, xs, ys, strict=True):
+        parts.append(
+            f'<g class="dot"><title>{r["nights"]} night(s): {r["demand_multiple"]:.2f}x '
+            f"oversubscribed, fan pays {y:.2f}x face, brokers take "
+            f"{r['broker_capture']:.1%}, {r['low_income_served']:.1%} of low-income "
+            f'demand served</title><circle cx="{px(x):.1f}" cy="{py(y):.1f}" r="5" '
+            f'fill="var(--fan)"/></g>'
+        )
+        parts.append(
+            f'<text x="{px(x):.1f}" y="{top + ph + 20}" class="tick" text-anchor="middle">{r["nights"]}</text>'
+        )
+    parts.append(
+        f'<text x="{left + pw / 2:.0f}" y="{height - 8}" class="axis" text-anchor="middle">'
+        f"nights played, with total demand held fixed &#8594;</text>"
+    )
+    parts.append("</svg>")
+    return "".join(parts)
+
+
+def reserve_chart(rows: list[dict], *, width: int = 680, height: int = 300) -> str:
+    """Superfan access against casual access as seats are held back for a draw."""
+    left, right, top, bottom = 58, 130, 22, 46
+    pw, ph = width - left - right, height - top - bottom
+    x0, x1, y0, y1 = 0.0, 1.0, 0.0, 1.0
+
+    def px(v: float) -> float:
+        return left + (v - x0) / (x1 - x0) * pw
+
+    def py(v: float) -> float:
+        return top + ph - (v - y0) / (y1 - y0) * ph
+
+    parts = [
+        f'<svg viewBox="0 0 {width} {height}" width="{width}" height="{height}" '
+        f'role="img" aria-label="Superfan and casual access against the reserved share" class="chart">'
+    ]
+    for tick in (0.0, 0.25, 0.5, 0.75, 1.0):
+        parts.append(
+            f'<line x1="{left}" y1="{py(tick):.1f}" x2="{left + pw}" y2="{py(tick):.1f}" class="grid"/>'
+        )
+        parts.append(
+            f'<text x="{left - 10}" y="{py(tick) + 4:.1f}" class="tick" text-anchor="end">{tick:.0%}</text>'
+        )
+    for key, colour, label in (
+        ("superfan_served", "var(--artist)", "superfans"),
+        ("casual_served", "var(--fan)", "casual fans"),
+    ):
+        pts = " ".join(f"{px(r['reserve_share']):.1f},{py(r[key]):.1f}" for r in rows)
+        parts.append(f'<polyline points="{pts}" fill="none" stroke="{colour}" stroke-width="2.5"/>')
+        last = rows[-1]
+        parts.append(
+            f'<text x="{px(last["reserve_share"]) + 9:.1f}" y="{py(last[key]) + 4:.1f}" '
+            f'class="plabel" fill="{colour}">{label}</text>'
+        )
+        for r in rows:
+            parts.append(
+                f'<g class="dot"><title>{r["reserve_share"]:.0%} reserved — {label}: '
+                f"{r[key]:.1%} of demand served</title>"
+                f'<circle cx="{px(r["reserve_share"]):.1f}" cy="{py(r[key]):.1f}" r="4" fill="{colour}"/></g>'
+            )
+    for share in (0.0, 0.25, 0.5, 0.75, 1.0):
+        parts.append(
+            f'<text x="{px(share):.1f}" y="{top + ph + 20}" class="tick" text-anchor="middle">{share:.0%}</text>'
+        )
+    parts.append(
+        f'<text x="{left + pw / 2:.0f}" y="{height - 8}" class="axis" text-anchor="middle">'
+        f"share of face seats held back for an open draw &#8594;</text>"
+    )
+    parts.append("</svg>")
+    return "".join(parts)
+
+
 # --------------------------------------------------------------------------
 # page
 # --------------------------------------------------------------------------
@@ -321,7 +436,7 @@ CSS = """
        text-wrap: balance; }
   h2 { font-size: 1.3rem; letter-spacing: -0.012em; margin: 3.2rem 0 .8rem;
        padding-top: 1.4rem; border-top: 1px solid var(--hairline); text-wrap: balance; }
-  h3 { font-size: 1.02rem; margin: 2rem 0 .5rem; color: var(--ink-soft); }
+  h3 { font-size: 1.02rem; margin: 2rem 0 .5rem; color: var(--ink_soft); }
   p { margin: 0 0 1rem; color: var(--ink_soft); }
   .lede { font-size: 1.1rem; color: var(--muted); margin-bottom: 2rem; }
   .key { background: var(--raised); border: 1px solid var(--hairline); border-left: 3px solid var(--fan);
@@ -360,7 +475,7 @@ CSS = """
 """
 
 
-def build_html(sim: dict, sens: dict, led: dict, cal: dict) -> str:
+def build_html(sim: dict, sens: dict, led: dict, cal: dict, fro: dict) -> str:
     arms = sim["arms"]
     scn = sim["scenario"]
     by = {a["arm"]: a for a in arms}
@@ -370,6 +485,15 @@ def build_html(sim: dict, sens: dict, led: dict, cal: dict) -> str:
     rungs = led["leak_ladder"]["rungs"]
     cont = led["contention"]["rows"]
     hundred = next(r for r in cont if r["shards"] == 100)
+    nights_rows = fro["nights"]["rows"]
+    reserve_rows = fro["reserve"]["rows"]
+    clearing_rows = fro["clearing"]["rows"]
+
+    cap_q = fro["cap"]["arms"]["queue"]
+    cap_c = fro["cap"]["arms"]["capped"]
+
+    def reserve_at(share: float) -> dict:
+        return min(reserve_rows, key=lambda r: abs(r["reserve_share"] - share))
 
     return f"""<title>What Stops a Scalper</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -412,6 +536,99 @@ claim below was written down before the grid ran, and tested in every one of
 {sens["n_cells"]} cells spanning demand, broker cost convexity, off-platform leakage and the
 cost of forging a listening history.</p>
 {claims_table(sens["claims"])}
+
+<h2>The intervention that is not a policy</h2>
+<p>Total demand held fixed, the same queue that ships today, the room played more
+than once. Nothing about the allocation rule changes across these points — and one
+extra night moves what the average fan pays about as far as the entire verified-fan
+identity apparatus does, while doubling what the artist takes rather than wrongly
+rejecting {by["verified"]["false_rejected"]:.0%} of applicants.</p>
+{nights_chart(nights_rows, by["verified"]["price_multiple"], "verified fan")}
+<div class="scroll"><table><thead><tr><th>Nights</th><th>Oversubscribed</th>
+<th>Fan pays</th><th>Broker</th><th>At face</th><th>Low income</th>
+<th>Artist</th><th>Burned on bots</th></tr></thead><tbody>
+{
+        "".join(
+            f"<tr><th scope='row'>{r['nights']}</th><td>{r['demand_multiple']:.2f}x</td>"
+            f"<td>{r['price_multiple']:.2f}x</td><td>{r['broker_capture']:.1%}</td>"
+            f"<td>{r['face_access']:.1%}</td><td>{r['low_income_served']:.1%}</td>"
+            f"<td>{r['artist_vs_one_night']:.2f}x</td>"
+            f"<td>${r['identity_burn_total']:,.0f}</td></tr>"
+            for r in nights_rows
+        )
+    }
+</tbody></table></div>
+
+<h2>Three knobs, priced</h2>
+<p>The policy document recommended holding 20% of the house back for an open draw,
+selling 15% at a clearing price, and setting the purchase cap at party size —
+before any of the three had been measured. One turned out right for a reason that
+was not the reason given, one turned out to have no optimum at all, and one turned
+out to be conditional on something the assertion never mentioned.</p>
+
+<h3>Holding seats back for an open draw</h3>
+<p>Affinity rationing serves {by["affinity_bound"]["superfan_served"]:.0%} of
+superfan demand and <strong>{by["affinity_bound"]["casual_served"]:.1%}</strong> of
+casual demand — a merit cut is absolute, so a fan one place below it has no chance
+at all rather than a small one. Superfan access is completely flat until
+{fro["reserve"]["knee"]["reserve_share"]:.0%} is reserved, because top-decile demand
+does not fill the house: the reserve is free until it eats into the slack, and
+roughly one-for-one after that.</p>
+{reserve_chart(reserve_rows)}
+<p class="muted">At 20% reserved, casual fans get
+{reserve_at(0.20)["casual_served"]:.1%} of their demand against
+{reserve_rows[-1]["casual_served"]:.1%} under a pure lottery — about a fifth of the
+way back, not a restoration.</p>
+
+<h3>How tight to set the purchase cap</h3>
+<p>Tightening the cap from 8 to 2 truncates
+{cap_q["party_cost"]:.1%} of family ticket demand either way — the same families,
+the same parties split. What it buys depends entirely on whether the resale
+margin is still open, which is why this sweep runs against two arms. A single-arm
+version would have produced a confident number and a coin-flip as to which of two
+contradictory conclusions got published.</p>
+<div class="scroll"><table><thead><tr><th>Cap</th>
+<th>Family demand cut</th><th>Broker takes (open queue)</th>
+<th>Broker takes (capped exchange)</th></tr></thead><tbody>
+{
+        "".join(
+            f"<tr><th scope='row'>{q['cap']}</th><td>{q['party_truncated']:.1%}</td>"
+            f"<td>{q['broker_capture']:.1%}</td><td>{c['broker_capture']:.1%}</td></tr>"
+            for q, c in zip(cap_q["rows"], cap_c["rows"], strict=True)
+        )
+    }
+</tbody></table></div>
+<div class="key">
+<p>Going 8 &#8594; 2 on an open queue costs {cap_q["party_cost"]:.1%} of family
+demand and saves <strong>{cap_q["capture_saved"]:.1%}</strong> of the house from
+brokers — {cap_q["cost_per_point_saved"]:.1f} points spent per point saved, which
+is worth it. On the capped exchange the identical cost saves
+<strong>{cap_c["capture_saved"]:.1%}</strong>, at
+{cap_c["cost_per_point_saved"]:.1f} points per point. Cap tightly while the
+exchange is open; cap at party size once it is closed.</p>
+</div>
+
+<h3>Selling part of the house at a clearing price</h3>
+<div class="scroll"><table><thead><tr><th>Cleared</th><th>Artist/seat</th>
+<th>Fan pays</th><th>Low income</th><th>Access kept</th>
+<th>Superfans</th></tr></thead><tbody>
+{
+        "".join(
+            f"<tr><th scope='row'>{r['clearing_share']:.0%}</th>"
+            f"<td>${r['artist_per_seat']:,.0f}</td><td>{r['price_multiple']:.2f}x</td>"
+            f"<td>{r['low_income_served']:.1%}</td><td>{r['poor_access_kept']:.0%}</td>"
+            f"<td>{r['superfan_served']:.1%}</td></tr>"
+            for r in clearing_rows
+        )
+    }
+</tbody></table></div>
+<div class="key">
+<p><strong>This curve has no knee.</strong> Revenue gained per point of low-income
+access lost falls monotonically from the very first seat, so the sweep does not
+identify an optimum — it prices a choice. Any share picked here is a judgement
+about what artist revenue is worth, and has to be defended as one rather than as
+a discovered optimum.</p>
+</div>
 
 <h2>What the chain can enforce</h2>
 <p>A Cardano validator can refuse any transfer, cap any resale price and take a royalty on
@@ -457,7 +674,7 @@ Every figure is read from the JSON the simulation wrote.</footer>
 </main>"""
 
 
-def build_markdown(sim: dict, sens: dict, led: dict, cal: dict) -> str:
+def build_markdown(sim: dict, sens: dict, led: dict, cal: dict, fro: dict) -> str:
     arms = sim["arms"]
     scn = sim["scenario"]
     by = {a["arm"]: a for a in arms}
@@ -497,6 +714,54 @@ def build_markdown(sim: dict, sens: dict, led: dict, cal: dict) -> str:
         )
 
     q, b, c = by["queue"], by["affinity_bound"], by["clearing"]
+    nights_rows = fro["nights"]["rows"]
+    reserve_rows = fro["reserve"]["rows"]
+    clearing_rows = fro["clearing"]["rows"]
+    n2 = next(r for r in nights_rows if r["nights"] == 2)
+    n_clear = next(r for r in nights_rows if r["broker_capture"] < 0.01)
+    res20 = min(reserve_rows, key=lambda r: abs(r["reserve_share"] - 0.20))
+
+    nights = [
+        "| Nights | Oversubscribed | Fan pays | Broker | At face | Low income | Artist | Burned on bots |",
+        "|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for r in nights_rows:
+        nights.append(
+            f"| {r['nights']} | {r['demand_multiple']:.2f}x | {r['price_multiple']:.2f}x | "
+            f"{r['broker_capture']:.1%} | {r['face_access']:.1%} | "
+            f"{r['low_income_served']:.1%} | {r['artist_vs_one_night']:.2f}x | "
+            f"${r['identity_burn_total']:,.0f} |"
+        )
+
+    reserve = ["| Reserved | Superfans | Casual fans | Low income |", "|---:|---:|---:|---:|"]
+    for r in reserve_rows:
+        reserve.append(
+            f"| {r['reserve_share']:.0%} | {r['superfan_served']:.1%} | "
+            f"{r['casual_served']:.1%} | {r['low_income_served']:.1%} |"
+        )
+
+    cq = fro["cap"]["arms"]["queue"]
+    cc = fro["cap"]["arms"]["capped"]
+    caps = [
+        "| Cap | Family demand cut | Broker takes (open queue) | Broker takes (capped exchange) |",
+        "|---:|---:|---:|---:|",
+    ]
+    for rq, rc in zip(cq["rows"], cc["rows"], strict=True):
+        caps.append(
+            f"| {rq['cap']} | {rq['party_truncated']:.1%} | "
+            f"{rq['broker_capture']:.1%} | {rc['broker_capture']:.1%} |"
+        )
+
+    clearing = [
+        "| Cleared | Artist/seat | Fan pays | Low income | Access kept | Superfans |",
+        "|---:|---:|---:|---:|---:|---:|",
+    ]
+    for r in clearing_rows:
+        clearing.append(
+            f"| {r['clearing_share']:.0%} | ${r['artist_per_seat']:,.0f} | "
+            f"{r['price_multiple']:.2f}x | {r['low_income_served']:.1%} | "
+            f"{r['poor_access_kept']:.0%} | {r['superfan_served']:.1%} |"
+        )
     return f"""# Results
 
 Generated by `make all` from seed {scn["seed"]}. Every number is read out of
@@ -536,6 +801,56 @@ identity checks, and holders turned away at the gate.
 
 {chr(10).join(claims)}
 
+## The intervention that is not a policy
+
+Total demand held fixed, the same queue that ships today, the room played more than
+once. No allocation rule changes across these rows.
+
+{chr(10).join(nights)}
+
+One extra night moves what the average fan pays to {n2["price_multiple"]:.2f}x face.
+The entire verified-fan identity apparatus moves it to
+{by["verified"]["price_multiple"]:.2f}x -- and costs {by["verified"]["false_rejected"]:.0%}
+of real applicants a wrongful rejection, where the second night doubles what the
+artist takes. Play the room {n_clear["nights"]} times and demand is met exactly:
+brokers take {n_clear["broker_capture"]:.1%}, {n_clear["face_access"]:.1%} of the
+house goes at face, and the ${nights_rows[0]["identity_burn_total"]:,.0f} burned on
+bot infrastructure at one night falls to nothing.
+
+## Three knobs, priced
+
+The policy document recommended a 20% open-draw reserve, a 15% cleared share and a
+purchase cap at party size, before any of the three had been measured.
+
+### Holding seats back for an open draw
+
+{chr(10).join(reserve)}
+
+Superfan access is flat until {fro["reserve"]["knee"]["reserve_share"]:.0%} is
+reserved -- top-decile demand does not fill the house, so the reserve is free until
+it eats the slack, and roughly one-for-one after. At 20% reserved, casual fans get
+{res20["casual_served"]:.1%} of their demand against {reserve_rows[-1]["casual_served"]:.1%}
+under a pure lottery: about a fifth of the way back, not a restoration.
+
+### How tight to set the purchase cap
+
+{chr(10).join(caps)}
+
+Going from a cap of 8 to a cap of 2 truncates {cq["party_cost"]:.1%} of family
+ticket demand either way. On an open queue that buys back {cq["capture_saved"]:.1%}
+of the house -- {cq["cost_per_point_saved"]:.1f} points spent per point saved,
+which is worth it. On the capped exchange the identical cost saves
+{cc["capture_saved"]:.1%}, at {cc["cost_per_point_saved"]:.1f} points per point.
+Cap tightly while the exchange is open; cap at party size once it is closed.
+
+### Selling part of the house at a clearing price
+
+{chr(10).join(clearing)}
+
+**This curve has no knee.** Revenue gained per point of low-income access lost falls
+monotonically from the first seat, so the sweep does not find an optimum -- it prices
+a choice.
+
 ## What the chain can enforce
 
 {chr(10).join(ladder)}
@@ -560,9 +875,10 @@ See [ARCHITECTURE.md](ARCHITECTURE.md), [CARDANO.md](CARDANO.md) and [POLICY.md]
 def main() -> int:
     sim, sens = load("simulation.json"), load("sensitivity.json")
     led, cal = load("ledger.json"), load("calibration.json")
-    (ARTIFACTS / "results.html").write_text(build_html(sim, sens, led, cal))
+    fro = load("frontier.json")
+    (ARTIFACTS / "results.html").write_text(build_html(sim, sens, led, cal, fro))
     DOCS.mkdir(exist_ok=True)
-    (DOCS / "RESULTS.md").write_text(build_markdown(sim, sens, led, cal))
+    (DOCS / "RESULTS.md").write_text(build_markdown(sim, sens, led, cal, fro))
     print(f"wrote {ARTIFACTS / 'results.html'} and {DOCS / 'RESULTS.md'}")
     return 0
 

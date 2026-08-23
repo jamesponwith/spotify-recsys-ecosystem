@@ -152,6 +152,71 @@ def ledger(seats: int = 0, buyers: int = 40_000) -> None:
 
 
 @app.command()
+def frontier(trials: int = 24) -> None:
+    """The three knobs the documents asserted a value for before measuring one."""
+    from .frontier import build
+    from .simulate import save
+
+    scn = Scenario()
+    report = build(scn, trials=trials)
+    save(report, "frontier.json")
+
+    res = report["reserve"]
+    table = Table(title="Holding face seats back for an open draw")
+    table.add_column("Reserved")
+    for col in ("Superfans", "Casual fans", "Low income", "Broker"):
+        table.add_column(col, justify="right")
+    for r in res["rows"]:
+        table.add_row(
+            f"{r['reserve_share']:.0%}",
+            f"{r['superfan_served']:.1%}",
+            f"{r['casual_served']:.1%}",
+            f"{r['low_income_served']:.1%}",
+            f"{r['broker_capture']:.1%}",
+        )
+    console.print(table)
+    console.print(
+        f"[dim]Superfan access is flat to {res['knee']['reserve_share']:.0%} — their demand "
+        f"does not fill the house, so the reserve is free until it does.[/dim]"
+    )
+
+    table = Table(title="Selling part of the house at a clearing price")
+    table.add_column("Cleared")
+    for col in ("Artist/seat", "Fan pays", "Low income", "Kept", "Superfans"):
+        table.add_column(col, justify="right")
+    for r in report["clearing"]["rows"]:
+        table.add_row(
+            f"{r['clearing_share']:.0%}",
+            f"${r['artist_per_seat']:,.0f}",
+            f"{r['price_multiple']:.2f}x",
+            f"{r['low_income_served']:.1%}",
+            f"{r['poor_access_kept']:.0%}",
+            f"{r['superfan_served']:.1%}",
+        )
+    console.print(table)
+
+    table = Table(title="Playing the city more than once, with demand held fixed")
+    table.add_column("Nights")
+    for col in ("Demand", "Fan pays", "Broker", "At face", "Low income", "Artist"):
+        table.add_column(col, justify="right")
+    for r in report["nights"]["rows"]:
+        table.add_row(
+            str(r["nights"]),
+            f"{r['demand_multiple']:.2f}x",
+            f"{r['price_multiple']:.2f}x",
+            f"{r['broker_capture']:.1%}",
+            f"{r['face_access']:.1%}",
+            f"{r['low_income_served']:.1%}",
+            f"{r['artist_vs_one_night']:.2f}x",
+        )
+    console.print(table)
+    console.print(
+        "[dim]No allocation rule changes across those rows. It is the same queue "
+        "that ships today, played more times.[/dim]"
+    )
+
+
+@app.command()
 def demo(left: str = "queue", right: str = "affinity_bound", trial: int = 0) -> None:
     """Follow twelve people across two policies."""
     from .demo import build

@@ -93,6 +93,14 @@ def summarise(outcome: Outcome, arm: Arm, scn: Scenario, pop: Population) -> dic
     want = pop.party.astype(np.float64)
     superfan_served = float(held[superfan].sum() / max(want[superfan].sum(), 1e-9))
 
+    # The other end of the affinity distribution, and the group affinity
+    # rationing costs. Under a lottery someone who found the artist last month
+    # has a small chance; under an absolute merit cut they have none. Reporting
+    # only `superfan_served` would show the benefit of merit rationing and hide
+    # what it is taken from.
+    casual = pop.affinity <= float(np.quantile(pop.affinity, 0.50))
+    casual_served = float(held[casual].sum() / max(want[casual].sum(), 1e-9))
+
     # The same question asked of money rather than fandom: bottom income
     # quartile. A clearing price is invisible in every metric above and is
     # extremely visible in this one.
@@ -139,6 +147,7 @@ def summarise(outcome: Outcome, arm: Arm, scn: Scenario, pop: Population) -> dic
         "leak_to_brokers": broker_profit / max(fan_outlay, 1e-9),
         # who was shut out
         "superfan_served": superfan_served,
+        "casual_served": casual_served,
         "low_income_served": poor_served,
         "admitted_affinity": float(np.average(pop.affinity, weights=held))
         if total_held > 0
@@ -194,6 +203,7 @@ AGGREGATE_KEYS = (
     "unit_margin",
     "leak_to_brokers",
     "superfan_served",
+    "casual_served",
     "low_income_served",
     "admitted_affinity",
     "admitted_income",

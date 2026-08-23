@@ -1,0 +1,409 @@
+{
+  "trials": 24,
+  "reserve": {
+    "arm": "affinity_bound",
+    "rows": [
+      {
+        "reserve_share": 0.0,
+        "superfan_served": 0.96,
+        "casual_served": 3.797036855294067e-05,
+        "low_income_served": 0.1245445806527707,
+        "broker_capture": 0.0002879179119304696,
+        "price_multiple": 1.2701485981816045,
+        "income_ratio": 1.0079219084480762
+      },
+      {
+        "reserve_share": 0.05,
+        "superfan_served": 0.96,
+        "casual_served": 0.007190488472113313,
+        "low_income_served": 0.12430567871534803,
+        "broker_capture": 0.00029801696891422534,
+        "price_multiple": 1.2701535719654107,
+        "income_ratio": 1.0087735236128683
+      },
+      {
+        "reserve_share": 0.1,
+        "superfan_served": 0.96,
+        "casual_served": 0.014204089011310941,
+        "low_income_served": 0.12422920362165091,
+        "broker_capture": 0.00035204724776298865,
+        "price_multiple": 1.2701827689746554,
+        "income_ratio": 1.0106333280458188
+      },
+      {
+        "reserve_share": 0.2,
+        "superfan_served": 0.96,
+        "casual_served": 0.027958181817195976,
+        "low_income_served": 0.12471535507952047,
+        "broker_capture": 0.00034754119445587397,
+        "price_multiple": 1.2701802981581098,
+        "income_ratio": 1.0099134520183097
+      },
+      {
+        "reserve_share": 0.3,
+        "superfan_served": 0.879671408225929,
+        "casual_served": 0.04134897307946678,
+        "low_income_served": 0.12474858517213366,
+        "broker_capture": 0.00037029296573092024,
+        "price_multiple": 1.2701928057874239,
+        "income_ratio": 1.0117189325876674
+      },
+      {
+        "reserve_share": 0.5,
+        "superfan_served": 0.6490260294534894,
+        "casual_served": 0.06694975859151582,
+        "low_income_served": 0.12478566978069923,
+        "broker_capture": 0.0003747632350620325,
+        "price_multiple": 1.2701947605037225,
+        "income_ratio": 1.011047044583802
+      },
+      {
+        "reserve_share": 0.75,
+        "superfan_served": 0.37807858049040194,
+        "casual_served": 0.09702197365603334,
+        "low_income_served": 0.12474264041507688,
+        "broker_capture": 0.00041960627556456975,
+        "price_multiple": 1.270219352553603,
+        "income_ratio": 1.0114579796356453
+      },
+      {
+        "reserve_share": 1.0,
+        "superfan_served": 0.12514553936620204,
+        "casual_served": 0.1251066973242565,
+        "low_income_served": 0.12510372560579347,
+        "broker_capture": 7.96144219103387e-05,
+        "price_multiple": 1.2700904539511673,
+        "income_ratio": 1.0010329811176917
+      }
+    ],
+    "knee": {
+      "reserve_share": 0.2,
+      "superfan_served": 0.96,
+      "casual_served": 0.027958181817195976
+    }
+  },
+  "cap": {
+    "arms": {
+      "queue": {
+        "rows": [
+          {
+            "cap": 1,
+            "party_truncated": 0.5610082411230563,
+            "broker_capture": 0.1879024463116397,
+            "broker_identities": 3436.132091395722,
+            "price_multiple": 1.6364304837863697,
+            "face_access": 0.7554886637552637,
+            "superfan_served": 0.14827105963116302,
+            "low_income_served": 0.10124995710559677,
+            "customer_harm": 0.5610082411230563
+          },
+          {
+            "cap": 2,
+            "party_truncated": 0.20105790323222494,
+            "broker_capture": 0.28600996404948004,
+            "broker_identities": 5413.588978550292,
+            "price_multiple": 1.967068965150003,
+            "face_access": 0.6779655731381661,
+            "superfan_served": 0.1633289460362474,
+            "low_income_served": 0.08911062277899658,
+            "customer_harm": 0.20105790323222494
+          },
+          {
+            "cap": 3,
+            "party_truncated": 0.06969954041411541,
+            "broker_capture": 0.36918372627473395,
+            "broker_identities": 6139.898436123721,
+            "price_multiple": 2.1273714657621867,
+            "face_access": 0.5965737450606187,
+            "superfan_served": 0.17320479192600388,
+            "low_income_served": 0.0788659904943328,
+            "customer_harm": 0.06969954041411541
+          },
+          {
+            "cap": 4,
+            "party_truncated": 0.0,
+            "broker_capture": 0.43660743491370696,
+            "broker_identities": 6554.74808602909,
+            "price_multiple": 2.2319931737848977,
+            "face_access": 0.530271790336197,
+            "superfan_served": 0.18139294301834816,
+            "low_income_served": 0.0704880301669577,
+            "customer_harm": 0.0
+          },
+          {
+            "cap": 6,
+            "party_truncated": 0.0,
+            "broker_capture": 0.5414090535346506,
+            "broker_identities": 6658.047888206577,
+            "price_multiple": 2.299846078280216,
+            "face_access": 0.42562426379743773,
+            "superfan_served": 0.1909891507248561,
+            "low_income_served": 0.057376011880239865,
+            "customer_harm": 0.0
+          },
+          {
+            "cap": 8,
+            "party_truncated": 0.0,
+            "broker_capture": 0.6111016196356404,
+            "broker_identities": 6646.792033725357,
+            "price_multiple": 2.330560652923569,
+            "face_access": 0.35763268433359946,
+            "superfan_served": 0.19617599993239457,
+            "low_income_served": 0.048656623789513576,
+            "customer_harm": 0.0
+          }
+        ],
+        "cost_per_point_saved": 0.6184652844124994,
+        "party_cost": 0.20105790323222494,
+        "capture_saved": 0.3250916555861603
+      },
+      "capped": {
+        "rows": [
+          {
+            "cap": 1,
+            "party_truncated": 0.5610082411230563,
+            "broker_capture": 0.004843193874303125,
+            "broker_identities": 69.37741798168337,
+            "price_multiple": 1.2801669188742382,
+            "face_access": 0.9931016485427491,
+            "superfan_served": 0.12633785839110143,
+            "low_income_served": 0.12407459385486375,
+            "customer_harm": 0.6010082411230563
+          },
+          {
+            "cap": 2,
+            "party_truncated": 0.20105790323222494,
+            "broker_capture": 0.00773457385583691,
+            "broker_identities": 101.11741448184314,
+            "price_multiple": 1.2877962316330238,
+            "face_access": 0.9907463676860259,
+            "superfan_served": 0.1269101645548905,
+            "low_income_served": 0.12384307730903786,
+            "customer_harm": 0.24105790323222495
+          },
+          {
+            "cap": 3,
+            "party_truncated": 0.06969954041411541,
+            "broker_capture": 0.012464759211037802,
+            "broker_identities": 127.10602767095571,
+            "price_multiple": 1.2960368661807147,
+            "face_access": 0.9855034329908828,
+            "superfan_served": 0.1280350690978083,
+            "low_income_served": 0.12346466596002982,
+            "customer_harm": 0.1096995404141154
+          },
+          {
+            "cap": 4,
+            "party_truncated": 0.0,
+            "broker_capture": 0.017896918536626723,
+            "broker_identities": 147.94778956577423,
+            "price_multiple": 1.3039311377850158,
+            "face_access": 0.9794503240504898,
+            "superfan_served": 0.12897961290550247,
+            "low_income_served": 0.12287453212974271,
+            "customer_harm": 0.04
+          },
+          {
+            "cap": 6,
+            "party_truncated": 0.0,
+            "broker_capture": 0.031541750339310455,
+            "broker_identities": 176.28265276007838,
+            "price_multiple": 1.3183008880654825,
+            "face_access": 0.9638706437791932,
+            "superfan_served": 0.13213041967938755,
+            "low_income_served": 0.12116725403107202,
+            "customer_harm": 0.04
+          },
+          {
+            "cap": 8,
+            "party_truncated": 0.0,
+            "broker_capture": 0.04530282481966272,
+            "broker_identities": 192.6484705313269,
+            "price_multiple": 1.3297119594074513,
+            "face_access": 0.9482349626029704,
+            "superfan_served": 0.13422610711353217,
+            "low_income_served": 0.11944558743571713,
+            "customer_harm": 0.04
+          }
+        ],
+        "cost_per_point_saved": 5.351803665968429,
+        "party_cost": 0.20105790323222494,
+        "capture_saved": 0.03756825096382581
+      }
+    }
+  },
+  "clearing": {
+    "arm": "affinity_bound",
+    "rows": [
+      {
+        "clearing_share": 0.0,
+        "artist_per_seat": 94.99999999999773,
+        "price_multiple": 1.2701485981816045,
+        "low_income_served": 0.1245445806527707,
+        "superfan_served": 0.96,
+        "face_access": 0.9997120820880455,
+        "income_ratio": 1.0079219084480762,
+        "poor_access_kept": 1.0
+      },
+      {
+        "clearing_share": 0.05,
+        "artist_per_seat": 126.89003210198348,
+        "price_multiple": 1.6963193765212903,
+        "low_income_served": 0.12001232461373573,
+        "superfan_served": 0.96,
+        "face_access": 0.9497873345935507,
+        "income_ratio": 1.2427115601506278,
+        "poor_access_kept": 0.963609367703675
+      },
+      {
+        "clearing_share": 0.1,
+        "artist_per_seat": 144.32554862550538,
+        "price_multiple": 1.9294047026778482,
+        "low_income_served": 0.11530946952507375,
+        "superfan_served": 0.96,
+        "face_access": 0.8999054820415676,
+        "income_ratio": 1.4032850823593475,
+        "poor_access_kept": 0.9258489524048873
+      },
+      {
+        "clearing_share": 0.15,
+        "artist_per_seat": 157.60610690647488,
+        "price_multiple": 2.10694479759186,
+        "low_income_served": 0.11034631363858162,
+        "superfan_served": 0.96,
+        "face_access": 0.8498842155009267,
+        "income_ratio": 1.5426270943192524,
+        "poor_access_kept": 0.885998516035204
+      },
+      {
+        "clearing_share": 0.25,
+        "artist_per_seat": 176.61918433015876,
+        "price_multiple": 2.3611196220979456,
+        "low_income_served": 0.10057995869184207,
+        "superfan_served": 0.96,
+        "face_access": 0.7498731884057825,
+        "income_ratio": 1.7744406323535138,
+        "poor_access_kept": 0.807581977189824
+      },
+      {
+        "clearing_share": 0.4,
+        "artist_per_seat": 195.98131023895144,
+        "price_multiple": 2.6199606737207497,
+        "low_income_served": 0.08380979143858702,
+        "superfan_served": 0.8544991873032779,
+        "face_access": 0.5999070573408853,
+        "income_ratio": 2.065767664566005,
+        "poor_access_kept": 0.6729300544376801
+      },
+      {
+        "clearing_share": 0.6,
+        "artist_per_seat": 211.67602916552855,
+        "price_multiple": 2.8297742846339404,
+        "low_income_served": 0.05946060192227579,
+        "superfan_served": 0.6464974401131139,
+        "face_access": 0.4000149653434118,
+        "income_ratio": 2.3907573838653726,
+        "poor_access_kept": 0.47742424126868654
+      },
+      {
+        "clearing_share": 1.0,
+        "artist_per_seat": 224.46333452495483,
+        "price_multiple": 3.0007203668073625,
+        "low_income_served": 0.0,
+        "superfan_served": 0.22183861640627098,
+        "face_access": 0.0,
+        "income_ratio": 2.934686681083025,
+        "poor_access_kept": 0.0
+      }
+    ]
+  },
+  "nights": {
+    "arm": "queue",
+    "rows": [
+      {
+        "nights": 1,
+        "demand_multiple": 8.0,
+        "seats": 4232,
+        "markup": 3.0050978062258182,
+        "price_multiple": 2.330560652923569,
+        "broker_capture": 0.6111016196356404,
+        "face_access": 0.35763268433359946,
+        "superfan_served": 0.19617599993239457,
+        "low_income_served": 0.048656623789513576,
+        "artist_total": 402040.0,
+        "identity_burn_total": 146462.53165692295,
+        "artist_vs_one_night": 1.0
+      },
+      {
+        "nights": 2,
+        "demand_multiple": 4.0,
+        "seats": 8464,
+        "markup": 2.179539961771804,
+        "price_multiple": 1.753890697144632,
+        "broker_capture": 0.5318965867315754,
+        "face_access": 0.39753455580438474,
+        "superfan_served": 0.34790662667132194,
+        "low_income_served": 0.11713201080198236,
+        "artist_total": 804080.0,
+        "identity_burn_total": 88631.85494652043,
+        "artist_vs_one_night": 2.0
+      },
+      {
+        "nights": 3,
+        "demand_multiple": 2.6666666666666665,
+        "seats": 12696,
+        "markup": 1.903196205411879,
+        "price_multiple": 1.5165098853664911,
+        "broker_capture": 0.3892550982603475,
+        "face_access": 0.4949851435083447,
+        "superfan_served": 0.47157962932574654,
+        "low_income_served": 0.2292368766858889,
+        "artist_total": 1206120.0,
+        "identity_burn_total": 36165.4250353533,
+        "artist_vs_one_night": 3.0
+      },
+      {
+        "nights": 4,
+        "demand_multiple": 2.0,
+        "seats": 16928,
+        "markup": 1.811912881934818,
+        "price_multiple": 1.4096303950417208,
+        "broker_capture": 0.2576454182883146,
+        "face_access": 0.5900596814679694,
+        "superfan_served": 0.5823789749567302,
+        "low_income_served": 0.37151424798855137,
+        "artist_total": 1608160.0,
+        "identity_burn_total": 14093.265217120022,
+        "artist_vs_one_night": 4.0
+      },
+      {
+        "nights": 6,
+        "demand_multiple": 1.3333333333333333,
+        "seats": 25392,
+        "markup": 1.7595349111528165,
+        "price_multiple": 1.3144738339404138,
+        "broker_capture": 0.09084796113080595,
+        "face_access": 0.7138741167845101,
+        "superfan_served": 0.7927350024450085,
+        "low_income_served": 0.6824844636733974,
+        "artist_total": 2412240.0,
+        "identity_burn_total": 2045.1638439684211,
+        "artist_vs_one_night": 6.0
+      },
+      {
+        "nights": 8,
+        "demand_multiple": 1.0,
+        "seats": 33856,
+        "markup": NaN,
+        "price_multiple": 1.2700619633382932,
+        "broker_capture": 0.00013167204889613846,
+        "face_access": 0.9986425350504096,
+        "superfan_served": 0.999624753274241,
+        "low_income_served": 0.9994168970080478,
+        "artist_total": 3211953.958333333,
+        "identity_burn_total": 0.1720033726683606,
+        "artist_vs_one_night": 7.989140280403276
+      }
+    ]
+  }
+}

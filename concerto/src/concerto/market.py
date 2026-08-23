@@ -90,7 +90,8 @@ def _broker_identities(
     unit_margin: float,
     arm: Arm,
     scn: Scenario,
-    seats_face: float,
+    merit_seats: float,
+    reserve_seats: float,
     fan_tickets: float,
 ) -> tuple[float, float]:
     """Identities the sector buys, and the share of its requests that win.
@@ -101,16 +102,30 @@ def _broker_identities(
     it is solved directly: the fixed point is the root of a monotone scalar
     function, so bisection finds it exactly and always.
     """
-    if unit_margin <= 0.0 or seats_face <= 0.0:
+    seats = merit_seats + reserve_seats
+    if unit_margin <= 0.0 or seats <= 0.0:
         return 0.0, 0.0
     cap = float(arm.cap) if arm.cap is not None else 8.0
 
     def win(m: float) -> float:
-        if arm.rule == "affinity":
-            # Forged histories clear the cut, so brokers are served first and
-            # only run out when they exhaust the house.
-            return min(1.0, seats_face / max(m * cap, 1e-12))
-        return min(1.0, seats_face / max(fan_tickets + m * cap, 1e-12))
+        asked = m * cap
+        if asked <= 0.0:
+            return 0.0
+        if arm.rule != "affinity":
+            return min(1.0, seats / max(fan_tickets + asked, 1e-12))
+        # Forged histories clear the cut, so merit seats are a sure thing and
+        # brokers take them first. Only the capacity they cannot place there
+        # goes into the open draw, where it competes with the fans the merit
+        # round already turned away.
+        merit_won = min(asked, merit_seats)
+        left_over = max(asked - merit_seats, 0.0)
+        fans_left = max(fan_tickets - (merit_seats - merit_won), 0.0)
+        q_res = (
+            min(1.0, reserve_seats / max(fans_left + left_over, 1e-12))
+            if reserve_seats > 0.0
+            else 0.0
+        )
+        return (merit_won + left_over * q_res) / asked
 
     hi = best_response(1.0, unit_margin, arm, scn)
     if hi <= 0.0:
@@ -150,20 +165,41 @@ def solve(arm: Arm, scn: Scenario, pop: Population) -> Outcome:
     remaining_total = float(remaining.sum())
     cap_f = float(cap) if cap is not None else 8.0
 
+    # --- 1b. the reserved lottery block ----------------------------------
+    # Under a merit rule the cut is absolute: a fan one place below it has no
+    # chance, not a small one. Holding some of the face-priced seats back for an
+    # open draw is the only thing that gives them one. It is a no-op under a
+    # rule that is already a lottery.
+    reserve_seats = (
+        float(np.round(arm.reserve_share * seats_face)) if arm.rule == "affinity" else 0.0
+    )
+    merit_seats = seats_face - reserve_seats
+
     def state(p_resale: float) -> tuple[float, float, np.ndarray, float]:
         """Everything the market does, given a belief about the resale price."""
         unit_margin = margin(p_resale, scn.face_price, arm, scn)
-        identities, q = _broker_identities(unit_margin, arm, scn, seats_face, remaining_total)
-        broker_tickets = min(identities * cap_f * q, seats_face)
+        identities, _ = _broker_identities(
+            unit_margin, arm, scn, merit_seats, reserve_seats, remaining_total
+        )
         if arm.rule == "affinity":
-            fan_primary = sorted_take(
-                pop.affinity, remaining, seats_face - broker_tickets, pop.by_affinity
+            # Merit seats first -- a forged history clears the cut, so those are
+            # a sure thing -- then whatever identity capacity is left over goes
+            # into the open draw alongside everyone else.
+            asked = identities * cap_f
+            broker_merit = min(asked, merit_seats)
+            fan_merit = sorted_take(
+                pop.affinity, remaining, merit_seats - broker_merit, pop.by_affinity
             )
+            left_over = max(asked - merit_seats, 0.0)
+            after_merit = remaining - fan_merit
+            q_res = lottery_probability(reserve_seats, float(after_merit.sum()) + left_over)
+            fan_primary = fan_merit + after_merit * q_res
+            broker_tickets = broker_merit + left_over * q_res
         else:
-            fan_primary = remaining * lottery_probability(
-                seats_face, remaining_total + identities * cap_f
-            )
-        return unit_margin, identities, fan_primary, broker_tickets
+            q = lottery_probability(seats_face, remaining_total + identities * cap_f)
+            fan_primary = remaining * q
+            broker_tickets = identities * cap_f * q
+        return unit_margin, identities, fan_primary, min(broker_tickets, seats_face)
 
     def residual(p_resale: float) -> float:
         """Belief minus outcome. Decreasing in the belief, so it has one root."""
