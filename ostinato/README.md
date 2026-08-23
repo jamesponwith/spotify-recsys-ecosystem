@@ -42,53 +42,61 @@ real thing and not an artifact of a cheaper approximation.
 
 ## Results
 
-**The runaway did not happen. The intervention's effect did survive.**
+**The loop does not run away. The control does.**
 
-Artist Gini drifts **+0.0014** under the closed loop against **+0.0010** under the
-organic control — an excess of **+0.0004** against a noise band of **±0.0023**,
-taken as twice the control's own round-to-round standard deviation. At this dose
-and horizon there is no detectable homogenisation. That was not the hypothesis
-going in, and it is the headline anyway.
+Over 5 rounds, with a fixed query set and dose 25:
 
-**What is real** is the third arm. Gamut's popularity penalty holds **+4.8
-points** more long-tail share than the unmodified loop, in **6 of 6 rounds**:
+| arm | artist Gini drift | long-tail share | catalog reach |
+|---|---:|---:|---:|
+| organic control | **+0.00153** | −0.73pp | +0.021pp |
+| closed loop | −0.00003 | +0.67pp | +0.006pp |
+| closed loop + penalty | −0.00078 | +1.00pp | +0.014pp |
 
-| round | closed loop | + penalty | gap |
-|---:|---:|---:|---:|
-| 0 | 62.5% | 66.8% | +4.3pp |
-| 1 | 59.4% | 64.9% | +5.4pp |
-| 2 | 58.0% | 62.5% | +4.5pp |
-| 3 | 56.5% | 60.8% | +4.2pp |
-| 4 | 55.4% | 60.8% | +5.4pp |
-| 5 | 65.4% | 70.2% | +4.8pp |
+Noise band is ±0.00020, taken as twice the standard deviation of the *steadiest*
+arm — not the control, whose own spread mixes noise with the drift being judged.
 
-This one is trustworthy in a way the trajectories are not, because it is
-**paired**: both loop arms are driven by the same random stream, so at every
-round they see the identical query sample *and* the simulated listener accepts
-the identical *positions*. Only the track at each position differs. The gap is
-attributable to the ranking and nothing else.
+The ordering is the finding: **the recommender concentrates less than
+popularity-shaped listening does.** That is the opposite of the hypothesis this
+project was built to test, and it agrees with what [Gamut](../gamut) found in a
+single frame — Cadence already over-serves the long tail at a lift of 1.09×.
+Feeding its own output back does not reverse that; the organic arm, sampling in
+proportion to popularity, is the one that compounds.
+
+The caution that matters: Cadence's lexical and audio channels are content-based
+and do not move when the corpus does, which plausibly anchors it. A purely
+collaborative system has no such anchor, and that is where the runaway story came
+from in the first place.
+
+### Why this run is readable and the first one was not
+
+The first version redrew the query sample every round, so a change between rounds
+mixed system drift with a change of question. Fixing the set — one draw, reused by
+every round of every arm — cut round-to-round variance in artist Gini by **17×**
+on the closed-loop arm:
+
+| arm | sd, resampled | sd, fixed | noise cut |
+|---|---:|---:|---:|
+| organic | 0.00117 | 0.00059 | 2.0× |
+| closed loop | 0.00168 | **0.00010** | **17.2×** |
+| exposure-aware | 0.00160 | 0.00042 | 3.8× |
+
+The drift being measured is *smaller than the noise the old design generated*, so
+the earlier run could not have found it at any dose. That run reported the paired
+comparison and explicitly refused to report its trend lines. Those lines are now
+reportable, and they say something the paired result could not.
+
+### The result that held
+
+The exposure penalty holds **+4.76 points** more long-tail share than the
+unmodified loop, in **6 of 6** rounds — the same magnitude the noisier run found.
+It is trustworthy because it is *paired*: both loop arms run off one random
+stream, so at every round they see identical queries and the listener accepts
+identical *positions*. Only the track at each position differs.
+
+Surviving a redesign that changed everything else is the strongest thing that can
+be said for a number here.
 
 Full tables in [docs/RESULTS.md](docs/RESULTS.md).
-
-### The control earned its keep twice
-
-The first run used dose 1 — 150 accepted playlists a round against a corpus of
-5.88M interactions, a **0.011%** perturbation. The organic arm's noise floor
-(σ = 0.0012 in artist Gini, net five-round drift +0.0005) showed that no effect
-below ~0.003 could be distinguished from the noise of refitting a randomised SVD.
-
-That run was killed before it finished rather than reported. It would have
-produced a confident-looking null that was really a power failure, and nothing in
-its output would have distinguished the two. The `dose` parameter exists because
-of it, and the reasoning is a comment in `config.py`.
-
-### A design flaw worth naming
-
-The query sample is **redrawn every round**, so within-arm trajectories confound
-system drift with a change of question. Cross-arm comparisons at a fixed round
-are clean, because the arms share a sample — which is precisely why the paired
-result above is reported and the trend lines are not. Holding one query set fixed
-across rounds is the first thing to change.
 
 ## Running it
 
@@ -117,6 +125,7 @@ src/ostinato/
 - **The organic control is popularity-proportional**, which is itself a
   rich-get-richer process. Deliberately so: the question is whether the
   recommender concentrates *faster* than the world already does, not whether
-  concentration exists at all.
+  concentration exists at all. It turned out not to — the control is the arm
+  that compounds.
 - Only the collaborative and folksonomy spaces are refit. The lexical and audio
   channels are content-based and do not move.

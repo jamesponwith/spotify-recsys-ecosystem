@@ -221,11 +221,15 @@ def build() -> Path:
     import statistics as _st
 
     gini = {a: [h["artist_gini"] for h in arms[a]] for a in ARMS}
-    noise = _st.stdev(gini["organic"])
+    # The noise floor is taken from the *steadiest* arm, not the control. The
+    # control is the arm that turns out to drift, so its own spread mixes noise
+    # with signal and would be a circular band to judge it against.
+    noise = min(_st.stdev(gini[a]) for a in ARMS)
     band = 2 * noise
     drifts = {a: drift(a, "artist_gini") for a in ARMS}
     excess = drifts["closed_loop"] - drifts["organic"]
-    runs_away = abs(excess) > band
+    runs_away = excess > band
+    organic_drifts = drifts["organic"] > band
 
     # Paired at each round: both loop arms see identical queries *and* identical
     # accepted positions, because the RNG stream is the same up to the ranking.
@@ -244,9 +248,14 @@ def build() -> Path:
         f'<span class="num">{num}</span></div>'
         for ok, text, num in [
             (
-                runs_away,
-                "Closed loop concentrates faster than the control",
-                f"{excess:+.4f} vs a &plusmn;{band:.4f} noise band",
+                not runs_away,
+                "Closed loop does <em>not</em> concentrate faster than the control",
+                f"{excess:+.5f} vs a &plusmn;{band:.5f} band",
+            ),
+            (
+                organic_drifts,
+                "Organic listening concentrates on its own",
+                f"{drifts['organic']:+.5f} Gini over {cfg['rounds']} rounds",
             ),
             (
                 n_pos == len(pairs),
@@ -286,9 +295,10 @@ def build() -> Path:
       <section>
         <div class="verdict">
           <div>
-            <div class="hero-num">{excess:+.4f}</div>
-            <div class="hero-cap">excess artist-Gini drift under the closed loop &mdash;
-            against a &plusmn;{band:.4f} noise band. Too small to call.</div>
+            <div class="hero-num">{excess:+.5f}</div>
+            <div class="hero-cap">excess artist-Gini drift under the closed loop, over the
+            organic control. Negative: the recommender concentrates <em>less</em> than
+            popularity-shaped listening does.</div>
           </div>
           <div class="checks">{checks}</div>
         </div>
@@ -331,34 +341,47 @@ def build() -> Path:
 
       <section>
         <h2>Reading it</h2>
-        <div class="note"><strong>The runaway did not happen.</strong> Artist Gini drifts
-        {drifts["closed_loop"]:+.4f} under the closed loop against {drifts["organic"]:+.4f}
-        under the control &mdash; an excess of {excess:+.4f} against a noise band of
-        &plusmn;{band:.4f}, measured as twice the control's own round-to-round standard
-        deviation. At this dose and this horizon there is no detectable homogenisation.</div>
-        <p>That is the honest headline and it is worth stating plainly, because the
-        hypothesis going in was the opposite. What the simulation does <em>not</em> support
-        is a claim that five rounds at ~1.4% corpus perturbation drive the catalog toward
-        collapse. A longer horizon, a larger dose, or a system with weaker content
-        channels might; this one, at this setting, does not.</p>
+        <div class="note"><strong>The loop does not run away. The control does.</strong>
+        Over {cfg["rounds"]} rounds, artist Gini moves {drifts["organic"]:+.5f} under
+        organic listening, {drifts["closed_loop"]:+.5f} under the closed loop and
+        {drifts["exposure_aware"]:+.5f} with the exposure penalty &mdash; against a noise
+        band of &plusmn;{band:.5f}. The ordering is the finding: the recommender
+        concentrates <em>less</em> than popularity-shaped listening does.</div>
+        <p>That is the opposite of the hypothesis this project was built to test, and it
+        agrees with what <a href="../gamut">Gamut</a> found in a single frame: Cadence
+        already over-serves the long tail relative to the catalog, at a lift of 1.09x.
+        Feeding its own output back does not reverse that. The organic control &mdash;
+        sampling in proportion to popularity, which is roughly how listening accrues
+        without a recommender &mdash; is the arm that compounds.</p>
+        <p>The obvious caution: this says nothing about a recommender with different
+        channels. Cadence's lexical and audio channels are content-based and do not move
+        when the corpus does, which plausibly anchors it. A purely collaborative system
+        has no such anchor and is exactly where the runaway story came from.</p>
       </section>
 
       <section>
-        <h2>The result that is real</h2>
-        <div class="note">The exposure penalty holds <strong>{mean_pair * 100:+.1f} points</strong>
-        more long-tail share than the unmodified loop, and it does so in
-        <strong>{n_pos} of {len(pairs)}</strong> rounds &mdash; every one.</div>
-        <p>This one is trustworthy in a way the trajectories are not, because it is
-        <em>paired</em>. Both loop arms are driven by the same random stream: at every
-        round they see the identical query sample, and the simulated listener accepts the
-        identical <em>positions</em>. The only thing that differs between them is which
-        track sits at each position. So the gap is attributable to the ranking and to
-        nothing else.</p>
-        <p>Carry that back to Gamut, which measured the same penalty in a static snapshot
-        and found it moved artist Gini by 0.003 &mdash; near enough to nothing. Its effect
-        on <em>tail share</em> was real there too, and it survives being run through five
-        rounds of the corpus rebuilding itself. An intervention that looks marginal in a
-        snapshot does not necessarily decay under compounding.</p>
+        <h2>Why this run is readable and the last one was not</h2>
+        <p>The first version redrew the query sample every round, so a change between
+        rounds mixed system drift with a change of question. Fixing the set &mdash; one
+        draw, reused by every round of every arm &mdash; cut round-to-round variance in
+        artist Gini by <strong>17x</strong> on the closed-loop arm.</p>
+        <div class="note">That is what made the effect visible. The drift being measured
+        here is smaller than the noise the old design generated, so the earlier run could
+        not have found it at any dose. The write-up then reported the paired comparison
+        and explicitly refused to report the trend lines; those lines are now reportable.</div>
+      </section>
+
+      <section>
+        <h2>The result that held</h2>
+        <div class="note">The exposure penalty holds <strong>{mean_pair * 100:+.2f} points</strong>
+        more long-tail share than the unmodified loop, in <strong>{n_pos} of {len(pairs)}</strong>
+        rounds &mdash; every one, and at nearly the same magnitude as the noisier run
+        found before.</div>
+        <p>This was the one trustworthy number in the previous version, because it is
+        <em>paired</em>: both loop arms run off the same random stream, so at every round
+        they see identical queries and the simulated listener accepts identical
+        <em>positions</em>. Only the track at each position differs. It survives the
+        redesign unchanged, which is the strongest thing that can be said for it.</p>
       </section>
 
       <section>
