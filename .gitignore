@@ -50,3 +50,4 @@ htmlcov/
 !*/artifacts/sensitivity.json
 !*/artifacts/ledger.json
 !*/artifacts/calibration.json
+!*/artifacts/frontier.json
