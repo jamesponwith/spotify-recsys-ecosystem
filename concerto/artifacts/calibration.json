@@ -1,0 +1,64 @@
+{
+  "target_markup": 3.0,
+  "fitted_c0": 0.17404962458892909,
+  "shipped_c0": 0.174,
+  "anchor": "Resale markup on the unrestricted arm, the only quantity in the model that is publicly observable. Broker capture is an output.",
+  "sweep": [
+    {
+      "c0": 0.05,
+      "fitted": false,
+      "markup": 2.7002209659492142,
+      "broker_capture": 0.7739690624507305,
+      "broker_identities": 14485.920108832479,
+      "price_multiple": 2.3771186879845274
+    },
+    {
+      "c0": 0.1,
+      "fitted": false,
+      "markup": 2.8429956496797693,
+      "broker_capture": 0.6897273548303025,
+      "broker_identities": 9403.604742562986,
+      "price_multiple": 2.355163297140361
+    },
+    {
+      "c0": 0.17404962458892909,
+      "fitted": true,
+      "markup": 2.9999933507244125,
+      "broker_capture": 0.6102534694413152,
+      "broker_identities": 6622.334210480625,
+      "price_multiple": 2.3259356110463876
+    },
+    {
+      "c0": 0.3,
+      "fitted": false,
+      "markup": 3.2012064436174144,
+      "broker_capture": 0.5234238639043252,
+      "broker_identities": 4644.8450124950905,
+      "price_multiple": 2.281046465722526
+    },
+    {
+      "c0": 0.5,
+      "fitted": false,
+      "markup": 3.453058003746564,
+      "broker_capture": 0.43845615670674015,
+      "broker_identities": 3301.905281793541,
+      "price_multiple": 2.2273770565458713
+    },
+    {
+      "c0": 1.0,
+      "fitted": false,
+      "markup": 3.9076841429477103,
+      "broker_capture": 0.3230300385477997,
+      "broker_identities": 2017.9447191531,
+      "price_multiple": 2.1223697367381913
+    },
+    {
+      "c0": 2.0,
+      "fitted": false,
+      "markup": 4.55352418575678,
+      "broker_capture": 0.21969830114427427,
+      "broker_identities": 1190.4918609612394,
+      "price_multiple": 1.9915136131560125
+    }
+  ]
+}
