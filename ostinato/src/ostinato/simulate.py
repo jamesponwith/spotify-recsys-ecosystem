@@ -97,9 +97,28 @@ def run(cfg: SimConfig | None = None, verbose: bool = True) -> dict[str, Any]:
     start_tags = base.tag_matrix.tocsr()
     n_tracks = start_inter.shape[1]
 
+    # One query set, drawn once, used by every round of every arm.
+    #
+    # The first version of this redrew the sample each round, which left
+    # within-arm trajectories confounded: a change between rounds mixed system
+    # drift with a change of question, and there was no way to separate them.
+    # Cross-arm comparisons stayed clean because the arms shared a sample, which
+    # is why the earlier write-up reported the paired result and refused to
+    # report the trend lines. Holding the set fixed makes the trajectory mean
+    # what it looks like -- the same questions, asked of a corpus that is
+    # changing underneath them.
+    query_rng = np.random.default_rng(cfg.seed)
+    fixed_queries = query_rng.choice(len(all_titles), size=cfg.queries_per_round, replace=False)
+
     report: dict[str, Any] = {
         "config": dataclasses.asdict(cfg),
         "catalog": {"n_tracks": facts.n_tracks, "n_artists": facts.n_artists},
+        # Recorded so the fixed-query-set claim is auditable rather than trusted.
+        "queries": {
+            "n": int(fixed_queries.size),
+            "fixed_across_rounds": True,
+            "sample": [all_titles[i] for i in fixed_queries[:12]],
+        },
         "arms": {},
     }
 
@@ -126,7 +145,7 @@ def run(cfg: SimConfig | None = None, verbose: bool = True) -> dict[str, Any]:
             counts = np.asarray(inter.sum(axis=0)).ravel().astype(np.float64)
             pop_norm = popularity_norm(counts)
 
-            chosen = rng.choice(len(all_titles), size=cfg.queries_per_round, replace=False)
+            chosen = fixed_queries
             shown, new_rows, new_cols, new_tagr, new_tagc = [], [], [], [], []
             row_id = 0
             for qi in chosen:
