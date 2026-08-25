@@ -4,6 +4,8 @@
 /*
 !/.gitignore
 !/README.md
+!/Makefile
+!/scripts/
 !/cadence/
 !/timbre/
 !/segue/
