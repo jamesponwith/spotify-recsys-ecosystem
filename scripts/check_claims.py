@@ -140,6 +140,26 @@ CLAIMS: list[Claim] = [
     Claim("timbre", "13.2%", TIM, lambda d: f"{d['gate_0']['oracle_recovery_ratio']:.1%}"),
     Claim("timbre", "0.198", TIM, lambda d: f"{d['fits']['ridge']['mean_cosine']:.3f}"),
     Claim("timbre", "1,718", TIM, lambda d: f"{d['data']['n_queries']:,}"),
+    # A threshold and a verdict, not measurements. Neither is computed from data,
+    # so nothing else in the pipeline would notice them going stale: flip
+    # gate_oracle_fraction in timbre's config and the README still reads "the bar
+    # was 25%". Registering them turns a config edit into a failing check.
+    Claim(
+        "timbre",
+        "the bar was 25%",
+        TIM,
+        lambda d: f"the bar was {d['gate_0']['threshold_oracle_fraction']:.0%}",
+    ),
+    Claim(
+        "timbre",
+        "Killed at its own gate",
+        TIM,
+        lambda d: (
+            "Killed at its own gate"
+            if not d["gate_0"]["passed"]
+            else "PASSED ITS GATE -- the README still says it was killed"
+        ),
+    ),
     # --- concerto ----------------------------------------------------------
     # Concerto has no corpus, so its README figures are outputs of a simulation
     # rather than measurements of anything. That makes them *more* worth pinning,

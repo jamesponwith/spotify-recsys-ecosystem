@@ -313,9 +313,7 @@ def build(
     playlists.to_parquet(out_dir / "playlists.parquet", index=False)
     sparse.save_npz(out_dir / "interactions.npz", interactions)
     # Ragged per-playlist track sequence, aligned with interactions' rows.
-    np.savez_compressed(
-        out_dir / "order.npz", tracks=order_tracks, offsets=order_offsets
-    )
+    np.savez_compressed(out_dir / "order.npz", tracks=order_tracks, offsets=order_offsets)
     sparse.save_npz(out_dir / "tags.npz", tags)
     (out_dir / "tag_vocab.json").write_text(json.dumps(vocab))
 
