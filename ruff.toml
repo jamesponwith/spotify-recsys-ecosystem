@@ -1,0 +1,11 @@
+# Repo-level tooling in scripts/ lives outside every app, so it would otherwise
+# be formatted at ruff's default 88 columns while all six apps use 100. That is
+# not a style preference -- a shared file reformatted to a different width churns
+# wholesale the first time anyone runs the formatter on it, which is how you get
+# a diff nobody can review. Mirrors the app configs exactly.
+line-length = 100
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4"]
+ignore = ["E501", "B008"]

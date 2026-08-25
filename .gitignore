@@ -6,6 +6,7 @@
 !/README.md
 !/Makefile
 !/scripts/
+!/ruff.toml
 !/cadence/
 !/timbre/
 !/segue/

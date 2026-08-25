@@ -8,7 +8,9 @@ help:
 check-claims: ## Verify the root README's hand-typed numbers against each app's artifacts
 	@ostinato/.venv/bin/python scripts/check_claims.py
 
-lint-all: check-claims ## check-claims, then each app's own lint
+lint-all: check-claims ## check-claims, then lint the shared tooling and each app
+	@ostinato/.venv/bin/ruff check scripts
+	@ostinato/.venv/bin/ruff format --check scripts
 	@for a in $(APPS); do \
 	  if [ -x $$a/.venv/bin/ruff ]; then echo "--- $$a"; $(MAKE) -C $$a lint || exit 1; fi; \
 	done
