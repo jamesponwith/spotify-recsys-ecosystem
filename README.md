@@ -10,7 +10,7 @@ the previous one raised, and three of them answered it *no*.
 | **[timbre](timbre/)** | Content-based cold start | **Killed at its own gate.** Audio descriptors recover 13.2% of what playlist history gives; the bar was 25% |
 | **[segue](segue/)** | Sequence-aware continuation | Playlist order carries real signal — 13.7% fewer Clicks — that set metrics cannot see |
 | **[gamut](gamut/)** | Catalog exposure audit | 43.6% of exposure goes to 1% of artists, and no amount of re-ranking fixes it |
-| **[ostinato](ostinato/)** | Feedback-loop simulation | No detectable runaway in 5 rounds — but the exposure penalty holds its gain in 6 of 6 |
+| **[ostinato](ostinato/)** | Feedback-loop simulation | **The opposite of the hypothesis.** The recommender concentrates *less* than popularity-shaped listening does |
 | **[concerto](concerto/)** | Ticket-drop allocation | No policy makes a hot ticket cheap. Dynamic pricing removes the scalper by becoming one |
 
 ---
@@ -65,21 +65,36 @@ on interaction data its own output helped create, so Gamut's snapshot may be a
 frame from a film. Five rounds of recommend → accept → refit, against an organic
 control.
 
-> The runaway did not happen. Artist Gini drifts +0.0014 under the closed loop
-> against +0.0010 under the control — an excess of +0.0004 against a ±0.0023
-> noise band. That was not the hypothesis, and it is the headline anyway.
+> The loop does not run away. **The control does.** Artist Gini drifts
+> **+0.00153** under the organic control against **−0.00003** under the closed
+> loop and **−0.00078** with Gamut's penalty, against a ±0.00020 noise band. The
+> ordering is the finding: the recommender concentrates *less* than
+> popularity-shaped listening does.
 
-What is real is the third arm: Gamut's popularity penalty holds **+4.8 points**
-more long-tail share in **6 of 6 rounds**. That comparison is *paired* — both arms
-see the same queries and the listener accepts the same positions, so only the
-ranking differs. An intervention that looked marginal in a snapshot does not decay
-under compounding.
+That is the opposite of the hypothesis the project was built to test, and it
+agrees with what Gamut found in a single frame — Cadence already over-serves the
+long tail at a lift of 1.09×. Feeding its own output back does not reverse that.
+The arm that compounds is the one sampling in proportion to popularity.
+
+What made it readable was fixing the question. The first run redrew the query
+sample every round, so a change between rounds mixed system drift with a change
+of question; one fixed draw reused by every round of every arm cut round-to-round
+variance in artist Gini by **17.2×** on the closed loop. The drift being measured
+is *smaller than the noise the old design generated* — that run could not have
+found it at any dose, and said so rather than reporting trend lines it had not
+earned.
+
+The third arm survived the redesign intact: Gamut's popularity penalty holds
+**+4.76 points** more long-tail share in **6 of 6 rounds**, the same magnitude the
+noisier run found. That comparison is *paired* — both loop arms run off one random
+stream, so they see identical queries and the listener accepts identical
+positions, and only the track at each position differs.
 
 ---
 
 **Concerto** leaves the recommender behind and asks the question the other five
 cannot: not whether the *listener* was served, but whether a **market** serves
-anyone. Gamut and Ostinato established that exposure is starved at the long tail,
+anyone. Gamut established that exposure is starved at the long tail,
 and live performance is where those artists actually earn — so the ticket is
 where the argument ends up.
 
@@ -139,12 +154,17 @@ useful output.
   where its docstring promises "the first k tracks". Documented rather than
   patched, because fixing it would move every number in Cadence's published
   report. See [segue/docs/FINDINGS.md](segue/docs/FINDINGS.md).
-- **Ostinato's** first run was underpowered and the control proved it: a 0.011%
-  corpus perturbation per round against a noise floor of σ = 0.0012 in artist
-  Gini. It was killed before finishing rather than reported, because it would
-  have produced a confident-looking null that was really a power failure. Its
-  query sample is also redrawn each round, which confounds within-arm
-  trajectories — named on the page rather than quietly smoothed over.
+- **Ostinato** was wrong twice and the second correction inverted its headline.
+  The first run was underpowered and the control proved it: a 0.011% corpus
+  perturbation per round against a noise floor of σ = 0.0012 in artist Gini,
+  killed before finishing rather than reported, because it would have produced a
+  confident-looking null that was really a power failure. The second run still
+  redrew its query sample each round, so between-round changes mixed system drift
+  with a change of question. Fixing the set cut closed-loop variance **17.2×** —
+  and the drift underneath turned out to run the other way, from "no detectable
+  runaway" to "the organic control is the arm that concentrates". A null that
+  survives a redesign is a result; this one did not survive, and the redesign is
+  why anyone knows.
 - **Concerto's** founding hypothesis was backwards. It was built to show that
   verified-fan schemes are theatre — that competition among the surviving brokers
   would eat the gain. The identity-cost elasticity is 1.8, not 1, so a 12x cost
