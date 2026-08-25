@@ -1,4 +1,4 @@
-# This repository is the six-app ecosystem only. The working directory it lives
+# This repository is the five-app ecosystem only. The working directory it lives
 # in also holds unrelated projects, so the root is a whitelist rather than a
 # blocklist: anything not named below is never a candidate for a commit.
 /*
@@ -12,7 +12,6 @@
 !/segue/
 !/gamut/
 !/ostinato/
-!/concerto/
 
 # Virtual environments
 .venv/

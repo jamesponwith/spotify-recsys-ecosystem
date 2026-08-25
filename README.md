@@ -1,8 +1,9 @@
 # A music recommendation ecosystem, and what measuring it honestly turned up
 
-Six applications, five of them built on the [Spotify Million Playlist Dataset](https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge).
-They are not six demos of the same idea. Each one was built to answer a question
-the previous one raised, and three of them answered it *no*.
+Five applications built on the [Spotify Million Playlist Dataset](https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge).
+They are not five demos of the same idea. Each one was built to answer a question
+the previous one raised, and two of them answered it *no*. A sixth grew out of
+them and left — see below.
 
 | | | |
 |---|---|---|
@@ -11,7 +12,6 @@ the previous one raised, and three of them answered it *no*.
 | **[segue](segue/)** | Sequence-aware continuation | Playlist order carries real signal — 13.7% fewer Clicks — that set metrics cannot see |
 | **[gamut](gamut/)** | Catalog exposure audit | 43.6% of exposure goes to 1% of artists, and no amount of re-ranking fixes it |
 | **[ostinato](ostinato/)** | Feedback-loop simulation | **The opposite of the hypothesis.** The recommender concentrates *less* than popularity-shaped listening does |
-| **[concerto](concerto/)** | Ticket-drop allocation | No policy makes a hot ticket cheap. Dynamic pricing removes the scalper by becoming one |
 
 ---
 
@@ -92,37 +92,16 @@ positions, and only the track at each position differs.
 
 ---
 
-**Concerto** leaves the recommender behind and asks the question the other five
-cannot: not whether the *listener* was served, but whether a **market** serves
-anyone. Gamut established that exposure is starved at the long tail,
-and live performance is where those artists actually earn — so the ticket is
-where the argument ends up.
+**Concerto** started here and left. It asked whether a *market* serves anyone
+rather than whether a listener does — ticket allocation, not recommendation — and
+it shared no corpus, no dependency and no thesis with the other five. It now lives
+at **[jamesponwith/concerto](https://github.com/jamesponwith/concerto)**, extracted
+with `git subtree split` so its history and authorship survived, and re-verified
+after the move: fresh venv, `make all`, all seven artifacts byte-identical to their
+pre-move hashes.
 
-It simulates a ticket on-sale under eight allocation policies, each solved to a
-rational-expectations equilibrium against a broker sector that decides for itself
-how many purchasing identities to buy. That single choice — making brokerage an
-*investment* rather than fixed demand — is what the results turn on.
-
-> Across all 180 parameter cells, **every** policy leaves the average fan paying
-> more than 1.2x face. What a policy chooses is not the price. It is who gets in,
-> and who keeps the difference.
-
-Two results contradict how the industry talks about it. **Dynamic pricing
-removes the scalper by becoming one** — clearing the house at market takes broker
-capture to zero and takes what the average fan pays from 2.33x to 3.06x face,
-with the bottom income quartile shut out entirely. And **the lever is the margin,
-not the bot**: capping resale beat hardening identity in 180 of 180 cells.
-
-The Cardano work lands the same shape of finding as Gamut's. A validator-capped
-resale and a fully soulbound token are entirely different contracts and produce
-identical broker economics, because a broker who cannot transfer a ticket sells
-the *wallet* — which produces no transaction at all. A contract can escrow an
-asset; it cannot escrow a secret. **The strongest anti-scalping component in a
-web3 ticketing system is a person with a scanner.**
-
-Unlike the other five, Concerto has no corpus — no promoter publishes on-sale
-logs — so its single free parameter is fitted in the open against resale markup
-and every claim is reported with the fraction of the grid that held.
+It is recorded here rather than deleted because a project that outgrew the
+ecosystem is part of the ecosystem's history.
 
 ---
 
@@ -165,14 +144,11 @@ useful output.
   runaway" to "the organic control is the arm that concentrates". A null that
   survives a redesign is a result; this one did not survive, and the redesign is
   why anyone knows.
-- **Concerto's** founding hypothesis was backwards. It was built to show that
-  verified-fan schemes are theatre — that competition among the surviving brokers
-  would eat the gain. The identity-cost elasticity is 1.8, not 1, so a 12x cost
-  rise cuts broker entry ~92x before about four fifths of it is competed back.
-  Verification works; it is simply beaten outright by capping the margin. Its
-  obvious equity metric also reads backwards, scoring the *most* exclusive policy
-  best, because everyone an exclusive policy admits is equally rich. Both are on
-  the page. See [concerto/docs/FINDINGS.md](concerto/docs/FINDINGS.md).
+- **Concerto's** founding hypothesis was backwards — it was built to show
+  verified-fan schemes are theatre, and found verification works, merely beaten by
+  capping the margin. Its equity metric also read backwards, scoring the *most*
+  exclusive policy best. Both are on the page in its
+  [own repo](https://github.com/jamesponwith/concerto/blob/main/docs/FINDINGS.md).
 - **Gamut's** first exposure frontier came out perfectly flat. Exposure metrics
   computed over the candidate pool are invariant to re-ranking — reordering a set
   does not change the set. Exposure has to be counted at the cut the listener
@@ -189,7 +165,6 @@ Each app has a working demo command and a published report showing real output.
 | segue | `segue demo` | a held-out playlist continued, against what the person really played next |
 | gamut | `gamut demo` | one query before and after the exposure-aware re-rank |
 | ostinato | `ostinato simulate` | exposure drift across rounds, three arms |
-| concerto | `concerto demo` | twelve people followed across two allocation policies |
 
 ## Running any of it
 
@@ -210,7 +185,6 @@ hand.
 
 Python 3.12, NumPy/SciPy/scikit-learn, FastAPI, Typer, `uv`, `ruff`, `mypy`,
 `pytest`. No GPU anywhere — the most expensive thing in the repo trains in under
-three minutes on CPU. Concerto is the exception to the shared base: it has no
-corpus and no Cadence dependency, so it installs standalone. The Anthropic SDK is
+three minutes on CPU. The Anthropic SDK is
 an optional planner backend; Cadence falls back to a deterministic rules planner
 with no API key.

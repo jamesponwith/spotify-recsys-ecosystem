@@ -1,4 +1,4 @@
-APPS := cadence timbre segue gamut ostinato concerto
+APPS := cadence timbre segue gamut ostinato
 
 .PHONY: help check-claims lint-all
 

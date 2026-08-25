@@ -18,7 +18,7 @@ prose stays hand-written; the arithmetic stays honest. Run it in `make lint`.
 from __future__ import annotations
 
 import json
-import math
+import re
 import statistics as st
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -54,21 +54,10 @@ def _pairs(d: dict) -> list[float]:
     return [a[i]["tail_share"] - c[i]["tail_share"] for i in range(len(c))]
 
 
-def _cheapest_arm(d: dict) -> float:
-    """The lowest price multiple any arm reaches in any cell of the grid."""
-    return min(min(v["price_multiple"] for v in c["metrics"].values()) for c in d["cells"])
-
-
-def _claim(d: dict, key: str) -> dict:
-    return next(c for c in d["claims"] if c["key"] == key)
-
-
 OST = "ostinato/artifacts/sim_report.json"
 GAM = "gamut/artifacts/audit_report.json"
 SEG = "segue/artifacts/eval_report.json"
 TIM = "timbre/artifacts/phase0_report.json"
-CON_M = "concerto/artifacts/simulation.json"
-CON_S = "concerto/artifacts/sensitivity.json"
 
 
 def _arm(d: dict, key: str) -> dict:
@@ -160,36 +149,60 @@ CLAIMS: list[Claim] = [
             else "PASSED ITS GATE -- the README still says it was killed"
         ),
     ),
-    # --- concerto ----------------------------------------------------------
-    # Concerto has no corpus, so its README figures are outputs of a simulation
-    # rather than measurements of anything. That makes them *more* worth pinning,
-    # not less: nothing external would ever contradict them.
-    Claim("concerto", "180 parameter cells", CON_S, lambda d: f"{d['n_cells']} parameter cells"),
-    Claim(
-        "concerto",
-        "180 of 180 cells",
-        CON_S,
-        lambda d: "{held} of {of} cells".format(**_claim(d, "margin_beats_identity")),
-    ),
-    # The threshold in "every policy leaves the average fan paying more than
-    # 1.2x face", floored to the tenth. Verifies the sentence is still true *and*
-    # still tight -- if the cheapest arm fell to 1.15x this computes "1.1x face"
-    # and drifts, and if it rose to 1.45x it drifts the other way for
-    # understating the result.
-    Claim(
-        "concerto",
-        "1.2x face",
-        CON_S,
-        lambda d: f"{math.floor(_cheapest_arm(d) * 10) / 10:.1f}x face",
-    ),
-    Claim("concerto", "2.33x", CON_M, lambda d: f"{_arm(d, 'queue')['price_multiple']:.2f}x"),
-    Claim("concerto", "3.06x", CON_M, lambda d: f"{_arm(d, 'clearing')['price_multiple']:.2f}x"),
 ]
+
+
+WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7}
+
+
+def check_self_consistency(text: str) -> list[str]:
+    """Catch prose arithmetic, which no artifact can adjudicate.
+
+    Every claim above compares the page to a JSON file. This compares the page to
+    *itself*, which is a different failure and the one that actually happened:
+    Concerto leaving took a row out of the summary table and left the opening
+    sentence saying "Six applications ... three of them answered it no" above five
+    visible rows. Nothing sourced from an artifact could have noticed, because
+    nothing was wrong with any artifact.
+
+    The rule is simply that a number a reader can verify by counting must match
+    what they would count.
+    """
+    problems: list[str] = []
+
+    rows = re.findall(r"^\| \*\*\[([a-z]+)\]\(\1/\)\*\*", text, re.M)
+    # The whitelist in .gitignore is the authority on what this repo contains --
+    # not "every directory with a pyproject.toml", which also finds unrelated
+    # projects sharing the parent directory.
+    whitelist = re.findall(r"^!/([a-z-]+)/$", (ROOT / ".gitignore").read_text(), re.M)
+    dirs = sorted(w for w in whitelist if (ROOT / w / "pyproject.toml").exists())
+
+    if sorted(rows) != dirs:
+        problems.append(f"summary table lists {sorted(rows)} but the repo contains {dirs}")
+
+    m = re.search(r"^([A-Z][a-z]+) applications built on", text, re.M)
+    if not m:
+        problems.append("could not find the 'N applications built on' opening")
+    else:
+        stated = WORDS.get(m.group(1).lower())
+        if stated != len(rows):
+            problems.append(
+                f"opening says {m.group(1).lower()!r} applications; the table has {len(rows)} rows"
+            )
+
+    m = re.search(r"not (\w+) demos of the same idea", text)
+    if m and WORDS.get(m.group(1)) != len(rows):
+        problems.append(
+            f"'not {m.group(1)} demos' disagrees with the {len(rows)} rows in the table"
+        )
+
+    return problems
 
 
 def main() -> int:
     text = README.read_text()
     missing_src, absent, drifted = [], [], []
+    inconsistent = check_self_consistency(text)
 
     for c in CLAIMS:
         path = ROOT / c.source
@@ -206,17 +219,22 @@ def main() -> int:
         ("DRIFTED — the README contradicts its source", drifted),
         ("ABSENT — verified claim is no longer on the page", absent),
         ("SKIPPED — artifact not built", missing_src),
+        ("INCONSISTENT — the page contradicts itself", inconsistent),
     ):
         if rows:
             print(f"\n{label}:")
             for r in rows:
                 print(f"  {r}")
 
-    if drifted or absent:
-        print(f"\n{len(drifted) + len(absent)} problem(s). Regenerate the app, then fix README.md.")
+    if drifted or absent or inconsistent:
+        n = len(drifted) + len(absent) + len(inconsistent)
+        print(f"\n{n} problem(s). Regenerate the app, then fix README.md.")
         return 1
     checked = len(CLAIMS) - len(missing_src)
-    print(f"root README: {checked}/{len(CLAIMS)} claims match their source artifacts")
+    print(
+        f"root README: {checked}/{len(CLAIMS)} claims match their source artifacts, "
+        "and the page agrees with itself"
+    )
     return 0
 
 
