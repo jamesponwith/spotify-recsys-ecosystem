@@ -6,6 +6,8 @@
 !/README.md
 !/Makefile
 !/scripts/
+!/docs/
+!/.beads/
 !/ruff.toml
 !/cadence/
 !/timbre/
@@ -53,3 +55,9 @@ htmlcov/
 !*/artifacts/ledger.json
 !*/artifacts/calibration.json
 !*/artifacts/frontier.json
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
