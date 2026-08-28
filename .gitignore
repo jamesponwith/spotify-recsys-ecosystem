@@ -15,6 +15,13 @@
 !/gamut/
 !/ostinato/
 
+# The fleet's safety rails. Whitelisted explicitly, because the root is a
+# whitelist: an unattended builder is bounded by files it must find in the
+# checkout, and a rail that lives only on one machine is not a rail.
+!/lefthook.yml
+!/tools/
+!/.lefthook/
+
 # Virtual environments
 .venv/
 *.egg-info/
