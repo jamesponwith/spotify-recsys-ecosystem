@@ -1,0 +1,51 @@
+# Build inner-loop gate. Under 10s or it gets skipped — speed is a feature.
+#
+# The heavy checks (make lint-all, the six pytest suites) are NOT here: they
+# take minutes and a slow gate is a bypassed gate. They run in CI and on
+# demand. What runs here is what makes a commit safe to look at.
+pre-commit:
+  parallel: true
+  commands:
+    # beads follows core.hooksPath and installs ITS hooks wherever it points.
+    # This repo had core.hooksPath aimed at .beads/hooks, so beads owned the
+    # path outright and nothing else could gate a commit — the failure ADR 0012
+    # records. lefthook owns .git/hooks now and beads is invoked as a declared
+    # step instead: one owner, one path.
+    beads:
+      run: |
+        h="$(git rev-parse --show-toplevel)/.beads/hooks/pre-commit"
+        [ -x "$h" ] && "$h" || true
+    # A commit mid-rebase may not build even when neither endpoint is broken.
+    replay-guard:
+      run: |
+        for f in rebase-merge rebase-apply MERGE_HEAD CHERRY_PICK_HEAD; do
+          if [ -e "$(git rev-parse --git-path $f)" ]; then
+            echo "pre-commit: replay in progress ($f) — CI is the gate here"
+          fi
+        done
+    # A fixture identity in .git/config gets published under whoever owns that
+    # address. It happened in the flywheel repo: 36 commits under a stranger's
+    # name, because a test helper wrote d@d into the real config. A real
+    # domain has a dot; a fixture's does not.
+    identity:
+      run: |
+        email=$(git config user.email 2>/dev/null || true)
+        case "${email#*@}" in
+        *.*) ;;
+        *) echo "pre-commit: refusing to commit as '${email:-<unset>}' — that is a test"
+           echo "  fixture identity, not yours: git config --local --unset user.email"
+           exit 1 ;;
+        esac
+    shellsyntax:
+      glob: "*.sh"
+      run: bash -n {staged_files}
+
+# The only pre-push rule: refuse what ADR 0003 forbids an unattended agent.
+# A script, not a command — lefthook filters `commands` by the files being
+# pushed and skips those with none, which is wrong for a rule that must judge
+# the REFS whatever the diff contains.
+pre-push:
+  scripts:
+    "push-guard.sh":
+      use_stdin: true
+      runner: bash
