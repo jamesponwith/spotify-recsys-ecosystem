@@ -225,3 +225,77 @@ slices by a completely different path. On a 235-playlist sample the two agree on
 **100%** of sequences once duplicate policy is reconciled — Cadence dedups by
 first occurrence, Segue keeps repeats, and every one of the 55 initial
 disagreements was exactly that.
+
+---
+
+## 4. The weight could not be retuned, because the harness could only see one side
+
+`audio_affinity_weight` trades audio adherence against tag relevance. Fixing the
+normalisation mismatch in §2 changed what the weight *means* without retuning the
+weight itself, which left the job half done — so this went looking for the right
+value and found that the question was not yet answerable.
+
+**Nothing measured the cost.** `constraints_eval` reports mood error, which falls
+monotonically as the weight rises. No metric anywhere in the repo measured whether
+the genre or era the listener asked for actually arrived, so nothing ever pushed
+back and the term looked free at any strength. It was not: at 0.35 it was
+overturning a hundred places of correct retrieval. **The problem was never that the
+battery had 20 queries. A one-sided metric cannot find an optimum at any n.**
+
+### The missing counterweight
+
+**Tag adherence**: of the tracks delivered, do they carry the tags the request
+named? Measured against the folksonomy — the same human behaviour retrieval is
+built on — rather than against a genre string nobody curated. It is reported two
+ways because the obvious one is useless:
+
+| weight | tag share | tag strength | mood error |
+|---:|---:|---:|---:|
+| 0.00 | 1.0000 | 3.426 | 0.1926 |
+| 0.20 | 0.9969 | 3.101 | 0.1096 |
+| **0.35** | 0.9910 | 2.820 | 0.0735 |
+| 0.45 | 0.9770 | 2.605 | 0.0561 |
+| 0.80 | 0.5468 | 1.405 | 0.0070 |
+
+*Share* — the fraction of tracks carrying at least one requested tag — is flat to
+three decimal places until 0.45 and then collapses. A track filed under `rock`
+once out of five hundred playlists clears that bar, so it cannot separate a
+plausible playlist from a good one. *Strength*, the mean `log1p` of the requested
+tag count, is what `sparse_tag_channel` itself ranks on and moves smoothly across
+the whole range.
+
+### Two findings, one of them a surprise
+
+**Query-dependence is already implemented, and I did not know it.** The hypothesis
+was that genre requests should lean on tags and mood requests on audio. But a pure
+genre or era query states no audio target, so `_audio_affinity` returns `None` and
+the weight is forced to zero. Across the whole sweep the tag-led family's strength
+is *identical* at 3.889 for every weight from 0.0 to 0.8. The contested case is
+narrower than it looked: only queries naming **both** a mood and a genre — which
+is exactly what "90s alternative rock for a road trip" is.
+
+**The weight cannot be chosen from this data, and the knee criterion was fooling
+me.** Distance to the ideal corner on min-max-normalised axes puts the knee at
+0.35 for both families — reassuringly, the shipped value. But that is an artifact:
+
+| swept range | knee (mood) | knee (mixed) |
+|---|---:|---:|
+| 0.0–0.8 | 0.35 | 0.35 |
+| ≤ 0.6 | 0.30 | 0.30 |
+| ≤ 0.45 | 0.20 | 0.20 |
+| excluding 0.0 | 0.45 | 0.45 |
+
+The knee moves wherever the sweep's endpoints move, because the trade is smoothly
+convex with no kink in it. Reporting 0.35 as "confirmed optimal" would have been
+reporting my own choice of sweep range back as a finding.
+
+**So the weight is unchanged at 0.35, and this is not a retune.** What is now
+true that was not before: the cost of the weight is measurable, the exchange rate
+at the shipped value is **≈0.12 tag strength per 0.01 of mood error**, and both
+query families agree on that rate at every swept range — which is the robust part,
+and the reason a query-dependent weight is *not* justified.
+
+Choosing a different value needs a stated preference between mood fidelity and
+genre fidelity. That is a product judgement, and no amount of held-out data
+supplies it. The contribution here is that the trade now has numbers on both
+sides; `cadence eval-affinity` regenerates them.

@@ -113,6 +113,16 @@ useful output.
 - **Cadence** shipped a ranking bug that only reading real output caught:
   min-max normalisation over a reranker whose probabilities are heavily skewed
   (median ~0.002, max ~0.7) silently nullified audio affinity at any weight.
+- **Cadence's** audio-affinity weight could not be retuned, because the harness
+  could only see one side of the trade it makes. Mood error falls monotonically as
+  the weight rises and nothing measured whether the requested *genre* arrived, so
+  the term looked free at any strength — the battery's size was never the problem.
+  A tag-adherence metric now supplies the counterweight. Two things fell out: the
+  weight is already query-dependent by construction (a pure genre request states
+  no audio target, so the term is switched off entirely), and the apparent optimum
+  was an artifact — the knee moves to 0.2, 0.3, 0.35 or 0.45 depending only on
+  which weights the sweep happens to include. The value is unchanged, and now the
+  trade has numbers on both sides instead of one.
 - **Cadence** shipped two more of the same kind, found the same way — by reading
   generated playlists rather than a metric. Its exact-tag channel scored
   multi-concept queries as an ANY-match, so one popular tag beat satisfying the

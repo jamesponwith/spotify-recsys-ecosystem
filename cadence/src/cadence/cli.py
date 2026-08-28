@@ -110,6 +110,14 @@ def evaluate(
     run(limit=limit or None, ablations=ablations, out_path=out)
 
 
+@app.command("eval-affinity")
+def eval_affinity_cmd():
+    """Sweep audio_affinity_weight against tag adherence and mood error."""
+    from .eval.affinity_sweep import main
+
+    main()
+
+
 @app.command("eval-constraints")
 def eval_constraints_cmd():
     """Measure how often the assembly stage honours stated requirements."""
