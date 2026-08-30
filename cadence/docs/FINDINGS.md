@@ -347,8 +347,8 @@ The median target sits 0.165 from where humans file the word; the median catalog
 mean sits 0.083 from it. The result is not a small-sample artifact: restricted to
 the 81 pairs with at least a thousand filed tracks, 57 are still worse than
 nothing. Nor is it one dimension: valence misses on 21 of 25 pairs, energy on 31
-of 48, acousticness on 9 of 13, instrumentalness on 4 of 6. Only speechiness (0
-of 3) is aimed where humans are.
+of 48, acousticness on 9 of 13, danceability on 7 of 11, instrumentalness on 4
+of 6. Only speechiness (0 of 3) is aimed where humans are.
 
 **The direction is right; the magnitude is not.** On 94 of the 106 pairs the
 target lies on the far side of the human mean from the catalog — the lexicon
@@ -358,10 +358,11 @@ direction, the target's displacement from the catalog is typically four times
 the crowd's (interquartile range 2.7–5.2×). `chill` is the
 cleanest case: 46,308 tracks, the largest sample in the table, filed at energy
 0.600 against a catalog of 0.632 — a displacement of 0.03 — and the lexicon
-asserts 0.32. Only 7 pairs point the wrong way outright, and those are the
-words whose folksonomy is indistinguishable from the catalog anyway:
-`morning`, `love` and `romantic` valence are all within 0.03 of the catalog
-mean, so "what direction" is barely a question there.
+asserts 0.32. Only 7 pairs point the wrong way outright, and every one of them
+is a word the crowd files close to the middle: `morning`, `love` and `romantic`
+valence are within 0.03 of the catalog mean, and the furthest of the seven,
+`singalong` energy, is 0.08 away on 370 tracks — so "which direction" was a
+close call on all of them, and the lexicon picked the far side of a coin.
 
 The 34 pairs the lexicon gets right are mostly the ones where the human mean is
 itself far from the catalog: `instrumental`/instrumentalness (humans 0.718

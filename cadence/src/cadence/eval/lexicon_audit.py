@@ -1,33 +1,21 @@
 """Audit ``MOOD_LEXICON``'s audio targets against where humans file each word.
 
-The lexicon asserts that "sleep" means energy 0.12. The folksonomy records
-where people actually put music on playlists titled *sleep*. Those are two
-definitions of the same word, and nothing in the repo had ever measured how far
-apart they are -- which matters, because the audio-affinity term aims selection
-at the lexicon's number, and a target far from human practice would explain
-the term performing no better than a permutation of itself.
+For every (word, dimension) pair where the lexicon word is also a tag in the
+vocabulary, three numbers: the **target** the lexicon asserts, the plain mean of
+that dimension over every track filed under the tag at least once
+(**folksonomy_mean**), and the plain mean over the whole catalog
+(**catalog_mean**) -- what you would aim at knowing nothing. A pair is *worse
+than nothing* when ``|target - folksonomy| > |catalog - folksonomy|``.
 
-For every (word, dimension) pair where the word is also a tag in the vocabulary,
-three numbers:
+The means are unweighted over tracks, not over playlist counts, so a track
+filed under `chill` once counts the same as one filed there a thousand times;
+that is the same population `sparse_tag_channel` retrieves from. Only tracks
+with audio count, in both the per-tag and the catalog means, so the two are
+over one population and the comparison is fair.
 
-* **target** -- what the lexicon asserts;
-* **folksonomy_mean** -- the plain mean of that dimension over every track
-  filed under that tag at least once;
-* **catalog_mean** -- the plain mean over the whole catalog, i.e. what you would
-  aim at knowing nothing.
-
-A pair is *worse than nothing* when ``|target - folksonomy| > |catalog -
-folksonomy|``: the lexicon's number is further from human behaviour than the
-uninformed prior is.
-
-What this establishes is the distance between the two definitions. It does
-**not** establish that the lexicon is wrong: someone asking for "chill" may well
-want calmer music than the median playlist titled *chill* contains. The
-folksonomy mean describes behaviour, not intent, and this audit says nothing
-about the affinity weight itself.
-
-Reads only ``tracks.parquet``, ``tags.npz`` and ``tag_vocab.json`` -- no engine,
-no trained spaces -- so it runs in seconds on the built catalog.
+Reads only ``tracks.parquet``, ``tags.npz`` and ``tag_vocab.json`` -- no
+engine, no trained spaces. What the result does and does not establish is in
+``docs/FINDINGS.md`` §5.
 """
 
 from __future__ import annotations
@@ -54,24 +42,25 @@ def audit(
 ) -> dict[str, Any]:
     """Compare every lexicon (word, dimension) pair with the folksonomy.
 
-    Only tracks with finite audio values count, in both the per-tag and the
-    catalog means, so the two are over the same population and the comparison
-    is fair. A word that is not a tag cannot be audited and is listed rather
-    than silently dropped.
+    A word that is not a tag cannot be audited and is listed rather than
+    silently dropped. Raises rather than writing NaN if the inputs disagree
+    about their shape or a dimension has no audio at all.
     """
+    if tags.shape != (len(frame), len(vocab)):
+        raise ValueError(f"tags is {tags.shape}; expected ({len(frame)} tracks, {len(vocab)} tags)")
     tags = tags.tocsc()
     col_of = {t: i for i, t in enumerate(vocab)}
-    has_audio = (
-        frame["has_audio"].to_numpy(dtype=bool)
-        if "has_audio" in frame.columns
-        else np.ones(len(frame), dtype=bool)
-    )
+    has_audio = frame["has_audio"].to_numpy(dtype=bool)
     dims = [d for d in AUDIO_FEATURE_COLS if d in frame.columns]
     values = {d: frame[d].to_numpy(dtype=np.float64) for d in dims}
     valid = {d: has_audio & np.isfinite(values[d]) for d in dims}
+    empty = [d for d in dims if not valid[d].any()]
+    if empty:
+        raise ValueError(f"no track has audio for {empty}; the audit would be over nothing")
     catalog_mean = {d: float(values[d][valid[d]].mean()) for d in dims}
 
     pairs: list[dict[str, Any]] = []
+    excess: list[float] = []
     not_tags: list[str] = []
     for word, entry in lexicon.items():
         if not entry.audio:
@@ -87,29 +76,49 @@ def audit(
             if not mask.any():
                 continue
             folk = float(values[dim][mask].mean())
+            cat = catalog_mean[dim]
             gap_target = abs(target - folk)
-            gap_catalog = abs(catalog_mean[dim] - folk)
+            gap_catalog = abs(cat - folk)
             pairs.append(
                 {
                     "word": word,
                     "dimension": dim,
                     "target": float(target),
                     "folksonomy_mean": round(folk, 4),
-                    "catalog_mean": round(catalog_mean[dim], 4),
+                    "catalog_mean": round(cat, 4),
                     "n_tracks": int(mask.sum()),
                     "gap_target": round(gap_target, 4),
                     "gap_catalog": round(gap_catalog, 4),
                     "target_worse_than_catalog": bool(gap_target > gap_catalog),
+                    # Does the target leave the catalog mean the same way the
+                    # crowd does, and does it go past the crowd?
+                    "direction_right": bool((target - cat) * (folk - cat) > 0),
+                    "overshoots": bool((target - folk) * (folk - cat) > 0),
                 }
             )
+            excess.append(gap_target - gap_catalog)
 
     # Most damning first: how much further the target is than doing nothing.
-    pairs.sort(key=lambda p: p["gap_target"] - p["gap_catalog"], reverse=True)
+    pairs = [p for _, p in sorted(zip(excess, pairs, strict=True), key=lambda t: -t[0])]
+    by_dim: dict[str, dict[str, int]] = {}
+    for p in pairs:
+        row = by_dim.setdefault(p["dimension"], {"n_pairs": 0, "n_target_worse_than_catalog": 0})
+        row["n_pairs"] += 1
+        row["n_target_worse_than_catalog"] += p["target_worse_than_catalog"]
     return {
         "n_pairs": len(pairs),
         "n_target_worse_than_catalog": sum(p["target_worse_than_catalog"] for p in pairs),
+        "n_direction_right": sum(p["direction_right"] for p in pairs),
+        "n_overshoots": sum(p["overshoots"] for p in pairs),
+        "median_gap_target": round(float(np.median([p["gap_target"] for p in pairs])), 4)
+        if pairs
+        else None,
+        "median_gap_catalog": round(float(np.median([p["gap_catalog"] for p in pairs])), 4)
+        if pairs
+        else None,
         "n_words_audited": len({p["word"] for p in pairs}),
         "words_not_tags": sorted(not_tags),
+        "by_dimension": by_dim,
         "catalog_mean": {d: round(m, 4) for d, m in catalog_mean.items()},
         "pairs": pairs,
     }
