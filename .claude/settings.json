@@ -11,5 +11,54 @@
         "matcher": ""
       }
     ]
+  },
+  "_permissions_note": "Without this block a builder is denied every write path \u2014 Edit, Write, bd, guard.sh, make, pytest, uv \u2014 and fails closed at step 0. Three runs did exactly that, correctly reporting they could not confirm the kill switch rather than proceeding unprotected. doctor never flagged it because settings.json was PRESENT; presence is not adequacy, the same rung doctor already climbed once for tracked-ness and again for the push guard actually refusing.",
+  "permissions": {
+    "allow": [
+      "Bash(bd:*)",
+      "Bash(tools/flywheel/guard.sh:*)",
+      "Bash(make:*)",
+      "Bash(uv run:*)",
+      "Bash(uv sync:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(ruff:*)",
+      "Bash(mypy:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git branch:*)",
+      "Bash(git worktree:*)",
+      "Bash(git push:*)",
+      "Bash(lefthook run:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr checks:*)",
+      "Write",
+      "Edit",
+      "NotebookEdit",
+      "mcp__blackbird__blackbird_agent_register",
+      "mcp__blackbird__blackbird_reservation_acquire",
+      "mcp__blackbird__blackbird_reservation_release",
+      "mcp__blackbird__blackbird_reservation_renew",
+      "mcp__blackbird__blackbird_agents_list"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push --force-with-lease:*)",
+      "Bash(git push origin main:*)",
+      "Bash(git tag:*)",
+      "Bash(gh release:*)",
+      "Bash(gh auth token:*)",
+      "Bash(gh api:*)",
+      "Bash(git -C:*)",
+      "Bash(uv run --no-project:*)",
+      "Read(~/.claude/.credentials.json)",
+      "Read(**/.env)"
+    ]
   }
 }
