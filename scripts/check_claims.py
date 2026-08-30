@@ -208,7 +208,8 @@ def main() -> int:
         path = ROOT / c.source
         if not path.exists():
             # One line per artifact, not per claim: six copies of the same
-            # missing file is noise, and the count that matters is claims.
+            # missing file is noise, and the missing artifact — not each claim
+            # riding on it — is the one problem the reader has to fix.
             line = f"{c.app}: {c.source} not built"
             if line not in missing_src:
                 missing_src.append(line)
@@ -236,12 +237,12 @@ def main() -> int:
     if drifted or absent or missing_src or inconsistent:
         n = len(drifted) + len(absent) + len(missing_src) + len(inconsistent)
         print(
-            f"\n{n} problem(s). Regenerate the app (or restore its artifact "
-            "from git), then fix README.md."
+            f"\n{n} problem(s). Restore the artifact from git (or regenerate "
+            "the app), then fix README.md."
         )
         return 1
     print(
-        f"root README: {len(CLAIMS)}/{len(CLAIMS)} claims match their source artifacts, "
+        f"root README: all {len(CLAIMS)} claims match their source artifacts, "
         "and the page agrees with itself"
     )
     return 0
