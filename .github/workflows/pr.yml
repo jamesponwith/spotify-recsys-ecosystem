@@ -1,0 +1,55 @@
+# Validate: no green, no merge.
+#
+# Written for THIS repo, not copied. The flywheel template's pr.yml is Go —
+# setup-go, go.mod, golangci-lint, go test -race — and this is a Python
+# monorepo with no go.mod, so every job would have failed on every PR. A gate
+# that can only fail is one everyone learns to ignore, which is the bypass the
+# standing rule is about.
+name: pr
+
+on:
+  pull_request:
+
+jobs:
+  # The repo's own gate, which passes today. check-claims verifies the root
+  # README's hand-typed numbers against each app's artifacts — the closest
+  # thing here to "the published pages are still true", and several open beads
+  # are corrections to exactly those numbers.
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          # Pinned, not read from a file: there is no .python-version here, and
+          # python-version-file pointing at a missing file fails the job on its
+          # first step. Every pyproject declares >=3.11; 3.12 is what the work
+          # is actually done on.
+          python-version: "3.12"
+      - run: pip install uv
+      - run: make lint-all
+
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [cadence, timbre, segue, gamut, ostinato]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          # Pinned, not read from a file: there is no .python-version here, and
+          # python-version-file pointing at a missing file fails the job on its
+          # first step. Every pyproject declares >=3.11; 3.12 is what the work
+          # is actually done on.
+          python-version: "3.12"
+      - run: pip install uv
+      # Run INSIDE the app, not from the root with --project. From the root
+      # pytest collects every app's tests against one app's dependencies: 28
+      # collection errors, none of them real. Verified by running it both ways.
+      #
+      # fail-fast is off on purpose: five apps, and knowing which three broke
+      # is worth more than stopping at the first.
+      - run: uv run pytest -q
+        working-directory: ${{ matrix.app }}

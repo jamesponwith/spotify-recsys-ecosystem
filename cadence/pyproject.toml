@@ -55,4 +55,9 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# The suite imports `from tests.conftest import ...`, which needs the project
+# root importable. Without it collection fails with "No module named 'tests'"
+# — three errors, and only when pytest is invoked from this directory rather
+# than through the root Makefile, which is exactly how CI runs it.
+pythonpath = ["."]
 addopts = "-q"

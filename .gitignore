@@ -22,6 +22,15 @@
 !/tools/
 !/.lefthook/
 
+# The agent's own instructions and state. A builder cuts its worktree from
+# TRACKED content, so a skill that exists only on this machine is a skill the
+# builder cannot find — three of them spawned into "Unknown command:
+# /flywheel-next", 0 turns and $0.00 each, because these were ignored.
+!/.claude/
+!/.flywheel/
+!/.gitattributes
+!/.github/
+
 # Virtual environments
 .venv/
 *.egg-info/
