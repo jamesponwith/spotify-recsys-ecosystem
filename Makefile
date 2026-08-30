@@ -12,5 +12,9 @@ lint-all: check-claims ## check-claims, then lint the shared tooling and each ap
 	@ostinato/.venv/bin/ruff check scripts
 	@ostinato/.venv/bin/ruff format --check scripts
 	@for a in $(APPS); do \
-	  if [ -x $$a/.venv/bin/ruff ]; then echo "--- $$a"; $(MAKE) -C $$a lint || exit 1; fi; \
+	  if [ ! -x $$a/.venv/bin/ruff ]; then \
+	    echo "lint-all: $$a has no venv — run 'uv sync --extra dev --project $$a' (skipping it would report green while checking nothing)"; \
+	    exit 1; \
+	  fi; \
+	  echo "--- $$a"; $(MAKE) -C $$a lint || exit 1; \
 	done
