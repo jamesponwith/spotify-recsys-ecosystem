@@ -73,8 +73,9 @@ IN_BAND = "≈"
 def fmt(cell: dict, metric: str) -> str:
     """`mean ± 2×SE`, at the precision the metric is conventionally read at."""
     digits = 2 if metric == "clicks" else 4
-    value, se = cell[metric], cell.get(f"{metric}_se", 0.0)
-    return f"{value:.{digits}f} ± {BAND_Z * se:.{digits}f}"
+    # The SE is indexed, not defaulted: a report without one would otherwise
+    # print "± 0.0000", which is the silent-band failure this script exists to end.
+    return f"{cell[metric]:.{digits}f} ± {BAND_Z * cell[f'{metric}_se']:.{digits}f}"
 
 
 def in_band(cell: dict, base: dict, metric: str) -> bool:
@@ -132,10 +133,13 @@ def main() -> int:
                 row.append("—")
                 continue
             text = fmt(v, "r_precision")
-            if name != ABLATION_BASE and base and in_band(v, base, "r_precision"):
+            marked = name != ABLATION_BASE and base and in_band(v, base, "r_precision")
+            if marked:
                 text += f" {IN_BAND}"
-                n_removed_in_band += name.startswith("no_")
-            n_removed += name.startswith("no_")
+            if name.startswith("no_"):
+                n_removed += 1
+                if marked:
+                    n_removed_in_band += 1
             row.append(text)
         out.append("| " + " | ".join(row) + " |")
     if n_removed:
@@ -159,16 +163,20 @@ def main() -> int:
             )
 
     meta = report["meta"]
-    # Reports written before the harness stamped the floor still carry the SE
-    # it is derived from, so derive it the same way rather than print nothing.
-    floor = detection_floor(results)
-    floor_value = meta.get("detection_floor", floor["value"])
+    # The harness stamps the floor and the cell it came from. Reports written
+    # before it did still carry the SE, so derive both the same way rather than
+    # print nothing — but never mix a stamped value with a recomputed cell.
+    if "detection_floor" in meta:
+        floor = {"value": meta["detection_floor"], **meta["detection_floor_basis"]}
+    else:
+        floor = detection_floor(results)
     out.append(
         f"\n\nEvaluated on {meta['limit_per_cell']} held-out playlists per cell, "
         f"retrieval depth {meta['depth']}, catalog {meta['n_tracks']:,} tracks. "
-        f"**Detection floor: {floor_value:.4f} R-precision** — {BAND_Z:.0f}×SE of the "
-        f"k={floor['k']} `{floor['system']}` cell. A difference smaller than that "
-        "cannot be distinguished from sampling noise anywhere in this report."
+        f"**Detection floor: {floor['value']:.4f} R-precision** — {BAND_Z:.0f}×SE of the "
+        f"k={floor['k']} `{floor['system']}` cell, the band the headline number sits in. "
+        "A difference between two cells is judged against the band of their "
+        f"*difference* (the `{IN_BAND}` marks above), which is wider still."
     )
     print("\n".join(out))
     return 0

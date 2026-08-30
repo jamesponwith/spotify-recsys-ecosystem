@@ -24,6 +24,7 @@ returns the global top-40 can score respectably on NDCG while being useless.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -160,35 +161,29 @@ class MetricAccumulator:
 BAND_Z = 2.0
 
 
-def within_band(x: float, x_se: float, y: float, y_se: float, z: float = BAND_Z) -> bool:
-    """Whether two independent means are indistinguishable at ±z×SE.
+def within_band(x: float, x_se: float, y: float, y_se: float) -> bool:
+    """Whether two independent means are indistinguishable at ±BAND_Z×SE.
 
     The band is on the *difference*, so both cells' errors add in quadrature.
     Testing |x − y| against one cell's SE alone would call a real gap noise
     whenever the other cell happened to be the noisier one.
     """
-    return abs(x - y) <= z * float(np.hypot(x_se, y_se))
+    return abs(x - y) <= BAND_Z * math.hypot(x_se, y_se)
 
 
-def detection_floor(results: dict, metric: str = "r_precision") -> dict:
-    """The smallest difference this report can tell from sampling noise.
+def detection_floor(results: dict) -> dict:
+    """The smallest R-precision difference this report can tell from noise.
 
-    Defined as ±z×SE of the headline cell — the smallest seed count, reranked if
-    the reranker ran — because that is the number every other cell is read
-    against. Returned rounded to the four decimals the tables print, plus the
-    cell it came from, so a reader can recompute it from the raw SE.
+    Defined as ±BAND_Z×SE of the headline cell — the smallest seed count,
+    reranked if the reranker ran — because that is the number every other cell
+    is read against. `value` is rounded to the four decimals the tables print;
+    the rest names the cell it came from, so the renderer can attribute the
+    floor and a reader can recompute it from the raw SE.
     """
     k = min(results, key=int)
     system = "full_reranked" if "full_reranked" in results[k] else "full_fusion"
-    se = float(results[k][system][f"{metric}_se"])
-    return {
-        "value": round(BAND_Z * se, 4),
-        "metric": metric,
-        "k": int(k),
-        "system": system,
-        "se": se,
-        "z": BAND_Z,
-    }
+    se = float(results[k][system]["r_precision_se"])
+    return {"value": round(BAND_Z * se, 4), "k": int(k), "system": system, "se": se, "z": BAND_Z}
 
 
 def evaluate_ranking(

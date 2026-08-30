@@ -7,7 +7,6 @@ decimals of which the last two were noise.
 
 from __future__ import annotations
 
-import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -19,15 +18,8 @@ from cadence.eval.metrics import BAND_Z, detection_floor, within_band
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "artifacts" / "eval_report.json"
 
-
-def _load_renderer():
-    spec = importlib.util.spec_from_file_location(
-        "render_results", ROOT / "scripts" / "render_results.py"
-    )
-    mod = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(mod)
-    return mod
+sys.path.insert(0, str(ROOT / "scripts"))
+import render_results  # noqa: E402
 
 
 def _cell(value: float, se: float, **extra: float) -> dict:
@@ -67,7 +59,7 @@ def rendered(tmp_path, monkeypatch, capsys) -> str:
     path = tmp_path / "eval_report.json"
     path.write_text(json.dumps(_synthetic_report()))
     monkeypatch.setattr(sys, "argv", ["render_results.py", str(path)])
-    assert _load_renderer().main() == 0
+    assert render_results.main() == 0
     return capsys.readouterr().out
 
 
@@ -101,14 +93,19 @@ def test_footer_states_the_floor(rendered):
     assert "k=0 `full_reranked` cell" in rendered
 
 
-def test_footer_prefers_the_stamped_floor(tmp_path, monkeypatch, capsys):
+def test_footer_prefers_the_stamped_floor_and_its_cell(tmp_path, monkeypatch, capsys):
+    # A stamped value must be attributed to the stamped cell, never to a
+    # recomputed one — otherwise the footer can quote one number and name another.
     report = _synthetic_report()
     report["meta"]["detection_floor"] = 0.0200
+    report["meta"]["detection_floor_basis"] = {"k": 5, "system": "full_fusion"}
     path = tmp_path / "eval_report.json"
     path.write_text(json.dumps(report))
     monkeypatch.setattr(sys, "argv", ["render_results.py", str(path)])
-    _load_renderer().main()
-    assert "Detection floor: 0.0200 R-precision" in capsys.readouterr().out
+    render_results.main()
+    out = capsys.readouterr().out
+    assert "Detection floor: 0.0200 R-precision" in out
+    assert "k=5 `full_fusion` cell" in out
 
 
 def test_within_band_uses_the_error_of_the_difference():
@@ -130,7 +127,12 @@ def test_detection_floor_is_the_headline_cells_band():
 
 @pytest.mark.skipif(not REPORT.exists(), reason="artifacts/eval_report.json not built")
 def test_published_report_carries_its_floor():
-    """The committed artifact must agree with the arithmetic that stamps it."""
+    """The committed artifact must agree with the arithmetic that stamps it.
+
+    The value itself is not pinned: an honest re-run moves every number, and
+    the docs are regenerated from the artifact rather than asserted against it.
+    """
     report = json.loads(REPORT.read_text())
-    assert report["meta"]["detection_floor"] == 0.0149
-    assert report["meta"]["detection_floor"] == detection_floor(report["results"])["value"]
+    floor = detection_floor(report["results"])
+    assert report["meta"]["detection_floor"] == floor.pop("value")
+    assert report["meta"]["detection_floor_basis"] == floor

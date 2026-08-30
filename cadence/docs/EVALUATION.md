@@ -71,7 +71,7 @@ channel with anything to say.
 
 ```bash
 make all                                  # build → splits → train → reranker → eval
-python scripts/render_results.py          # regenerate the tables below
+.venv/bin/python scripts/render_results.py  # regenerate the tables below
 ```
 
 Results are written to `artifacts/eval_report.json`. Every cell carries a
@@ -338,4 +338,4 @@ R-precision ± 2×SE; each row removes or isolates one retrieval channel. `≈` 
 | popularity baseline | 25 | 0.0007 | 0.000 | 0 | 0 |
 
 
-Evaluated on 400 held-out playlists per cell, retrieval depth 500, catalog 159,338 tracks. **Detection floor: 0.0149 R-precision** — 2×SE of the k=0 `full_reranked` cell. A difference smaller than that cannot be distinguished from sampling noise anywhere in this report.
+Evaluated on 400 held-out playlists per cell, retrieval depth 500, catalog 159,338 tracks. **Detection floor: 0.0149 R-precision** — 2×SE of the k=0 `full_reranked` cell, the band the headline number sits in. A difference between two cells is judged against the band of their *difference* (the `≈` marks above), which is wider still.
