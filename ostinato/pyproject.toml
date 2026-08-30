@@ -13,6 +13,8 @@ dependencies = [
     "scikit-learn>=1.4",
     "typer>=0.12",
     "rich>=13.7",
+  "cadence",
+  "gamut",
 ]
 
 [project.optional-dependencies]
@@ -44,3 +46,7 @@ disallow_untyped_defs = false
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+
+[tool.uv.sources]
+cadence = { path = "../cadence", editable = true }
+gamut = { path = "../gamut", editable = true }
