@@ -27,6 +27,15 @@ jobs:
           # is actually done on.
           python-version: "3.12"
       - run: pip install uv
+      # The Makefile calls ostinato/.venv/bin/python and .../ruff directly, so
+      # the venvs must exist before it runs — on a fresh runner they do not and
+      # check-claims dies with exit 127. It passed locally only because those
+      # venvs were already built, which is the whole reason this failed in CI
+      # and not on my machine.
+      - run: |
+          for a in cadence timbre segue gamut ostinato; do
+            uv sync --extra dev --project "$a"
+          done
       - run: make lint-all
 
   tests:
@@ -51,5 +60,8 @@ jobs:
       #
       # fail-fast is off on purpose: five apps, and knowing which three broke
       # is worth more than stopping at the first.
-      - run: uv run pytest -q
+      # --extra dev: pytest is declared under [project.optional-dependencies]
+      # dev, and uv run does not install extras by default, so a fresh runner
+      # fails with "Failed to spawn: pytest". Locally the venv already had it.
+      - run: uv run --extra dev pytest -q
         working-directory: ${{ matrix.app }}
