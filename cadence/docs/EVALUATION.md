@@ -244,97 +244,98 @@ beyond-accuracy metrics in the same table.
 
 ### Main results by seed count
 
-`k` = number of seed tracks revealed. **k=0 is the pure natural-language cold-start case**: title only, nothing for collaborative filtering to use.
+`k` = number of seed tracks revealed. **k=0 is the pure natural-language cold-start case**: title only, nothing for collaborative filtering to use. Every cell is mean ± 2×SE.
 
 
 **k = 0 seed tracks**
 
 | System | R-prec | R-prec (artist) | NDCG@100 | Clicks ↓ | Recall@500 |
 |---|---|---|---|---|---|
-| **Cadence (reranked)** | 0.1422 | 0.1647 | 0.1952 | 3.37 | 0.2975 |
-| Cadence (fusion only) | 0.0698 | 0.0873 | 0.0913 | 8.05 | 0.2975 |
-| item-kNN baseline | 0.0404 | 0.0558 | 0.0545 | 13.02 | 0.1552 |
-| popularity baseline | 0.0404 | 0.0558 | 0.0545 | 13.02 | 0.1552 |
-| lexical-title baseline | 0.0197 | 0.0278 | 0.0266 | 26.19 | 0.0672 |
+| **Cadence (reranked)** | 0.1429 ± 0.0149 | 0.1655 ± 0.0157 | 0.1975 ± 0.0191 | 3.23 ± 0.95 | 0.3031 ± 0.0264 |
+| Cadence (fusion only) | 0.0709 ± 0.0108 | 0.0883 ± 0.0119 | 0.0924 ± 0.0140 | 7.70 ± 1.21 | 0.3031 ± 0.0264 |
+| item-kNN baseline | 0.0404 ± 0.0059 | 0.0558 ± 0.0072 | 0.0545 ± 0.0087 | 13.02 ± 1.81 | 0.1552 ± 0.0140 |
+| popularity baseline | 0.0404 ± 0.0059 | 0.0558 ± 0.0072 | 0.0545 ± 0.0087 | 13.02 ± 1.81 | 0.1552 ± 0.0140 |
+| lexical-title baseline | 0.0197 ± 0.0075 | 0.0278 ± 0.0083 | 0.0266 ± 0.0099 | 26.19 ± 2.11 | 0.0672 ± 0.0140 |
 
 **k = 1 seed tracks**
 
 | System | R-prec | R-prec (artist) | NDCG@100 | Clicks ↓ | Recall@500 |
 |---|---|---|---|---|---|
-| **Cadence (reranked)** | 0.1792 | 0.2037 | 0.2407 | 1.70 | 0.3575 |
-| Cadence (fusion only) | 0.1273 | 0.1543 | 0.1761 | 2.76 | 0.3575 |
-| item-kNN baseline | 0.1226 | 0.1501 | 0.1702 | 4.04 | 0.3408 |
-| popularity baseline | 0.0389 | 0.0543 | 0.0528 | 14.03 | 0.1508 |
-| lexical-title baseline | 0.0183 | 0.0257 | 0.0245 | 33.79 | 0.0497 |
+| **Cadence (reranked)** | 0.1962 ± 0.0184 | 0.2242 ± 0.0190 | 0.2672 ± 0.0230 | 2.08 ± 0.71 | 0.3723 ± 0.0273 |
+| Cadence (fusion only) | 0.1441 ± 0.0154 | 0.1742 ± 0.0164 | 0.2022 ± 0.0199 | 2.99 ± 0.83 | 0.3723 ± 0.0273 |
+| item-kNN baseline | 0.1390 ± 0.0153 | 0.1696 ± 0.0166 | 0.1888 ± 0.0198 | 5.08 ± 1.23 | 0.3545 ± 0.0282 |
+| popularity baseline | 0.0398 ± 0.0059 | 0.0552 ± 0.0072 | 0.0540 ± 0.0086 | 13.08 ± 1.81 | 0.1541 ± 0.0140 |
+| lexical-title baseline | 0.0183 ± 0.0077 | 0.0257 ± 0.0084 | 0.0242 ± 0.0098 | 34.50 ± 2.16 | 0.0500 ± 0.0135 |
 
 **k = 5 seed tracks**
 
 | System | R-prec | R-prec (artist) | NDCG@100 | Clicks ↓ | Recall@500 |
 |---|---|---|---|---|---|
-| **Cadence (reranked)** | 0.2483 | 0.2804 | 0.3352 | 0.57 | 0.4492 |
-| Cadence (fusion only) | 0.1782 | 0.2137 | 0.2531 | 0.77 | 0.4492 |
-| item-kNN baseline | 0.1621 | 0.1970 | 0.2254 | 1.33 | 0.4514 |
-| popularity baseline | 0.0339 | 0.0483 | 0.0470 | 16.98 | 0.1368 |
-| lexical-title baseline | 0.0174 | 0.0246 | 0.0234 | 34.56 | 0.0477 |
+| **Cadence (reranked)** | 0.2416 ± 0.0189 | 0.2733 ± 0.0191 | 0.3283 ± 0.0232 | 0.81 ± 0.40 | 0.4515 ± 0.0260 |
+| Cadence (fusion only) | 0.1849 ± 0.0153 | 0.2197 ± 0.0162 | 0.2559 ± 0.0194 | 1.01 ± 0.45 | 0.4515 ± 0.0260 |
+| item-kNN baseline | 0.1761 ± 0.0142 | 0.2117 ± 0.0153 | 0.2430 ± 0.0185 | 1.42 ± 0.59 | 0.4663 ± 0.0258 |
+| popularity baseline | 0.0378 ± 0.0057 | 0.0527 ± 0.0070 | 0.0518 ± 0.0082 | 13.50 ± 1.82 | 0.1525 ± 0.0139 |
+| lexical-title baseline | 0.0179 ± 0.0075 | 0.0251 ± 0.0083 | 0.0237 ± 0.0097 | 34.90 ± 2.14 | 0.0501 ± 0.0136 |
 
 **k = 10 seed tracks**
 
 | System | R-prec | R-prec (artist) | NDCG@100 | Clicks ↓ | Recall@500 |
 |---|---|---|---|---|---|
-| **Cadence (reranked)** | 0.2470 | 0.2790 | 0.3382 | 0.58 | 0.4571 |
-| Cadence (fusion only) | 0.1752 | 0.2105 | 0.2502 | 0.91 | 0.4571 |
-| item-kNN baseline | 0.1448 | 0.1795 | 0.2054 | 2.40 | 0.4419 |
-| popularity baseline | 0.0277 | 0.0412 | 0.0389 | 20.33 | 0.1203 |
-| lexical-title baseline | 0.0163 | 0.0233 | 0.0225 | 35.13 | 0.0467 |
+| **Cadence (reranked)** | 0.2457 ± 0.0184 | 0.2777 ± 0.0186 | 0.3359 ± 0.0231 | 0.71 ± 0.36 | 0.4696 ± 0.0256 |
+| Cadence (fusion only) | 0.1829 ± 0.0150 | 0.2183 ± 0.0159 | 0.2578 ± 0.0191 | 0.95 ± 0.41 | 0.4696 ± 0.0256 |
+| item-kNN baseline | 0.1676 ± 0.0138 | 0.2033 ± 0.0150 | 0.2390 ± 0.0178 | 1.52 ± 0.58 | 0.4769 ± 0.0250 |
+| popularity baseline | 0.0353 ± 0.0055 | 0.0497 ± 0.0068 | 0.0498 ± 0.0080 | 14.20 ± 1.85 | 0.1515 ± 0.0138 |
+| lexical-title baseline | 0.0172 ± 0.0073 | 0.0240 ± 0.0080 | 0.0233 ± 0.0096 | 35.45 ± 2.11 | 0.0489 ± 0.0134 |
 
 **k = 25 seed tracks**
 
 | System | R-prec | R-prec (artist) | NDCG@100 | Clicks ↓ | Recall@500 |
 |---|---|---|---|---|---|
-| **Cadence (reranked)** | 0.1916 | 0.2190 | 0.2736 | 3.18 | 0.4130 |
-| Cadence (fusion only) | 0.1116 | 0.1414 | 0.1731 | 4.97 | 0.4130 |
-| item-kNN baseline | 0.0812 | 0.1099 | 0.1172 | 10.38 | 0.3373 |
-| popularity baseline | 0.0142 | 0.0245 | 0.0197 | 30.91 | 0.0703 |
-| lexical-title baseline | 0.0103 | 0.0164 | 0.0171 | 37.77 | 0.0405 |
+| **Cadence (reranked)** | 0.2005 ± 0.0181 | 0.2293 ± 0.0184 | 0.2973 ± 0.0225 | 2.28 ± 0.91 | 0.4706 ± 0.0264 |
+| Cadence (fusion only) | 0.1443 ± 0.0141 | 0.1748 ± 0.0150 | 0.2217 ± 0.0179 | 2.59 ± 0.92 | 0.4706 ± 0.0264 |
+| item-kNN baseline | 0.1286 ± 0.0122 | 0.1595 ± 0.0135 | 0.1963 ± 0.0157 | 3.05 ± 0.91 | 0.4726 ± 0.0250 |
+| popularity baseline | 0.0292 ± 0.0052 | 0.0412 ± 0.0063 | 0.0451 ± 0.0077 | 17.58 ± 2.01 | 0.1464 ± 0.0141 |
+| lexical-title baseline | 0.0117 ± 0.0051 | 0.0176 ± 0.0062 | 0.0190 ± 0.0082 | 38.12 ± 2.00 | 0.0447 ± 0.0130 |
 
 
 ### Channel ablations
 
-R-precision; each row removes or isolates one retrieval channel.
+R-precision ± 2×SE; each row removes or isolates one retrieval channel. `≈` marks a cell whose difference from the fusion row is inside the band of that difference — at this sample size the change is not distinguishable from noise.
 
 | Configuration | k=0 | k=1 | k=5 | k=10 | k=25 |
 |---|---|---|---|---|---|
-| Cadence (fusion only) | 0.0698 | 0.1273 | 0.1782 | 0.1752 | 0.1116 |
-| − exact co-occurrence | 0.0698 | 0.0956 | 0.1327 | 0.1362 | 0.1011 |
-| − collaborative embedding | 0.0698 | 0.1356 | 0.1586 | 0.1421 | 0.0815 |
-| − folksonomy tags | 0.0191 | 0.1094 | 0.1700 | 0.1693 | 0.1122 |
-| − lexical | 0.0715 | 0.1267 | 0.1775 | 0.1741 | 0.1108 |
-| − audio | 0.0705 | 0.1273 | 0.1783 | 0.1753 | 0.1116 |
-| only co-occurrence | 0.0000 | 0.1215 | 0.1607 | 0.1430 | 0.0807 |
-| only collaborative | 0.0000 | 0.0686 | 0.1235 | 0.1337 | 0.1065 |
-| only folksonomy tags | 0.0659 | 0.0641 | 0.0578 | 0.0512 | 0.0320 |
+| Cadence (fusion only) | 0.0709 ± 0.0108 | 0.1441 ± 0.0154 | 0.1849 ± 0.0153 | 0.1829 ± 0.0150 | 0.1443 ± 0.0141 |
+| − exact co-occurrence | 0.0709 ± 0.0108 ≈ | 0.1070 ± 0.0134 | 0.1212 ± 0.0134 | 0.1157 ± 0.0131 | 0.0906 ± 0.0122 |
+| − collaborative embedding | 0.0709 ± 0.0108 ≈ | 0.1499 ± 0.0154 ≈ | 0.1734 ± 0.0143 ≈ | 0.1651 ± 0.0140 ≈ | 0.1310 ± 0.0130 ≈ |
+| − folksonomy tags | 0.0191 ± 0.0076 | 0.1264 ± 0.0146 ≈ | 0.1699 ± 0.0142 ≈ | 0.1694 ± 0.0138 ≈ | 0.1361 ± 0.0133 ≈ |
+| − lexical | 0.0723 ± 0.0103 ≈ | 0.1438 ± 0.0154 ≈ | 0.1843 ± 0.0152 ≈ | 0.1823 ± 0.0150 ≈ | 0.1448 ± 0.0141 ≈ |
+| − audio | 0.0716 ± 0.0108 ≈ | 0.1441 ± 0.0154 ≈ | 0.1850 ± 0.0154 ≈ | 0.1829 ± 0.0150 ≈ | 0.1443 ± 0.0141 ≈ |
+| only co-occurrence | 0.0000 ± 0.0000 | 0.1372 ± 0.0153 ≈ | 0.1734 ± 0.0142 ≈ | 0.1651 ± 0.0138 ≈ | 0.1270 ± 0.0121 ≈ |
+| only collaborative | 0.0000 ± 0.0000 | 0.0857 ± 0.0115 | 0.1060 ± 0.0112 | 0.1020 ± 0.0110 | 0.0820 ± 0.0108 |
+| only folksonomy tags | 0.0668 ± 0.0104 ≈ | 0.0657 ± 0.0104 | 0.0613 ± 0.0100 | 0.0561 ± 0.0096 | 0.0429 ± 0.0088 |
+
+20 of 25 `−` cells sit inside their own band: removing that channel cannot be told from noise in this report.
 
 
 ### Beyond-accuracy and latency
 
 | System | k | Coverage@100 | Gini@100 | p50 ms | p95 ms |
 |---|---|---|---|---|---|
-| **Cadence (reranked)** | 0 | 0.0603 | 0.684 | 144 | 183 |
-| Cadence (fusion only) | 0 | 0.1045 | 0.502 | 63 | 155 |
+| **Cadence (reranked)** | 0 | 0.0602 | 0.681 | 128 | 145 |
+| Cadence (fusion only) | 0 | 0.1041 | 0.503 | 49 | 96 |
 | popularity baseline | 0 | 0.0006 | 0.000 | 0 | 0 |
-| **Cadence (reranked)** | 1 | 0.0941 | 0.529 | 156 | 205 |
-| Cadence (fusion only) | 1 | 0.0874 | 0.551 | 99 | 161 |
+| **Cadence (reranked)** | 1 | 0.1258 | 0.430 | 163 | 200 |
+| Cadence (fusion only) | 1 | 0.1408 | 0.383 | 94 | 155 |
 | popularity baseline | 1 | 0.0006 | 0.000 | 0 | 0 |
-| **Cadence (reranked)** | 5 | 0.0801 | 0.580 | 165 | 193 |
-| Cadence (fusion only) | 5 | 0.0718 | 0.611 | 89 | 135 |
+| **Cadence (reranked)** | 5 | 0.1049 | 0.494 | 172 | 215 |
+| Cadence (fusion only) | 5 | 0.1050 | 0.505 | 92 | 150 |
 | popularity baseline | 5 | 0.0007 | 0.000 | 0 | 0 |
-| **Cadence (reranked)** | 10 | 0.0762 | 0.599 | 166 | 214 |
-| Cadence (fusion only) | 10 | 0.0691 | 0.628 | 93 | 145 |
+| **Cadence (reranked)** | 10 | 0.0963 | 0.525 | 172 | 213 |
+| Cadence (fusion only) | 10 | 0.0949 | 0.541 | 97 | 143 |
 | popularity baseline | 10 | 0.0007 | 0.000 | 0 | 0 |
-| **Cadence (reranked)** | 25 | 0.0756 | 0.607 | 183 | 240 |
-| Cadence (fusion only) | 25 | 0.0697 | 0.635 | 104 | 166 |
+| **Cadence (reranked)** | 25 | 0.0852 | 0.569 | 183 | 230 |
+| Cadence (fusion only) | 25 | 0.0828 | 0.590 | 110 | 177 |
 | popularity baseline | 25 | 0.0007 | 0.000 | 0 | 0 |
 
 
-Evaluated on 400 held-out playlists per cell, retrieval depth 500, catalog 159,338 tracks.
-
+Evaluated on 400 held-out playlists per cell, retrieval depth 500, catalog 159,338 tracks. **Detection floor: 0.0149 R-precision** — 2×SE of the k=0 `full_reranked` cell. A difference smaller than that cannot be distinguished from sampling noise anywhere in this report.

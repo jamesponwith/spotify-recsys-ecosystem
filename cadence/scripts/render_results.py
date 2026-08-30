@@ -3,6 +3,12 @@
 
 Generating the tables rather than transcribing them means the numbers in the
 documentation cannot drift from the numbers the harness produced.
+
+Every number is printed with its ±2×SE band. The harness has always written the
+standard errors; this script used to read them and drop them, which is how the
+docs came to quote four decimals with no indication that the last two were
+noise. A band beside every figure makes the detection floor impossible to miss,
+which is all this does — it does not make the harness one bit more sensitive.
 """
 
 from __future__ import annotations
@@ -10,6 +16,8 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+
+from cadence.eval.metrics import BAND_Z, detection_floor, within_band
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -31,8 +39,9 @@ SYSTEM_ORDER = [
     "popularity",
     "lexical_title",
 ]
+ABLATION_BASE = "full_fusion"
 ABLATION_ORDER = [
-    "full_fusion",
+    ABLATION_BASE,
     "no_cooccurrence",
     "no_collaborative",
     "no_tag",
@@ -57,10 +66,19 @@ LABEL = {
     "only_collaborative": "only collaborative",
     "only_tag": "only folksonomy tags",
 }
+# Marks an ablation cell whose difference from the fusion row is inside the band.
+IN_BAND = "≈"
 
 
-def fmt(value: float, metric: str) -> str:
-    return f"{value:.2f}" if metric == "clicks" else f"{value:.4f}"
+def fmt(cell: dict, metric: str) -> str:
+    """`mean ± 2×SE`, at the precision the metric is conventionally read at."""
+    digits = 2 if metric == "clicks" else 4
+    value, se = cell[metric], cell.get(f"{metric}_se", 0.0)
+    return f"{value:.{digits}f} ± {BAND_Z * se:.{digits}f}"
+
+
+def in_band(cell: dict, base: dict, metric: str) -> bool:
+    return within_band(cell[metric], cell[f"{metric}_se"], base[metric], base[f"{metric}_se"])
 
 
 def main() -> int:
@@ -77,7 +95,7 @@ def main() -> int:
     out.append(
         "`k` = number of seed tracks revealed. **k=0 is the pure "
         "natural-language cold-start case**: title only, nothing for "
-        "collaborative filtering to use.\n"
+        f"collaborative filtering to use. Every cell is mean ± {BAND_Z:.0f}×SE.\n"
     )
     for k in ks:
         cell = results[k]
@@ -89,22 +107,42 @@ def main() -> int:
             if name not in cell:
                 continue
             row = [LABEL.get(name, name)]
-            row += [fmt(cell[name][m], m) for m in HEADLINE]
+            row += [fmt(cell[name], m) for m in HEADLINE]
             out.append("| " + " | ".join(row) + " |")
 
     out.append("\n\n### Channel ablations\n")
-    out.append("R-precision; each row removes or isolates one retrieval channel.\n")
+    out.append(
+        f"R-precision ± {BAND_Z:.0f}×SE; each row removes or isolates one retrieval "
+        f"channel. `{IN_BAND}` marks a cell whose difference from the fusion row is "
+        "inside the band of that difference — at this sample size the change is "
+        "not distinguishable from noise.\n"
+    )
     header = "| Configuration | " + " | ".join(f"k={k}" for k in ks) + " |"
     out.append(header)
     out.append("|" + "---|" * (len(ks) + 1))
+    n_removed = n_removed_in_band = 0
     for name in ABLATION_ORDER:
         if not any(name in results[k] for k in ks):
             continue
         row = [LABEL.get(name, name)]
         for k in ks:
             v = results[k].get(name)
-            row.append(fmt(v["r_precision"], "r_precision") if v else "—")
+            base = results[k].get(ABLATION_BASE)
+            if not v:
+                row.append("—")
+                continue
+            text = fmt(v, "r_precision")
+            if name != ABLATION_BASE and base and in_band(v, base, "r_precision"):
+                text += f" {IN_BAND}"
+                n_removed_in_band += name.startswith("no_")
+            n_removed += name.startswith("no_")
+            row.append(text)
         out.append("| " + " | ".join(row) + " |")
+    if n_removed:
+        out.append(
+            f"\n{n_removed_in_band} of {n_removed} `−` cells sit inside their own band: "
+            "removing that channel cannot be told from noise in this report."
+        )
 
     out.append("\n\n### Beyond-accuracy and latency\n")
     out.append("| System | k | Coverage@100 | Gini@100 | p50 ms | p95 ms |")
@@ -121,9 +159,16 @@ def main() -> int:
             )
 
     meta = report["meta"]
+    # Reports written before the harness stamped the floor still carry the SE
+    # it is derived from, so derive it the same way rather than print nothing.
+    floor = detection_floor(results)
+    floor_value = meta.get("detection_floor", floor["value"])
     out.append(
         f"\n\nEvaluated on {meta['limit_per_cell']} held-out playlists per cell, "
-        f"retrieval depth {meta['depth']}, catalog {meta['n_tracks']:,} tracks."
+        f"retrieval depth {meta['depth']}, catalog {meta['n_tracks']:,} tracks. "
+        f"**Detection floor: {floor_value:.4f} R-precision** — {BAND_Z:.0f}×SE of the "
+        f"k={floor['k']} `{floor['system']}` cell. A difference smaller than that "
+        "cannot be distinguished from sampling noise anywhere in this report."
     )
     print("\n".join(out))
     return 0

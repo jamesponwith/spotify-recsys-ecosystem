@@ -57,6 +57,14 @@
         "shift_k": 2.0,
         "min_token_len": 2
       }
+    },
+    "detection_floor": 0.0149,
+    "detection_floor_basis": {
+      "metric": "r_precision",
+      "k": 0,
+      "system": "full_reranked",
+      "se": 0.007435214370452819,
+      "z": 2.0
     }
   },
   "results": {
