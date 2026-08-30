@@ -24,34 +24,18 @@ from .config import ARTIFACTS, CADENCE_PROCESSED, CHANNELS, AuditConfig
 ABSENT = -1
 
 
-def strip_sentinel(ranks: np.ndarray) -> np.ndarray:
+def strip_sentinel(ranks: np.ndarray, depth: int) -> np.ndarray:
     """Map fusion's absent-candidate sentinel to ABSENT.
 
     Cadence's RRF marks a candidate a channel never returned with the rank
-    ``channel_depth + 1`` -- deliberately, so its learned reranker can tell
-    "ranked last" from "never seen". The audit needs the opposite contract:
-    a rank is only meaningful if the channel actually produced it. Left in
+    ``depth + 1`` -- deliberately, so its learned reranker can tell "ranked
+    last" from "never seen". The audit needs the opposite contract: left in
     place, the sentinel passes any ``rank >= 0`` filter and every channel
-    block silently becomes the whole pool re-sorted.
-
-    Real ranks are unique within a query (each rank belongs to exactly one
-    candidate) while every absent candidate shares the one sentinel value, so
-    a duplicated maximum is the sentinel. A sentinel that appears exactly once
-    is ``channel_depth + 1`` with all other pool candidates present, hence at
-    least the pool size -- whereas a channel covering the whole pool has ranks
-    forming a permutation whose maximum is the pool size minus one. The only
-    misfire is a full-coverage channel whose deepest rank survived fused
-    truncation; dropping that one candidate cannot reach any audited depth.
+    block silently becomes the whole pool re-sorted. Real ranks are
+    ``0 .. depth - 1``, so anything at or past the channel's depth is absent.
     """
     cleaned = np.asarray(ranks).astype(np.int32)
-    if cleaned.size == 0:
-        return cleaned
-    top = cleaned.max()
-    if top < 0:
-        return cleaned
-    hits = cleaned == top
-    if hits.sum() > 1 or top >= cleaned.size:
-        cleaned[hits] = ABSENT
+    cleaned[cleaned >= depth] = ABSENT
     return cleaned
 
 
@@ -75,6 +59,9 @@ class Collected:
             channel_ranks=self.channel_ranks,
             titles=np.array(self.titles, dtype=object),
             truth=np.array([json.dumps(sorted(t)) for t in self.truth], dtype=object),
+            # Format marker: ranks in this cache had fusion's absent sentinel
+            # stripped at collection. load() refuses caches without it.
+            sentinel_stripped=np.True_,
         )
         return path
 
@@ -84,11 +71,11 @@ class Collected:
         if not path.exists():
             raise FileNotFoundError(f"{path} not found -- run `gamut collect` first.")
         z = np.load(path, allow_pickle=True)
-        if _contaminated(z["channel_ranks"]):
+        if "sentinel_stripped" not in z:
             raise ValueError(
-                f"{path} predates the sentinel fix: its per-channel ranks contain "
-                "duplicate values, which can only be fusion's absent-candidate "
-                "sentinel. Re-run `gamut collect` before auditing."
+                f"{path} predates the sentinel fix: its per-channel ranks treat "
+                "fusion's absent-candidate sentinel as a real rank, so every "
+                "channel row is the whole pool. Re-run `gamut collect`."
             )
         return cls(
             indices=z["indices"],
@@ -97,21 +84,6 @@ class Collected:
             truth=[set(json.loads(s)) for s in z["truth"]],
             titles=list(z["titles"]),
         )
-
-
-def _contaminated(channel_ranks: np.ndarray) -> bool:
-    """True if any stored row still carries fusion's sentinel.
-
-    Real ranks are unique per (channel, query); only the shared sentinel can
-    repeat. This is what lets a pre-fix cache be refused instead of silently
-    reproducing the published per-channel rows.
-    """
-    for channel in channel_ranks:
-        for row in channel:
-            real = row[row >= 0]
-            if real.size != np.unique(real).size:
-                return True
-    return False
 
 
 def collect(cfg: AuditConfig | None = None, verbose: bool = True) -> Collected:
@@ -144,9 +116,7 @@ def collect(cfg: AuditConfig | None = None, verbose: bool = True) -> Collected:
         for ci, name in enumerate(CHANNELS):
             cr = fused.channel_ranks.get(name)
             if cr is not None:
-                # Strip over the full pool: sentinel detection needs every row
-                # entry, not just the slice that fits the audit depth.
-                ranks[ci, qi, :n] = strip_sentinel(cr)[:n]
+                ranks[ci, qi, :n] = strip_sentinel(cr, fused.channel_depths[name])[:n]
         truth.append({int(t) for t in ch["held_out"]})
         titles.append(title)
         if verbose and (qi + 1) % 50 == 0:
