@@ -24,7 +24,7 @@ from ..catalog import Catalog
 from ..config import ARTIFACTS, DATA_PROCESSED
 from ..engine import CadenceEngine
 from .baselines import ItemKNNBaseline, LexicalBaseline, PopularityBaseline
-from .metrics import MetricAccumulator, catalog_coverage, evaluate_ranking, gini
+from .metrics import MetricAccumulator, catalog_coverage, detection_floor, evaluate_ranking, gini
 from .splits import Challenge, load_splits
 
 DEPTH = 500
@@ -200,6 +200,13 @@ def run(
                     f"NDCG@100={m['ndcg_100']:.4f} clicks={m['clicks']:.2f}"
                 )
         report["results"][str(k)] = cell
+
+    # Stamp the floor on the report itself, so anything that quotes a number
+    # from it can quote the band it sits in without re-deriving the arithmetic.
+    if report["results"]:
+        floor = detection_floor(report["results"])
+        report["meta"]["detection_floor"] = floor.pop("value")
+        report["meta"]["detection_floor_basis"] = floor
 
     out_path = out_path or artifacts_dir / "eval_report.json"
     out_path.write_text(json.dumps(report, indent=2))
