@@ -1,0 +1,4 @@
+{"ts":"2026-08-28T16:50:12Z","event":"push.refused","agent":"fleet/doctor-probe","repo":"Spotify","refs":"main"}
+{"ts":"2026-08-28T16:53:05Z","event":"push.refused","agent":"fleet/builder-py","repo":"Spotify","refs":"main"}
+{"ts":"2026-08-30T00:36:21Z","event":"push.refused","agent":"fleet/doctor-probe","repo":"Spotify","refs":"main"}
+{"ts":"2026-08-30T00:36:40Z","event":"push.refused","agent":"fleet/doctor-probe","repo":"Spotify","refs":"main"}
