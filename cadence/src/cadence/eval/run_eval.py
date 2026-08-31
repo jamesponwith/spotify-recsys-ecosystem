@@ -145,11 +145,30 @@ def verify_vectors(report: dict, sidecar: dict, tol: float = 1e-9) -> None:
     sidecar's per-challenge vectors; raise ValueError on the first field that
     is missing or disagrees beyond tol. Set-level numbers (coverage, gini,
     latency) have no per-challenge vector and are not checked."""
-    reference = sidecar["meta"]["reference"]
+    try:
+        reference = sidecar["meta"]["reference"]
+        all_vectors = sidecar["vectors"]
+    except (KeyError, TypeError) as e:
+        raise ValueError(f"not an eval vectors sidecar: missing {e}") from e
     for k, cell in report["results"].items():
-        arms = sidecar["vectors"][k]
+        arms = all_vectors.get(k, {})
         for arm, published in cell.items():
-            acc = MetricAccumulator(values={m: [float(x) for x in v] for m, v in arms[arm].items()})
+            vecs = arms.get(arm)
+            if vecs is None:
+                raise ValueError(f"sidecar has no vectors for results[{k!r}][{arm!r}]")
+            # Every published mean with an _se companion came from a
+            # per-challenge vector, so a vector the sidecar lost is a hole in
+            # the guarantee, not a key to skip.
+            missing = {
+                key[: -len("_se")]
+                for key in published
+                if key.endswith("_se") and not key.endswith("_delta_se")
+            } - set(vecs)
+            if missing:
+                raise ValueError(
+                    f"sidecar vectors for results[{k!r}][{arm!r}] lack {sorted(missing)}"
+                )
+            acc = MetricAccumulator(values={m: [float(x) for x in v] for m, v in vecs.items()})
             derived = acc.summary()
             if arm != reference and reference in arms:
                 ref_acc = MetricAccumulator(
@@ -158,7 +177,9 @@ def verify_vectors(report: dict, sidecar: dict, tol: float = 1e-9) -> None:
                 derived.update(acc.paired_deltas(ref_acc))
             for key, want in derived.items():
                 got = published.get(key)
-                if got is None or abs(float(got) - want) > tol:
+                # `not <=` rather than `>` so a NaN on either side fails
+                # instead of slipping through every comparison.
+                if got is None or not abs(float(got) - want) <= tol:
                     raise ValueError(
                         f"results[{k!r}][{arm!r}][{key!r}]: report has {got!r}, "
                         f"vectors re-derive {want!r}"
