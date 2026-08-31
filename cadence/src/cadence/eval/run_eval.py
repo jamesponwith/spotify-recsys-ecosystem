@@ -8,6 +8,12 @@ Sweeping the seed count is the core experiment. k=0 is the natural-language
 cold-start case this project exists for; k=25 is a conventional
 continue-this-playlist task. A system that only reports one of them is hiding
 half its behaviour.
+
+Every arm scores the identical challenge list in identical order, so each cell
+also carries paired deltas against the full_fusion reference, and the raw
+per-challenge vectors are persisted to a `*_vectors.json` sidecar next to the
+report. verify_vectors() re-derives every published mean, SE and delta from
+that sidecar before either file is written.
 """
 
 from __future__ import annotations
@@ -28,6 +34,7 @@ from .metrics import MetricAccumulator, catalog_coverage, evaluate_ranking, gini
 from .splits import Challenge, load_splits
 
 DEPTH = 500
+PAIRED_REFERENCE = "full_fusion"
 
 ALL_CHANNELS = {
     "collaborative",
@@ -55,7 +62,7 @@ def _run_engine_config(
     artist_ids: np.ndarray,
     n_items: int,
     limit: int | None,
-) -> dict:
+) -> tuple[dict, MetricAccumulator]:
     acc = MetricAccumulator()
     recommended: list[np.ndarray] = []
     exposure = np.zeros(n_items, dtype=np.int64)
@@ -87,17 +94,18 @@ def _run_engine_config(
         if len(preds):
             exposure[preds[:100]] += 1
 
-    out = acc.summary()
-    out["coverage_100"] = catalog_coverage(recommended, n_items)
-    out["gini_100"] = gini(exposure[exposure > 0]) if exposure.any() else 0.0
-    out["latency_p50_ms"] = float(np.percentile(latencies, 50)) if latencies else 0.0
-    out["latency_p95_ms"] = float(np.percentile(latencies, 95)) if latencies else 0.0
-    return out
+    extras = {
+        "coverage_100": catalog_coverage(recommended, n_items),
+        "gini_100": gini(exposure[exposure > 0]) if exposure.any() else 0.0,
+        "latency_p50_ms": float(np.percentile(latencies, 50)) if latencies else 0.0,
+        "latency_p95_ms": float(np.percentile(latencies, 95)) if latencies else 0.0,
+    }
+    return extras, acc
 
 
 def _run_baseline(
     baseline, challenges: list[Challenge], artist_ids: np.ndarray, n_items: int, limit: int | None
-) -> dict:
+) -> tuple[dict, MetricAccumulator]:
     acc = MetricAccumulator()
     recommended: list[np.ndarray] = []
     items = challenges[:limit] if limit else challenges
@@ -106,9 +114,55 @@ def _run_baseline(
         preds = baseline.recommend(seeds, ch.title, k=DEPTH)
         acc.update(evaluate_ranking(preds, set(ch.held_out), artist_ids))
         recommended.append(preds[:100])
-    out = acc.summary()
-    out["coverage_100"] = catalog_coverage(recommended, n_items)
-    return out
+    return {"coverage_100": catalog_coverage(recommended, n_items)}, acc
+
+
+def build_cell(
+    accs: dict[str, MetricAccumulator],
+) -> tuple[dict[str, dict], dict[str, dict[str, list[float]]]]:
+    """Collapse each arm's accumulator to its summary, attach paired deltas
+    against PAIRED_REFERENCE, and keep the per-challenge vectors the summaries
+    collapse — the pairing is only valid because every arm scored the same
+    challenges in the same order."""
+    reference = accs.get(PAIRED_REFERENCE)
+    cell: dict[str, dict] = {}
+    vectors: dict[str, dict[str, list[float]]] = {}
+    for name, acc in accs.items():
+        out = acc.summary()
+        if reference is not None and acc is not reference:
+            out.update(acc.paired_deltas(reference))
+        cell[name] = out
+        vectors[name] = {m: list(v) for m, v in acc.values.items()}
+    return cell, vectors
+
+
+def sidecar_path(out_path: Path) -> Path:
+    return out_path.with_name(out_path.stem + "_vectors" + out_path.suffix)
+
+
+def verify_vectors(report: dict, sidecar: dict, tol: float = 1e-9) -> None:
+    """Re-derive every mean, SE and paired field in the report from the
+    sidecar's per-challenge vectors; raise ValueError on the first field that
+    is missing or disagrees beyond tol. Set-level numbers (coverage, gini,
+    latency) have no per-challenge vector and are not checked."""
+    reference = sidecar["meta"]["reference"]
+    for k, cell in report["results"].items():
+        arms = sidecar["vectors"][k]
+        for arm, published in cell.items():
+            acc = MetricAccumulator(values={m: [float(x) for x in v] for m, v in arms[arm].items()})
+            derived = acc.summary()
+            if arm != reference and reference in arms:
+                ref_acc = MetricAccumulator(
+                    values={m: [float(x) for x in v] for m, v in arms[reference].items()}
+                )
+                derived.update(acc.paired_deltas(ref_acc))
+            for key, want in derived.items():
+                got = published.get(key)
+                if got is None or abs(float(got) - want) > tol:
+                    raise ValueError(
+                        f"results[{k!r}][{arm!r}][{key!r}]: report has {got!r}, "
+                        f"vectors re-derive {want!r}"
+                    )
 
 
 def run(
@@ -170,39 +224,56 @@ def run(
             "limit_per_cell": limit,
             "seed_counts": list(ks),
             "reranker": reranker is not None,
+            "paired_reference": PAIRED_REFERENCE,
             "build": catalog.meta["build"],
             "train": catalog.meta["train"],
         },
         "results": {},
     }
+    vectors_by_k: dict[str, dict[str, dict[str, list[float]]]] = {}
 
     for k in ks:
         items = challenges.get(k, [])
         if not items:
             continue
-        cell: dict[str, dict] = {}
+        accs: dict[str, MetricAccumulator] = {}
+        extras: dict[str, dict] = {}
         for cfg in configs:
             t0 = time.perf_counter()
-            cell[cfg.name] = _run_engine_config(engine, items, cfg, artist_ids, n_items, limit)
+            extras[cfg.name], accs[cfg.name] = _run_engine_config(
+                engine, items, cfg, artist_ids, n_items, limit
+            )
             if verbose:
-                m = cell[cfg.name]
+                m = accs[cfg.name].summary()
                 print(
                     f"k={k:<3} {cfg.name:<20} R-prec={m['r_precision']:.4f} "
                     f"NDCG@100={m['ndcg_100']:.4f} clicks={m['clicks']:.2f} "
                     f"({time.perf_counter() - t0:.0f}s)"
                 )
         for name, bl in baselines.items():
-            cell[name] = _run_baseline(bl, items, artist_ids, n_items, limit)
+            extras[name], accs[name] = _run_baseline(bl, items, artist_ids, n_items, limit)
             if verbose:
-                m = cell[name]
+                m = accs[name].summary()
                 print(
                     f"k={k:<3} {name:<20} R-prec={m['r_precision']:.4f} "
                     f"NDCG@100={m['ndcg_100']:.4f} clicks={m['clicks']:.2f}"
                 )
+        cell, vectors = build_cell(accs)
+        for name, ex in extras.items():
+            cell[name].update(ex)
         report["results"][str(k)] = cell
+        vectors_by_k[str(k)] = vectors
 
     out_path = out_path or artifacts_dir / "eval_report.json"
+    sidecar = {
+        "meta": {"reference": PAIRED_REFERENCE, "report": out_path.name},
+        "vectors": vectors_by_k,
+    }
+    verify_vectors(report, sidecar)
     out_path.write_text(json.dumps(report, indent=2))
+    vec_path = sidecar_path(out_path)
+    vec_path.write_text(json.dumps(sidecar))
     if verbose:
         print(f"\nwrote {out_path}")
+        print(f"wrote {vec_path}")
     return report
