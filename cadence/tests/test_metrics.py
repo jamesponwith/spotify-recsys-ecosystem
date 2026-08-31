@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from cadence.eval.metrics import (
     MetricAccumulator,
@@ -85,3 +86,62 @@ def test_accumulator_reports_mean_and_standard_error():
     assert s["m"] == 0.5
     assert s["m_se"] > 0
     assert s["n"] == 2
+
+
+def _acc(**metrics: list[float]) -> MetricAccumulator:
+    acc = MetricAccumulator()
+    for name, vals in metrics.items():
+        for v in vals:
+            acc.add(name, v)
+    return acc
+
+
+def test_paired_deltas_mean_se_and_n_changed():
+    ref = _acc(m=[0.1, 0.2, 0.3, 0.4])
+    arm = _acc(m=[0.1, 0.25, 0.3, 0.5])
+    d = arm.paired_deltas(ref)
+    diffs = np.array([0.0, 0.05, 0.0, 0.1])
+    assert abs(d["m_delta"] - diffs.mean()) < 1e-12
+    assert abs(d["m_delta_se"] - diffs.std(ddof=1) / 2) < 1e-12
+    assert d["m_n_changed"] == 2
+
+
+def test_paired_deltas_sign_is_arm_minus_reference():
+    ref = _acc(m=[0.5, 0.5])
+    arm = _acc(m=[0.4, 0.4])
+    assert abs(arm.paired_deltas(ref)["m_delta"] - (-0.1)) < 1e-12
+
+
+def test_paired_deltas_requires_aligned_vectors():
+    ref = _acc(m=[0.1, 0.2, 0.3])
+    arm = _acc(m=[0.1, 0.2])
+    with pytest.raises(ValueError):
+        arm.paired_deltas(ref)
+
+
+def test_paired_deltas_only_covers_shared_metrics():
+    ref = _acc(m=[0.1, 0.2])
+    arm = _acc(m=[0.1, 0.3], extra=[1.0, 2.0])
+    d = arm.paired_deltas(ref)
+    assert "m_delta" in d
+    assert not any(k.startswith("extra") for k in d)
+
+
+def test_paired_deltas_does_not_change_summary():
+    arm = _acc(m=[0.1, 0.3])
+    before = arm.summary()
+    arm.paired_deltas(_acc(m=[0.2, 0.2]))
+    assert arm.summary() == before
+
+
+def test_paired_band_beats_unpaired_band_on_correlated_arms():
+    # The situation the harness is in: two arms score the same challenges and
+    # differ by a small per-challenge nudge, so between-challenge variance is
+    # shared and cancels under pairing (rho ~ 0.99 in the real report).
+    rng = np.random.default_rng(20260815)
+    base = rng.uniform(0.0, 1.0, size=400)
+    arm_vals = base + rng.normal(0.0, 0.005, size=400)
+    ref, arm = _acc(m=list(base)), _acc(m=list(arm_vals))
+    unpaired_band = 2 * np.hypot(ref.summary()["m_se"], arm.summary()["m_se"])
+    paired_band = 2 * arm.paired_deltas(ref)["m_delta_se"]
+    assert paired_band < unpaired_band / 10
