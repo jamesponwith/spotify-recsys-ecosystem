@@ -12,6 +12,7 @@ Hermetic: builds a tiny processed dir from scratch, trains real (tiny) spaces.
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 import numpy as np
@@ -27,17 +28,21 @@ from cadence.text import title_tokens
 N_TRACKS = 30
 VOCAB = ["rock", "chill", "indie", "summer", "gym", "sad"]
 
-# Playlist titles and members. Rows 16-19 are the evaluation holdout; tracks
-# 28 and 29 appear *only* there, so any "rock" credit they carry is
-# self-supplied by the playlists they would be scored against.
-PLAYLISTS: list[tuple[str, list[int]]] = (
+# Playlist titles and members, holdout last so its rows are simply the tail.
+# Tracks 28 and 29 appear *only* on the held-out "rock anthems" playlists, so
+# any "rock" credit they carry is self-supplied by the playlists they would be
+# scored against.
+TRAIN_PLAYLISTS: list[tuple[str, list[int]]] = (
     [("chill beats", [3 * i, 3 * i + 1, 3 * i + 2]) for i in range(5)]
     + [("indie summer", [15 + i, 16 + i, 17 + i]) for i in range(5)]
     + [("rock riffs", [20 + i, 21 + i, 22 + i]) for i in range(4)]
     + [("gym rock", [i, i + 5, 24 + i]) for i in range(2)]
-    + [("rock anthems", [5 + i, 10 + i, 28, 29]) for i in range(4)]
 )
-HOLDOUT_ROWS = np.arange(16, 20)
+HOLDOUT_PLAYLISTS: list[tuple[str, list[int]]] = [
+    ("rock anthems", [5 + i, 10 + i, 28, 29]) for i in range(4)
+]
+PLAYLISTS = TRAIN_PLAYLISTS + HOLDOUT_PLAYLISTS
+HOLDOUT_ROWS = np.arange(len(TRAIN_PLAYLISTS), len(PLAYLISTS))
 
 
 def _tag_counts(playlists: list[tuple[str, list[int]]]) -> sparse.csr_matrix:
@@ -100,9 +105,7 @@ def test_train_persists_holdout_free_tags(trained: tuple[Path, Path]) -> None:
     assert (artifacts / "tags_train.npz").exists()
 
     got = sparse.load_npz(artifacts / "tags_train.npz").tocsr()
-    keep = np.ones(len(PLAYLISTS), dtype=bool)
-    keep[HOLDOUT_ROWS] = False
-    want = _tag_counts([p for i, p in enumerate(PLAYLISTS) if keep[i]])
+    want = _tag_counts(TRAIN_PLAYLISTS)
     assert got.shape == want.shape
     assert (got != want).nnz == 0
 
@@ -121,14 +124,27 @@ def test_catalog_load_prefers_tags_train(trained: tuple[Path, Path]) -> None:
     assert (catalog.tag_matrix != want).nnz == 0
 
 
-def test_catalog_load_falls_back_to_processed_tags(trained: tuple[Path, Path]) -> None:
+def test_catalog_load_falls_back_to_processed_tags(
+    trained: tuple[Path, Path], tmp_path: Path
+) -> None:
+    # A copy of the artifacts, not the shared fixture: deleting from the real
+    # bundle would leak into whichever test runs next.
     processed, artifacts = trained
-    path = artifacts / "tags_train.npz"
-    hidden = path.with_suffix(".hidden")
-    path.rename(hidden)
-    try:
-        catalog = Catalog.load(processed_dir=processed, artifacts_dir=artifacts)
-    finally:
-        hidden.rename(path)
+    art = Path(shutil.copytree(artifacts, tmp_path / "artifacts"))
+    (art / "tags_train.npz").unlink()
+    catalog = Catalog.load(processed_dir=processed, artifacts_dir=art)
     want = sparse.load_npz(processed / "tags.npz").tocsr()
     assert (catalog.tag_matrix != want).nnz == 0
+
+
+def test_catalog_load_rejects_mismatched_tag_matrix(
+    trained: tuple[Path, Path], tmp_path: Path
+) -> None:
+    # A tags_train.npz left over from before a data rebuild must fail loudly,
+    # not silently serve credit for the wrong tracks.
+    processed, artifacts = trained
+    art = Path(shutil.copytree(artifacts, tmp_path / "artifacts"))
+    stale = sparse.csr_matrix((N_TRACKS + 1, len(VOCAB)), dtype=np.float32)
+    sparse.save_npz(art / "tags_train.npz", stale)
+    with pytest.raises(ValueError, match="stale artifacts"):
+        Catalog.load(processed_dir=processed, artifacts_dir=art)
