@@ -10,6 +10,7 @@ artifacts/*
 !artifacts/demo.json
 !artifacts/*_report.json
 !artifacts/*_meta.json
+!artifacts/lexicon_calibration.json
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
