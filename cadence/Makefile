@@ -33,6 +33,9 @@ eval: ## run the offline harness with ablations
 eval-constraints: ## measure constraint satisfaction of the assembly stage
 	$(CADENCE) eval-constraints
 
+audit-lexicon: ## compare MOOD_LEXICON's audio targets with the folksonomy
+	$(CADENCE) audit-lexicon
+
 all: build splits train reranker eval eval-constraints ## full offline pipeline
 
 play: ## example query

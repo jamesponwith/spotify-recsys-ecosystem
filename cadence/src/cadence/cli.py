@@ -118,6 +118,17 @@ def eval_affinity_cmd():
     main()
 
 
+@app.command("audit-lexicon")
+def audit_lexicon_cmd(
+    processed: Path = typer.Option(DATA_PROCESSED),
+    out: Path = typer.Option(ARTIFACTS / "lexicon_calibration.json"),
+):
+    """Compare MOOD_LEXICON's audio targets with where humans file each word."""
+    from .eval.lexicon_audit import main
+
+    main(processed_dir=processed, out=out)
+
+
 @app.command("eval-constraints")
 def eval_constraints_cmd():
     """Measure how often the assembly stage honours stated requirements."""
