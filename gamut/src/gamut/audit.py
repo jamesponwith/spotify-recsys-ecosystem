@@ -19,20 +19,26 @@ from .rerank import apply_artist_cap, popularity_norm, rerank
 def funnel_stages(cfg: AuditConfig) -> tuple[tuple[str, int], ...]:
     """The three real narrowings between the catalog and the listener.
 
-    Each stage is a (name, depth) pair and the depth is written into the report
-    beside the name, because the published error was a naming one: `depth` was
-    100 while Cadence's fused pool is 1500, and the top-100 window went out
-    labelled "reached by retrieval". A row that carries its own depth can be
-    checked against the stage it claims to measure; a bare percentage cannot.
+    Each stage is a (name, depth) pair, and the depth is published beside the
+    name: the error this corrects was a naming one, and a row carrying its own
+    depth can be checked against the stage it claims to measure.
 
-    The stages are nested prefixes of one ranked list, so their reach is
-    monotone non-increasing -- which is the invariant `tests/test_funnel.py`
-    asserts, and the one the old report violated by construction.
+    `read_by_select` is fusion's top `SELECT_POOL`, which is the prefix
+    `select()` reads *in the configuration Gamut audits* -- `collect` builds the
+    engine without its learned reranker. With a reranker loaded Cadence re-sorts
+    the whole pool before `select` takes that prefix, so the row would name a
+    different set of tracks than it measured.
+
+    Every stage clamps to `cfg.depth`. A stage cannot read deeper than was
+    collected, and an unclamped one reports reach *rising* down the funnel.
     """
-    return (
-        ("retrieved", cfg.depth),  # what `retrieve()` returns
-        ("read_by_select", min(SELECT_POOL, cfg.depth)),  # the prefix `select()` scores
-        ("shown", cfg.cut),  # what the listener actually sees
+    return tuple(
+        (name, min(depth, cfg.depth))
+        for name, depth in (
+            ("retrieved", cfg.depth),  # what `retrieve()` returns
+            ("read_by_select", SELECT_POOL),  # the prefix `select()` scores
+            ("shown", cfg.cut),  # what the listener actually sees
+        )
     )
 
 
@@ -95,15 +101,14 @@ def run(cfg: AuditConfig | None = None, verbose: bool = True) -> dict[str, Any]:
     }
 
     # --- where the catalog is actually lost -------------------------------
-    # Measured before the baseline because the baseline's `pool` row is one of
-    # these stages rather than a second computation of it. Two measurements of
-    # the same window can disagree; one measurement read twice cannot, and a
-    # published funnel disagreeing with itself is this bead's whole subject.
-    funnel = {
-        name: {"stage": name, "depth": d, **_as_dict(measure(collected.indices, facts, d))}
-        for name, d in funnel_stages(cfg)
-    }
-    report["funnel"] = list(funnel.values())
+    # Each stage is measured once and read wherever it is published. Two
+    # measurements of one window can disagree, and a published funnel that
+    # disagrees with itself is exactly what this corrects.
+    stages = funnel_stages(cfg)
+    exposure = {name: measure(collected.indices, facts, d) for name, d in stages}
+    report["funnel"] = [
+        {"stage": name, "depth": d, **_as_dict(exposure[name])} for name, d in stages
+    ]
     if verbose:
         for row in report["funnel"]:
             print(
@@ -113,11 +118,11 @@ def run(cfg: AuditConfig | None = None, verbose: bool = True) -> dict[str, Any]:
             )
 
     # --- what the system does today -------------------------------------
-    baseline = measure(collected.indices, facts, cfg.cut)
+    baseline = exposure["shown"]
     report["baseline"] = {
         **_as_dict(baseline),
         **_accuracy(collected.indices, collected.truth, cfg.cut),
-        "pool": {k: v for k, v in funnel["retrieved"].items() if k != "stage"},
+        "pool": _as_dict(exposure["retrieved"]),
     }
     if verbose:
         print(

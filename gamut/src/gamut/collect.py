@@ -67,14 +67,11 @@ class Collected:
 
     @classmethod
     def load(cls, path: Path | None = None, min_depth: int | None = None) -> Collected:
-        """Load the cache, refusing one that cannot answer the question asked.
+        """Load the cache, refusing one too narrow for the depth being reported.
 
-        ``min_depth`` is the depth the caller is about to *report*. A cache
-        narrower than that is not a smaller sample of the same thing: every
-        exposure number computed from it describes a shallower window than the
-        stage it will be labelled with. That mislabelling is what shipped --
-        a top-100 window published as "reached by retrieval" over a 1500-deep
-        pool -- so the width is checked rather than assumed.
+        ``min_depth`` is what the caller is about to *publish*. A narrower cache
+        is not a smaller sample of the same window, it is a different window
+        wearing the label -- so the width is checked rather than assumed.
         """
         path = path or ARTIFACTS / "collected.npz"
         if not path.exists():
@@ -86,7 +83,16 @@ class Collected:
                 "fusion's absent-candidate sentinel as a real rank, so every "
                 "channel row is the whole pool. Re-run `gamut collect`."
             )
-        cached_depth = int(z["indices"].shape[1])
+        # All three blocks are written at one width by `save`, so a disagreement
+        # means a hand-assembled cache. Checking only `indices` would let a
+        # 1500-wide pool carry 100-wide channel ranks, and every channel row
+        # would ship labelled with a depth it was never measured at.
+        widths = {name: int(z[name].shape[-1]) for name in ("indices", "scores", "channel_ranks")}
+        if len(set(widths.values())) != 1:
+            raise ValueError(
+                f"{path} has blocks of disagreeing width {widths}. Re-run `gamut collect`."
+            )
+        cached_depth = widths["indices"]
         if min_depth is not None and cached_depth < min_depth:
             raise ValueError(
                 f"{path} was collected {cached_depth} deep but the audit reports "

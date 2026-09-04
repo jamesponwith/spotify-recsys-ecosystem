@@ -25,12 +25,15 @@ def collect(n_queries: int = 400, depth: int = RETRIEVE_DEPTH) -> None:
     console.print(f"wrote {run_collect(cfg).save()}")
 
 
+# `--depth` mirrors `collect`'s: a shallower cache can still be audited, it just
+# has to be *labelled* at the depth it was collected at. Without this the two
+# commands could not agree, since `audit` would always demand the full pool.
 @app.command()
-def audit() -> None:
+def audit(depth: int = RETRIEVE_DEPTH) -> None:
     """Per-channel exposure attribution, then the accuracy/exposure frontier."""
     from .audit import run
 
-    report = run()
+    report = run(AuditConfig(depth=depth))
     b = report["baseline"]
     console.print(
         f"\n[bold]{b['track_coverage']:.2%}[/bold] of the catalog ever surfaced · "
