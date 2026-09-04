@@ -79,6 +79,54 @@ standard error (`*_se`) so a difference between two runs can be read as
 meaningful or not rather than eyeballed.
 
 
+## Pricing a config knob (paired A/B)
+
+The `*_se` above is the error of a *level*, and at n=400 the band it implies is
+±0.0149 R-precision — wider than any single knob in `RetrievalConfig` is worth.
+Read that way every config change comes back "no difference", which is a fact
+about the harness's resolution and not about the knob.
+
+`cadence eval-ab` runs two configs over the *same* challenges from the *same*
+planned intents, so the comparison can be paired. Differencing per challenge
+cancels the between-challenge variance the arms share, and the band on the
+difference is two to three orders of magnitude narrower than the unpaired one.
+
+```bash
+.venv/bin/cadence eval-ab --k 0 --limit 400 --arm rrf_k=30
+make eval-ab                                  # the same invocation
+```
+
+Arm A is the shipped config unless `--base KEY=VALUE` says otherwise; `--arm`
+sets arm B and both repeat. The report prints each metric's mean under both
+arms, the paired delta, the paired ±2×SE band, a detectable/not verdict, and —
+deliberately — the *unpaired* band beside it, so the cases where the shipped
+harness was calling a real difference noise are visible rather than asserted.
+It lands in `artifacts/eval_ab.json`.
+
+Only `rrf_k` and the seven channel weights can be set. That is not an oversight:
+this harness stops at fusion and never runs selection or sequencing, so an A/B
+on `mmr_lambda` or a sequencer weight would return a guaranteed null that means
+nothing at all. The parser refuses those keys by name and points at
+`eval-constraints` / `eval-affinity`, which do execute that stage.
+
+**A "not detectable" verdict is a statement about resolution, never evidence
+that the shipped value is optimal.** It says the effect is smaller than the
+band, and the band is printed next to it so a reader can see how small that is.
+Two limits carry over unchanged from the rest of this page: the split is single
+and frozen, so these bands quantify noise *within* it and not across splits; and
+no amount of pairing rescues the `audio` weight, which is inactive on 82.2 % of
+k=0 challenges — a query-set defect, not a statistical one.
+
+> **Pending confirmation.** The effects that motivated this command were
+> measured before it existed: `rrf_k` 60→30 costs −0.00579 NDCG@100 (paired
+> ±2×SE 0.00222, detectable) while moving R-precision only −0.00109 (paired
+> ±2×SE 0.00185, not detectable), and `tag_exact` 0.7→0.9 gains +0.00186
+> R-precision (paired ±2×SE 0.00165). The decision rule those numbers imply is
+> covered by hermetic tests; reproducing the numbers themselves needs a run on
+> the machine holding `data/processed`, and they are not restated as results
+> elsewhere in this document until that run happens.
+
+
 ## Constraint satisfaction (the assembly stage)
 
 The ranking harness above stops at retrieval — it never calls selection or
