@@ -7,14 +7,17 @@ import json
 import typer
 from rich.console import Console
 
-from .config import ARTIFACTS, AuditConfig
+from .config import ARTIFACTS, RETRIEVE_DEPTH, AuditConfig
 
 app = typer.Typer(add_completion=False, help="Gamut -- catalog exposure audit.")
 console = Console()
 
 
+# `depth` defaults to Cadence's real pool depth rather than a literal: this flag
+# was a second hand-copy of the constant that drifted, so a fix in config.py
+# alone would have left `gamut collect` still caching a 100-deep window.
 @app.command()
-def collect(n_queries: int = 400, depth: int = 100) -> None:
+def collect(n_queries: int = 400, depth: int = RETRIEVE_DEPTH) -> None:
     """Run Cadence over the held-out title-only battery and cache what it surfaced."""
     from .collect import collect as run_collect
 

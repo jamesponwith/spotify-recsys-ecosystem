@@ -11,9 +11,29 @@ import pandas as pd
 from cadence.eval.metrics import ndcg, r_precision
 
 from .collect import ABSENT, Collected
-from .config import ARTIFACTS, CADENCE_PROCESSED, CHANNELS, AuditConfig
+from .config import ARTIFACTS, CADENCE_PROCESSED, CHANNELS, SELECT_POOL, AuditConfig
 from .exposure import CatalogFacts, ExposureReport, measure
 from .rerank import apply_artist_cap, popularity_norm, rerank
+
+
+def funnel_stages(cfg: AuditConfig) -> tuple[tuple[str, int], ...]:
+    """The three real narrowings between the catalog and the listener.
+
+    Each stage is a (name, depth) pair and the depth is written into the report
+    beside the name, because the published error was a naming one: `depth` was
+    100 while Cadence's fused pool is 1500, and the top-100 window went out
+    labelled "reached by retrieval". A row that carries its own depth can be
+    checked against the stage it claims to measure; a bare percentage cannot.
+
+    The stages are nested prefixes of one ranked list, so their reach is
+    monotone non-increasing -- which is the invariant `tests/test_funnel.py`
+    asserts, and the one the old report violated by construction.
+    """
+    return (
+        ("retrieved", cfg.depth),  # what `retrieve()` returns
+        ("read_by_select", min(SELECT_POOL, cfg.depth)),  # the prefix `select()` scores
+        ("shown", cfg.cut),  # what the listener actually sees
+    )
 
 
 def _accuracy(block: np.ndarray, truth: list[set[int]], depth: int) -> dict[str, float]:
@@ -53,7 +73,7 @@ def _as_dict(r: ExposureReport) -> dict[str, float]:
 def run(cfg: AuditConfig | None = None, verbose: bool = True) -> dict[str, Any]:
     cfg = cfg or AuditConfig()
     t0 = time.perf_counter()
-    collected = Collected.load()
+    collected = Collected.load(min_depth=cfg.depth)
     frame = pd.read_parquet(CADENCE_PROCESSED / "tracks.parquet")
     facts = CatalogFacts.build(frame, cfg.tail_percentile, cfg.head_percentile)
     pop = popularity_norm(facts.play_counts)
@@ -74,12 +94,30 @@ def run(cfg: AuditConfig | None = None, verbose: bool = True) -> dict[str, Any]:
         },
     }
 
+    # --- where the catalog is actually lost -------------------------------
+    # Measured before the baseline because the baseline's `pool` row is one of
+    # these stages rather than a second computation of it. Two measurements of
+    # the same window can disagree; one measurement read twice cannot, and a
+    # published funnel disagreeing with itself is this bead's whole subject.
+    funnel = {
+        name: {"stage": name, "depth": d, **_as_dict(measure(collected.indices, facts, d))}
+        for name, d in funnel_stages(cfg)
+    }
+    report["funnel"] = list(funnel.values())
+    if verbose:
+        for row in report["funnel"]:
+            print(
+                f"  {row['stage']:16s} depth={row['depth']:<5d} "
+                f"reach={row['track_coverage']:.3%}  gini={row['artist_gini']:.3f}",
+                flush=True,
+            )
+
     # --- what the system does today -------------------------------------
     baseline = measure(collected.indices, facts, cfg.cut)
     report["baseline"] = {
         **_as_dict(baseline),
         **_accuracy(collected.indices, collected.truth, cfg.cut),
-        "pool": _as_dict(measure(collected.indices, facts, cfg.depth)),
+        "pool": {k: v for k, v in funnel["retrieved"].items() if k != "stage"},
     }
     if verbose:
         print(

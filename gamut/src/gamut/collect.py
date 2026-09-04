@@ -66,7 +66,16 @@ class Collected:
         return path
 
     @classmethod
-    def load(cls, path: Path | None = None) -> Collected:
+    def load(cls, path: Path | None = None, min_depth: int | None = None) -> Collected:
+        """Load the cache, refusing one that cannot answer the question asked.
+
+        ``min_depth`` is the depth the caller is about to *report*. A cache
+        narrower than that is not a smaller sample of the same thing: every
+        exposure number computed from it describes a shallower window than the
+        stage it will be labelled with. That mislabelling is what shipped --
+        a top-100 window published as "reached by retrieval" over a 1500-deep
+        pool -- so the width is checked rather than assumed.
+        """
         path = path or ARTIFACTS / "collected.npz"
         if not path.exists():
             raise FileNotFoundError(f"{path} not found -- run `gamut collect` first.")
@@ -76,6 +85,14 @@ class Collected:
                 f"{path} predates the sentinel fix: its per-channel ranks treat "
                 "fusion's absent-candidate sentinel as a real rank, so every "
                 "channel row is the whole pool. Re-run `gamut collect`."
+            )
+        cached_depth = int(z["indices"].shape[1])
+        if min_depth is not None and cached_depth < min_depth:
+            raise ValueError(
+                f"{path} was collected {cached_depth} deep but the audit reports "
+                f"depth {min_depth}. Every figure derived from it would describe "
+                f"the top {cached_depth} of the pool while being labelled as the "
+                "whole of it. Re-run `gamut collect`."
             )
         return cls(
             indices=z["indices"],
