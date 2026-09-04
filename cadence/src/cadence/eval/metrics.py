@@ -190,14 +190,20 @@ class MetricAccumulator:
 BAND_Z = 2.0
 
 
-def within_band(x: float, x_se: float, y: float, y_se: float) -> bool:
-    """Whether two independent means are indistinguishable at ±BAND_Z×SE.
+def unpaired_band(x_se: float, y_se: float) -> float:
+    """±BAND_Z×SE on the difference of two *independent* means.
 
-    The band is on the *difference*, so both cells' errors add in quadrature.
-    Testing |x − y| against one cell's SE alone would call a real gap noise
-    whenever the other cell happened to be the noisier one.
+    Both cells' errors add in quadrature. Testing |x − y| against one cell's SE
+    alone would call a real gap noise whenever the other cell happened to be the
+    noisier one. Exposed separately from `within_band` so a report can print the
+    band it judged against instead of asserting one.
     """
-    return abs(x - y) <= BAND_Z * math.hypot(x_se, y_se)
+    return BAND_Z * math.hypot(x_se, y_se)
+
+
+def within_band(x: float, x_se: float, y: float, y_se: float) -> bool:
+    """Whether two independent means are indistinguishable at ±BAND_Z×SE."""
+    return abs(x - y) <= unpaired_band(x_se, y_se)
 
 
 def detection_floor(results: dict) -> dict:

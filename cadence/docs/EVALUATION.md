@@ -81,15 +81,18 @@ meaningful or not rather than eyeballed.
 
 ## Pricing a config knob (paired A/B)
 
-The `*_se` above is the error of a *level*, and at n=400 the band it implies is
-±0.0149 R-precision — wider than any single knob in `RetrievalConfig` is worth.
-Read that way every config change comes back "no difference", which is a fact
-about the harness's resolution and not about the knob.
+The `*_se` above is the error of a *level*. At n=400 the k=0 detection floor it
+implies is ±0.0149 R-precision, and the band on a *difference* between two cells
+is wider still — ±0.0210, because both cells' errors add in quadrature. That is
+wider than any single knob in `RetrievalConfig` is worth, so read that way every
+config change comes back "no difference", which is a fact about the harness's
+resolution and not about the knob.
 
 `cadence eval-ab` runs two configs over the *same* challenges from the *same*
 planned intents, so the comparison can be paired. Differencing per challenge
 cancels the between-challenge variance the arms share, and the band on the
-difference is two to three orders of magnitude narrower than the unpaired one.
+difference drops from ±0.0210 to roughly ±0.0019 — about an order of magnitude,
+which is the difference between resolving these effects and not.
 
 ```bash
 .venv/bin/cadence eval-ab --k 0 --limit 400 --arm rrf_k=30
@@ -97,11 +100,21 @@ make eval-ab                                  # the same invocation
 ```
 
 Arm A is the shipped config unless `--base KEY=VALUE` says otherwise; `--arm`
-sets arm B and both repeat. The report prints each metric's mean under both
-arms, the paired delta, the paired ±2×SE band, a detectable/not verdict, and —
-deliberately — the *unpaired* band beside it, so the cases where the shipped
-harness was calling a real difference noise are visible rather than asserted.
-It lands in `artifacts/eval_ab.json`.
+sets arm B and both repeat. Reranking is on by default, because the headline
+numbers on this page are reranked and `--no-reranker` prices a different system;
+if `artifacts/reranker.pkl` is missing the command refuses to run rather than
+quietly scoring the fusion-only path.
+
+The report prints each metric's mean under both arms, the paired delta, the
+paired ±2×SE band, how many challenges moved at all, a detectable/not verdict,
+and — deliberately — the *unpaired* band beside it, so the cases where the
+shipped harness was calling a real difference noise are visible rather than
+asserted. It lands in `artifacts/eval_ab.json`.
+
+The `moved` count is there because the verdict is a normal approximation over
+differences that are mostly exactly zero: a delta that clears its band on four
+changed challenges out of 400 is a much weaker claim than the band alone
+suggests, and the column is what lets a reader notice.
 
 Only `rrf_k` and the seven channel weights can be set. That is not an oversight:
 this harness stops at fusion and never runs selection or sequencing, so an A/B

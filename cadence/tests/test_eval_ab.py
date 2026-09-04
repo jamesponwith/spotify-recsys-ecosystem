@@ -10,6 +10,7 @@ numbers from the real catalog needs the built artifacts and lives in the
 from __future__ import annotations
 
 import re
+from dataclasses import fields
 
 import numpy as np
 import pytest
@@ -50,6 +51,14 @@ def test_parse_overrides_refuses_assembly_knobs_by_name():
         parse_overrides(["mmr_lambda=0.5"])
     with pytest.raises(ValueError, match="stops at fusion"):
         parse_overrides(["w_tempo=2.0"])
+
+
+def test_every_assembly_knob_gets_the_pointed_refusal():
+    # Derived from AssemblyConfig, so a knob added there cannot quietly
+    # downgrade to the bare "unknown knob" message.
+    for field in fields(DEFAULT.assembly):
+        with pytest.raises(ValueError, match="stops at fusion"):
+            parse_overrides([f"{field.name}=1"])
 
 
 def test_parse_overrides_rejects_unknown_and_malformed():
@@ -246,6 +255,23 @@ def test_format_report_columns_line_up_under_the_header():
     assert all(len(row) == len(header) for row in rows)
 
 
+def test_format_report_shows_how_many_challenges_actually_moved():
+    # A verdict resting on a handful of challenges is a normal approximation
+    # over mostly-zero differences; the reader has to be able to see that.
+    a = np.zeros(400)
+    b = a.copy()
+    b[:4] = 0.5
+    m = compare(_acc("r_precision", a), _acc("r_precision", b))["r_precision"]
+    assert m["detectable"] is True
+    assert m["n_changed"] == 4
+    row = next(
+        line
+        for line in format_report({"r_precision": m}, _meta()).splitlines()
+        if line.startswith("r_precision")
+    )
+    assert "4  DETECTABLE" in row
+
+
 def test_format_report_says_how_many_metrics_pairing_rescued():
     a, b = _vectors(mean_a=0.1889, sd_a=0.149, delta=-0.00579, delta_sd=0.0222, n=400, seed=5)
     text = format_report(compare(_acc("ndcg_100", a), _acc("ndcg_100", b)), _meta())
@@ -266,6 +292,20 @@ def test_format_report_stays_quiet_when_pairing_changed_no_verdict():
 def test_run_refuses_two_identical_arms_before_touching_the_catalog():
     with pytest.raises(ValueError, match="nothing to compare"):
         run(k=0, arm={"rrf_k": 30.0}, base={"rrf_k": 30.0})
+
+
+def test_run_refuses_an_arm_that_only_restates_the_shipped_value():
+    # `--arm rrf_k=60` is a different override map but the same config, and
+    # would otherwise buy a full two-arm run of guaranteed zeroes.
+    with pytest.raises(ValueError, match="nothing to compare"):
+        run(k=0, arm={"rrf_k": DEFAULT.retrieval.rrf_k})
+
+
+def test_run_refuses_to_silently_drop_a_requested_reranker(tmp_path):
+    # Asking for the reranked path and getting the fusion-only one back with a
+    # full verdict table would misattribute every number in it.
+    with pytest.raises(FileNotFoundError, match="train-reranker"):
+        run(k=0, arm={"rrf_k": 30.0}, use_reranker=True, artifacts_dir=tmp_path)
 
 
 ANSI = re.compile(r"\x1b\[[0-9;]*m")
@@ -304,10 +344,11 @@ def test_eval_ab_runs_end_to_end_on_the_real_split(tmp_path):
     """Both arms see the same challenges; only fusion differs. Small limit —
     the bead's published numbers come from `--limit 400` on the data host."""
     out = tmp_path / "eval_ab.json"
-    report = run(k=0, limit=8, arm={"rrf_k": 30.0}, out_path=out, verbose=False)
+    report = run(k=0, limit=8, arm={"rrf_k": 30.0}, use_reranker=False, out_path=out, verbose=False)
     assert out.exists()
     meta = report["meta"]
     assert meta["n"] == 8
+    assert meta["reranker"] is False
     assert meta["arm_a"]["rrf_k"] == DEFAULT.retrieval.rrf_k
     assert meta["arm_b"]["rrf_k"] == 30.0
     assert meta["arm_a"]["channel_weights"] == meta["arm_b"]["channel_weights"]

@@ -113,15 +113,13 @@ def evaluate(
 
 @app.command("eval-ab")
 def eval_ab_cmd(
-    k: int = typer.Option(0, "--k", help="seed count to run both arms over"),
+    k: int = typer.Option(0, help="seed count to run both arms over"),
     limit: int = typer.Option(400, help="challenges in the cell; 0 = all"),
-    arm: list[str] = typer.Option(
-        [], "--arm", help="KEY=VALUE override for arm B; repeat for several"
-    ),
+    arm: list[str] = typer.Option([], help="KEY=VALUE override for arm B; repeat for several"),
     base: list[str] = typer.Option(
-        [], "--base", help="KEY=VALUE override for arm A (default: the shipped config)"
+        [], help="KEY=VALUE override for arm A (default: the shipped config)"
     ),
-    reranker: bool = typer.Option(False, help="score both arms through the learned reranker"),
+    reranker: bool = typer.Option(True, help="score both arms through the learned reranker"),
     out: Path = typer.Option(ARTIFACTS / "eval_ab.json"),
 ):
     """Price one retrieval knob against another arm with a paired band.
@@ -130,6 +128,10 @@ def eval_ab_cmd(
     is paired and resolves differences the unpaired band in `evaluate` calls
     noise. Only rrf_k and the seven channel weights are settable — the assembly
     knobs live past this harness's last stage.
+
+    Reranking is on by default because the published headline numbers are
+    reranked; `--no-reranker` prices the fusion-only path, which is a different
+    system and not comparable with them.
     """
     from .eval.eval_ab import parse_overrides, run
 
