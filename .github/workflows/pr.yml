@@ -38,6 +38,23 @@ jobs:
           done
       - run: make lint-all
 
+  # The shared tooling in scripts/ belongs to no app, so the matrix below never
+  # collects its tests. reconcile_board.py decides whether a bead is closed,
+  # and an untested decision there is how spot-2ig came to be marked shipped
+  # while its work sat off main for a day — it gets its own gate. Only ostinato
+  # is synced: pytest is the whole dependency, and it is the venv the Makefile
+  # already reaches for.
+  scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install uv
+      - run: uv sync --extra dev --project ostinato
+      - run: make test-scripts
+
   tests:
     runs-on: ubuntu-latest
     strategy:

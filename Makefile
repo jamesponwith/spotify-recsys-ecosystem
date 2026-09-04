@@ -1,12 +1,18 @@
 APPS := cadence timbre segue gamut ostinato
 
-.PHONY: help check-claims lint-all
+.PHONY: help check-claims test-scripts reconcile-board lint-all
 
 help:
-	@grep -E '^[a-z-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-13s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-z-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
 check-claims: ## Verify the root README's hand-typed numbers against each app's artifacts
 	@ostinato/.venv/bin/python scripts/check_claims.py
+
+test-scripts: ## Run the tests for the shared tooling in scripts/
+	@ostinato/.venv/bin/python -m pytest scripts/tests -q
+
+reconcile-board: ## Close beads whose PR merged AND reached origin/main; report the rest
+	@ostinato/.venv/bin/python scripts/reconcile_board.py $(ARGS)
 
 lint-all: check-claims ## check-claims, then lint the shared tooling and each app
 	@ostinato/.venv/bin/ruff check scripts
