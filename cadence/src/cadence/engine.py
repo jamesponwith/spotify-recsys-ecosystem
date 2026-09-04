@@ -233,6 +233,7 @@ class CadenceEngine:
                     channel_ranks={k: v[order] for k, v in cand.channel_ranks.items()},
                     channel_scores={k: v[order] for k, v in cand.channel_scores.items()},
                     channels_present=cand.channels_present,
+                    channel_depths=cand.channel_depths,
                 )
                 scores = cand.scores
             except Exception as exc:  # noqa: BLE001

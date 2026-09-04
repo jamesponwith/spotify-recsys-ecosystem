@@ -28,6 +28,12 @@ class FusedCandidates:
     channel_ranks: dict[str, np.ndarray]  # channel -> rank per fused index (0 = best)
     channel_scores: dict[str, np.ndarray]
     channels_present: list[str] = field(default_factory=list)
+    # How many candidates each channel actually returned. A rank in
+    # channel_ranks is real iff it is < the channel's depth; the absent
+    # sentinel below is depth + 1. Consumers that need "did this channel see
+    # this candidate" (Gamut's audit) resolve it from here rather than
+    # guessing which values are sentinels.
+    channel_depths: dict[str, int] = field(default_factory=dict)
 
     def __len__(self) -> int:
         return len(self.indices)
@@ -85,4 +91,5 @@ def reciprocal_rank_fusion(
         channel_ranks=channel_ranks,
         channel_scores=channel_scores,
         channels_present=[r.name for r in live],
+        channel_depths={r.name: len(r) for r in live},
     )

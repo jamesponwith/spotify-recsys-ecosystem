@@ -54,7 +54,19 @@ class Catalog:
         vocab: list[str] = json.loads((artifacts_dir / "tag_vocab.json").read_text())
         lexical = sparse.load_npz(artifacts_dir / "lexical.npz").tocsr()
         vectorizer = pickle.loads((artifacts_dir / "lexical_vectorizer.pkl").read_bytes())
-        tag_matrix = sparse.load_npz(processed_dir / "tags.npz").tocsr()
+        # Prefer the tag matrix the trainer actually fit on: processed tags.npz
+        # counts *every* playlist, so a held-out challenge could credit a track
+        # via the very playlist being scored. The fallback exists only for
+        # artifact bundles from before tags_train.npz was persisted.
+        tags_path = artifacts_dir / "tags_train.npz"
+        tag_matrix = sparse.load_npz(
+            tags_path if tags_path.exists() else processed_dir / "tags.npz"
+        ).tocsr()
+        if tag_matrix.shape != (len(frame), len(vocab)):
+            raise ValueError(
+                f"tag matrix {tag_matrix.shape} does not match the catalog "
+                f"({len(frame)} tracks x {len(vocab)} tags) — stale artifacts? re-run `cadence train`"
+            )
         train_path = artifacts_dir / "train_interactions.npz"
         interactions = sparse.load_npz(
             train_path if train_path.exists() else processed_dir / "interactions.npz"
