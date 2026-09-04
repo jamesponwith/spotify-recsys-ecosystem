@@ -39,14 +39,21 @@ to work with, which is the actual natural-language cold-start case:
 
 | System | R-precision | NDCG@100 | Clicks ↓ |
 |---|---|---|---|
-| **Cadence** | **0.1429** | **0.1975** | **3.2** |
-| item-kNN baseline | 0.0404 | 0.0545 | 13.0 |
-| popularity baseline | 0.0404 | 0.0545 | 13.0 |
-| lexical title matching | 0.0197 | 0.0266 | 26.2 |
+| **Cadence** | **0.1429 ± 0.0149** | **0.1975 ± 0.0191** | **3.2 ± 1.0** |
+| item-kNN baseline | 0.0404 ± 0.0059 | 0.0545 ± 0.0087 | 13.0 ± 1.8 |
+| popularity baseline | 0.0404 ± 0.0059 | 0.0545 ± 0.0087 | 13.0 ± 1.8 |
+| lexical title matching | 0.0197 ± 0.0075 | 0.0266 ± 0.0099 | 26.2 ± 2.1 |
 
 **3.5x better than popularity**, using the official RecSys Challenge 2018
 metrics on 400 held-out playlists. With seeds revealed the margin holds:
-at k=5, R-precision **0.2416** vs **0.1761** for item-kNN (+37 %).
+at k=5, R-precision **0.2416 ± 0.0189** vs **0.1761 ± 0.0142** for item-kNN
+(+37 %).
+
+> Bands are ±2×SE. The headline band, **0.0149**, is also the harness's
+> detection floor: a difference smaller than that — which is most of the
+> channel weights in `config.py` — cannot be told from sampling noise at this
+> sample size. It is printed beside every number so it cannot be missed, not
+> because the harness got any sharper.
 
 > Seeds are the playlist's genuine first k. They used not to be — the harness
 > handed out the k lowest track ids, which are 1.5-1.7x more popular. Fixing
