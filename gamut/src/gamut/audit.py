@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from cadence.eval.metrics import ndcg, r_precision
 
-from .collect import Collected
+from .collect import ABSENT, Collected
 from .config import ARTIFACTS, CADENCE_PROCESSED, CHANNELS, AuditConfig
 from .exposure import CatalogFacts, ExposureReport, measure
 from .rerank import apply_artist_cap, popularity_norm, rerank
@@ -30,12 +30,15 @@ def _channel_block(collected: Collected, ci: int, depth: int) -> np.ndarray:
 
     A channel that never returned a candidate for a query contributes an empty
     row rather than a padded one, so its coverage is not inflated by other
-    channels' finds sitting in the shared candidate pool.
+    channels' finds sitting in the shared candidate pool. This depends on the
+    ABSENT contract that `collect.strip_sentinel` enforces at the fusion
+    boundary: fusion itself marks absence as `channel_depth + 1`, which would
+    pass this filter and turn every block into the whole pool re-sorted.
     """
     ranks = collected.channel_ranks[ci]
-    out = np.full((ranks.shape[0], depth), -1, dtype=np.int32)
+    out = np.full((ranks.shape[0], depth), ABSENT, dtype=np.int32)
     for i in range(ranks.shape[0]):
-        present = np.flatnonzero(ranks[i] >= 0)
+        present = np.flatnonzero(ranks[i] != ABSENT)
         if present.size == 0:
             continue
         ordered = present[np.argsort(ranks[i][present], kind="stable")][:depth]

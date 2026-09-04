@@ -299,3 +299,95 @@ Choosing a different value needs a stated preference between mood fidelity and
 genre fidelity. That is a product judgement, and no amount of held-out data
 supplies it. The contribution here is that the trade now has numbers on both
 sides; `cadence eval-affinity` regenerates them.
+
+---
+
+## 5. The lexicon aims where humans do not file the music
+
+§4 priced the audio-affinity weight and left it alone. This asks a prior
+question: is the *target* the weight aims at the right one? `MOOD_LEXICON`
+asserts that `sleep` means energy 0.12. The folksonomy records where people
+actually put music on playlists titled *sleep*. Nothing had ever compared the
+two, and they turn out to be two different definitions of the same word.
+
+For every (word, dimension) pair in the lexicon where the word is also a tag —
+106 pairs over 49 words — three numbers: the **target** the lexicon asserts, the
+plain mean of that dimension over every track filed under the tag (**humans**),
+and the plain mean over the whole catalog (**catalog**), which is what you would
+aim at knowing nothing.
+
+**72 of 106 pairs assert a target further from the folksonomy's own mean than
+the catalog mean is** — worse than doing nothing. The twenty furthest, ordered
+by how much worse:
+
+| word | dimension | target | humans | catalog | tracks |
+|---|---|---:|---:|---:|---:|
+| sleep | instrumentalness | 0.50 | **0.101** | 0.100 | 9,113 |
+| background | instrumentalness | 0.55 | **0.129** | 0.100 | 1,435 |
+| singalong | valence | 0.75 | **0.445** | 0.472 | 370 |
+| rage | valence | 0.18 | **0.460** | 0.472 | 1,694 |
+| sleep | energy | 0.12 | **0.509** | 0.632 | 9,113 |
+| feel good | valence | 0.82 | **0.517** | 0.472 | 11,057 |
+| happy | valence | 0.85 | **0.536** | 0.472 | 12,557 |
+| chill | acousticness | 0.55 | **0.285** | 0.270 | 46,308 |
+| summer | valence | 0.78 | **0.502** | 0.472 | 35,852 |
+| chill | energy | 0.32 | **0.600** | 0.632 | 46,308 |
+| banger | energy | 0.88 | **0.643** | 0.632 | 700 |
+| relax | energy | 0.25 | **0.550** | 0.632 | 8,402 |
+| crying | valence | 0.15 | **0.413** | 0.472 | 276 |
+| sleep | acousticness | 0.75 | **0.408** | 0.270 | 9,113 |
+| angry | valence | 0.20 | **0.438** | 0.472 | 271 |
+| crying | energy | 0.28 | **0.556** | 0.632 | 276 |
+| dark | valence | 0.20 | **0.433** | 0.472 | 844 |
+| relaxing | energy | 0.25 | **0.536** | 0.632 | 2,664 |
+| background | energy | 0.28 | **0.543** | 0.632 | 1,435 |
+| nostalgic | energy | 0.45 | **0.626** | 0.632 | 1,051 |
+
+The median target sits 0.165 from where humans file the word; the median catalog
+mean sits 0.083 from it. The result is not a small-sample artifact: restricted to
+the 81 pairs with at least a thousand filed tracks, 57 are still worse than
+nothing. Nor is it one dimension: valence misses on 21 of 25 pairs, energy on 31
+of 48, acousticness on 9 of 13, danceability on 7 of 11, instrumentalness on 4
+of 6. Only speechiness (0 of 3) is aimed where humans are.
+
+**The direction is right; the magnitude is not.** On 94 of the 106 pairs the
+target lies on the far side of the human mean from the catalog — the lexicon
+knows that `sleep` is calmer than average and `party` is more danceable, and
+then overshoots: on the 65 pairs that are worse than nothing in the right
+direction, the target's displacement from the catalog is typically four times
+the crowd's (interquartile range 2.7–5.2×). `chill` is the
+cleanest case: 46,308 tracks, the largest sample in the table, filed at energy
+0.600 against a catalog of 0.632 — a displacement of 0.03 — and the lexicon
+asserts 0.32. Only 7 pairs point the wrong way outright, and every one of them
+is a word the crowd files close to the middle: `morning`, `love` and `romantic`
+valence are within 0.03 of the catalog mean, and the furthest of the seven,
+`singalong` energy, is 0.08 away on 370 tracks — so "which direction" was a
+close call on all of them, and the lexicon picked the far side of a coin.
+
+The 34 pairs the lexicon gets right are mostly the ones where the human mean is
+itself far from the catalog: `instrumental`/instrumentalness (humans 0.718
+against a catalog of 0.100), `angry`/energy (0.802), `high energy`/energy
+(0.796). When the crowd files a word somewhere genuinely distinctive, a
+confident target lands near it. When the crowd files it near the middle — which
+is most mood words — the same confidence is the error.
+
+**What this establishes** is how far apart the two definitions of each mood word
+are, and that the audio term has been aiming at a point humans do not put this
+music. That is consistent with §4 and with the shuffled-affinity control in
+`docs/INTENT.md`: a term aimed at the wrong place would be expected to perform
+no better than a permutation of itself, and it does not.
+
+**What it does not establish** is that the lexicon is wrong. The folksonomy mean
+describes *behaviour*, not *intent*: someone who asks for "sleep" may well want
+calmer music than the median playlist titled *sleep* contains, and a playlist
+titled *chill* is filed by whoever titled it, at energy 0.600, whether or not
+that is what a listener typing the word means. The right target is somewhere
+between the lexicon's assertion and the crowd's habit, and nothing in this
+audit says where. It also says nothing about the weight: the exchange rate in
+§4 was measured against the targets as they stand, and would move if they did.
+
+Six lexicon words — `aggressive`, `energetic`, `high-energy`, `late night`,
+`low energy`, `unplugged` — are not tags in the vocabulary and cannot be audited
+this way; they are listed in the artifact rather than dropped. `cadence
+audit-lexicon` regenerates `artifacts/lexicon_calibration.json` from the three
+processed files in about a second; it touches no trained artifact and no engine.
