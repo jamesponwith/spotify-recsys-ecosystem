@@ -1,4 +1,4 @@
-.PHONY: help venv install data build splits train reranker eval eval-constraints all play serve test lint typecheck clean
+.PHONY: help venv install data build splits train reranker eval eval-ab eval-constraints all play serve test lint typecheck clean
 
 PY := .venv/bin/python
 CADENCE := .venv/bin/cadence
@@ -29,6 +29,9 @@ reranker: ## fit the learned reranker
 
 eval: ## run the offline harness with ablations
 	$(CADENCE) evaluate --limit 400 --ablations
+
+eval-ab: ## price rrf_k against the shipped config with a paired band
+	$(CADENCE) eval-ab --k 0 --limit 400 --arm rrf_k=30
 
 eval-constraints: ## measure constraint satisfaction of the assembly stage
 	$(CADENCE) eval-constraints
