@@ -19,14 +19,33 @@ import numpy as np
 
 from .config import ARTIFACTS, CADENCE_PROCESSED, CHANNELS, AuditConfig
 
+# The one value that means "this channel never returned this candidate" once
+# the retrieval output is inside Gamut. Everything downstream filters on it.
+ABSENT = -1
+
+
+def strip_sentinel(ranks: np.ndarray, depth: int) -> np.ndarray:
+    """Map fusion's absent-candidate sentinel to ABSENT.
+
+    Cadence's RRF marks a candidate a channel never returned with the rank
+    ``depth + 1`` -- deliberately, so its learned reranker can tell "ranked
+    last" from "never seen". The audit needs the opposite contract: left in
+    place, the sentinel passes any ``rank >= 0`` filter and every channel
+    block silently becomes the whole pool re-sorted. Real ranks are
+    ``0 .. depth - 1``, so anything at or past the channel's depth is absent.
+    """
+    cleaned = np.asarray(ranks).astype(np.int32)
+    cleaned[cleaned >= depth] = ABSENT
+    return cleaned
+
 
 @dataclass
 class Collected:
     """Cached retrieval output, one row block per query."""
 
-    indices: np.ndarray  # (n_queries, depth) int32, -1 padded
+    indices: np.ndarray  # (n_queries, depth) int32, ABSENT padded
     scores: np.ndarray  # (n_queries, depth) float32, fused RRF score
-    channel_ranks: np.ndarray  # (n_channels, n_queries, depth) int32, -1 = absent
+    channel_ranks: np.ndarray  # (n_channels, n_queries, depth) int32, ABSENT = absent
     truth: list[set[int]]
     titles: list[str]
 
@@ -40,6 +59,9 @@ class Collected:
             channel_ranks=self.channel_ranks,
             titles=np.array(self.titles, dtype=object),
             truth=np.array([json.dumps(sorted(t)) for t in self.truth], dtype=object),
+            # Format marker: ranks in this cache had fusion's absent sentinel
+            # stripped at collection. load() refuses caches without it.
+            sentinel_stripped=np.True_,
         )
         return path
 
@@ -49,6 +71,12 @@ class Collected:
         if not path.exists():
             raise FileNotFoundError(f"{path} not found -- run `gamut collect` first.")
         z = np.load(path, allow_pickle=True)
+        if "sentinel_stripped" not in z:
+            raise ValueError(
+                f"{path} predates the sentinel fix: its per-channel ranks treat "
+                "fusion's absent-candidate sentinel as a real rank, so every "
+                "channel row is the whole pool. Re-run `gamut collect`."
+            )
         return cls(
             indices=z["indices"],
             scores=z["scores"],
@@ -72,9 +100,9 @@ def collect(cfg: AuditConfig | None = None, verbose: bool = True) -> Collected:
     engine = CadenceEngine(catalog)
     d = cfg.depth
 
-    indices = np.full((len(picked), d), -1, dtype=np.int32)
+    indices = np.full((len(picked), d), ABSENT, dtype=np.int32)
     scores = np.zeros((len(picked), d), dtype=np.float32)
-    ranks = np.full((len(CHANNELS), len(picked), d), -1, dtype=np.int32)
+    ranks = np.full((len(CHANNELS), len(picked), d), ABSENT, dtype=np.int32)
     truth: list[set[int]] = []
     titles: list[str] = []
 
@@ -88,7 +116,7 @@ def collect(cfg: AuditConfig | None = None, verbose: bool = True) -> Collected:
         for ci, name in enumerate(CHANNELS):
             cr = fused.channel_ranks.get(name)
             if cr is not None:
-                ranks[ci, qi, :n] = cr[:n]
+                ranks[ci, qi, :n] = strip_sentinel(cr, fused.channel_depths[name])[:n]
         truth.append({int(t) for t in ch["held_out"]})
         titles.append(title)
         if verbose and (qi + 1) % 50 == 0:
