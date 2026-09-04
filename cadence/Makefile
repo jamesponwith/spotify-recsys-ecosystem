@@ -48,8 +48,8 @@ test: ## run the test suite
 	$(PY) -m pytest tests/ -q
 
 lint: ## ruff
-	$(PY) -m ruff check src tests
-	$(PY) -m ruff format --check src tests
+	$(PY) -m ruff check src tests scripts
+	$(PY) -m ruff format --check src tests scripts
 
 typecheck: ## mypy
 	$(PY) -m mypy src/cadence

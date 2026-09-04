@@ -207,7 +207,12 @@ def main() -> int:
     for c in CLAIMS:
         path = ROOT / c.source
         if not path.exists():
-            missing_src.append(f"{c.app}: {c.source} not built")
+            # One line per artifact, not per claim: six copies of the same
+            # missing file is noise, and the missing artifact — not each claim
+            # riding on it — is the one problem the reader has to fix.
+            line = f"{c.app}: {c.source} not built"
+            if line not in missing_src:
+                missing_src.append(line)
             continue
         actual = c.compute(load(c.source))
         if actual != c.literal:
@@ -215,10 +220,13 @@ def main() -> int:
         elif c.literal not in text:
             absent.append(f"{c.app}: {c.literal!r} no longer appears in README.md")
 
+    # A missing artifact is a failure, not a skip. Every app's `make clean`
+    # deletes artifacts/*.json, so treating "not built" as "nothing to check"
+    # made `make clean && make lint-all` green while verifying nothing.
     for label, rows in (
         ("DRIFTED — the README contradicts its source", drifted),
         ("ABSENT — verified claim is no longer on the page", absent),
-        ("SKIPPED — artifact not built", missing_src),
+        ("MISSING — registered artifact not built, claims unverifiable", missing_src),
         ("INCONSISTENT — the page contradicts itself", inconsistent),
     ):
         if rows:
@@ -226,13 +234,15 @@ def main() -> int:
             for r in rows:
                 print(f"  {r}")
 
-    if drifted or absent or inconsistent:
-        n = len(drifted) + len(absent) + len(inconsistent)
-        print(f"\n{n} problem(s). Regenerate the app, then fix README.md.")
+    if drifted or absent or missing_src or inconsistent:
+        n = len(drifted) + len(absent) + len(missing_src) + len(inconsistent)
+        print(
+            f"\n{n} problem(s). Restore the artifact from git (or regenerate "
+            "the app), then fix README.md."
+        )
         return 1
-    checked = len(CLAIMS) - len(missing_src)
     print(
-        f"root README: {checked}/{len(CLAIMS)} claims match their source artifacts, "
+        f"root README: all {len(CLAIMS)} claims match their source artifacts, "
         "and the page agrees with itself"
     )
     return 0

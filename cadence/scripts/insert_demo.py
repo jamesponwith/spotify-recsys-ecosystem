@@ -36,7 +36,11 @@ EXTRA_CSS = """
 
 def esc(s: object) -> str:
     return (
-        str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+        str(s)
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
     )
 
 
@@ -44,7 +48,9 @@ def case_html(c: dict, limit: int, note: str = "") -> str:
     rows = []
     for t in c["tracks"][:limit]:
         why = esc(t["reasons"][0]) if t["reasons"] else ""
-        seg = f'<span class="seg">{esc(t["transition_note"])}</span>' if t["transition_note"] else ""
+        seg = (
+            f'<span class="seg">{esc(t["transition_note"])}</span>' if t["transition_note"] else ""
+        )
         rows.append(
             f'<tr><td class="pos">{t["position"]}</td>'
             f"<td><strong>{esc(t['name'])}</strong><br><span class='why'>{esc(t['artist'])}"
@@ -54,10 +60,10 @@ def case_html(c: dict, limit: int, note: str = "") -> str:
     ok = sum(1 for v in c["constraint_report"].values() if v)
     total = len(c["constraint_report"])
     facts = (
-        f'<span><b>{c["n_tracks"]}</b> tracks</span>'
-        f'<span><b>{c["duration_min"]:.0f}</b> min</span>'
-        f'<span><b>{ok}/{total}</b> constraints met</span>'
-        f'<span><b>{c["latency_ms"]:.0f}</b> ms</span>'
+        f"<span><b>{c['n_tracks']}</b> tracks</span>"
+        f"<span><b>{c['duration_min']:.0f}</b> min</span>"
+        f"<span><b>{ok}/{total}</b> constraints met</span>"
+        f"<span><b>{c['latency_ms']:.0f}</b> ms</span>"
     )
     return f"""
       <div class="panel">
