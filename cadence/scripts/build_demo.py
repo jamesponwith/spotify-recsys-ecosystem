@@ -62,7 +62,10 @@ def main() -> None:
                 ],
             }
         )
-        print(f"{q[:44]:46s} -> {p.stats.n_tracks:2d} tracks, {p.stats.total_duration_s / 60:.0f} min", flush=True)
+        print(
+            f"{q[:44]:46s} -> {p.stats.n_tracks:2d} tracks, {p.stats.total_duration_s / 60:.0f} min",
+            flush=True,
+        )
 
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
     out = ARTIFACTS / "demo.json"
