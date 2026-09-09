@@ -9,3 +9,5 @@
 {"ts":"2026-08-30T09:43:43Z","event":"bead.cost","agent":"fleet/builder-py","repo":"Spotify","bead":"spot-2ig","usd":"13.0254","tokens":"4302675","turns":"146"}
 {"ts":"2026-08-30T12:49:28Z","event":"bead.claimed","agent":"fleet/builder-py","repo":"spotify-recsys-ecosystem-spot-ktp","bead":"spot-ktp"}
 {"ts":"2026-08-30T23:08:16Z","event":"bead.claimed","agent":"fleet/builder-py","repo":"spotify-recsys-ecosystem-spot-p7s","bead":"spot-p7s"}
+{"ts":"2026-09-04T21:08:03Z","event":"bead.claimed","agent":"fleet/builder-py","repo":"spotify-recsys-ecosystem-spot-4ec","bead":"spot-4ec"}
+{"ts":"2026-09-04T21:36:52Z","event":"bead.pr_opened","agent":"fleet/builder-py","repo":"spotify-recsys-ecosystem-spot-4ec","bead":"spot-4ec","pr":"11"}

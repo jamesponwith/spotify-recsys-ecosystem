@@ -5,6 +5,7 @@ cadence splits           freeze the evaluation split
 cadence train            fit the retrieval spaces
 cadence train-reranker   fit the learned reranker
 cadence evaluate         run the offline harness
+cadence eval-ab          price a retrieval knob with a paired A/B
 cadence play "..."       generate a playlist and print it
 cadence serve            start the HTTP API
 cadence pipeline         everything above, in order
@@ -108,6 +109,46 @@ def evaluate(
     from .eval.run_eval import run
 
     run(limit=limit or None, ablations=ablations, out_path=out)
+
+
+@app.command("eval-ab")
+def eval_ab_cmd(
+    k: int = typer.Option(0, help="seed count to run both arms over"),
+    limit: int = typer.Option(400, help="challenges in the cell; 0 = all"),
+    arm: list[str] = typer.Option([], help="KEY=VALUE override for arm B; repeat for several"),
+    base: list[str] = typer.Option(
+        [], help="KEY=VALUE override for arm A (default: the shipped config)"
+    ),
+    reranker: bool = typer.Option(True, help="score both arms through the learned reranker"),
+    out: Path = typer.Option(ARTIFACTS / "eval_ab.json"),
+):
+    """Price one retrieval knob against another arm with a paired band.
+
+    Both arms see the same challenges and the same planned intents, so the delta
+    is paired and resolves differences the unpaired band in `evaluate` calls
+    noise. Only rrf_k and the seven channel weights are settable — the assembly
+    knobs live past this harness's last stage.
+
+    Reranking is on by default because the published headline numbers are
+    reranked; `--no-reranker` prices the fusion-only path, which is a different
+    system and not comparable with them.
+    """
+    from .eval.eval_ab import parse_overrides, run
+
+    try:
+        arm_overrides = parse_overrides(arm)
+        base_overrides = parse_overrides(base)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from None
+
+    run(
+        k=k,
+        limit=limit or None,
+        arm=arm_overrides,
+        base=base_overrides,
+        use_reranker=reranker,
+        out_path=out,
+    )
 
 
 @app.command("eval-affinity")

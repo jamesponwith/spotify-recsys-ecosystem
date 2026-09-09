@@ -149,10 +149,39 @@ class MetricAccumulator:
         for name, vals in self.values.items():
             arr = np.asarray(vals, dtype=np.float64)
             out[name] = float(arr.mean())
-            # Standard error, so a difference between two runs can be read as
-            # meaningful or not instead of being eyeballed.
+            # Standard error of the *level*. For a difference between two arms
+            # run over the same challenges, use paired_deltas instead — the
+            # unpaired band overstates the noise by orders of magnitude.
             out[f"{name}_se"] = float(arr.std(ddof=1) / np.sqrt(arr.size)) if arr.size > 1 else 0.0
         out["n"] = float(len(next(iter(self.values.values()), [])))
+        return out
+
+    def paired_deltas(self, reference: MetricAccumulator) -> dict[str, float]:
+        """Paired comparison against a reference arm evaluated over the same
+        challenges in the same order.
+
+        Differencing per challenge cancels the between-challenge variance the
+        two arms share (measured rho 0.99+ between arms of the real harness),
+        so `{name}_delta_se` is the standard error of the mean *difference* —
+        the right band for reading an ablation. Sign is self minus reference;
+        `{name}_n_changed` counts challenges whose score moved at all.
+        """
+        out: dict[str, float] = {}
+        for name, vals in self.values.items():
+            ref = reference.values.get(name)
+            if ref is None:
+                continue
+            if len(ref) != len(vals):
+                raise ValueError(
+                    f"cannot pair '{name}': {len(vals)} values here vs "
+                    f"{len(ref)} in the reference — arms saw different challenges"
+                )
+            diff = np.asarray(vals, dtype=np.float64) - np.asarray(ref, dtype=np.float64)
+            out[f"{name}_delta"] = float(diff.mean())
+            out[f"{name}_delta_se"] = (
+                float(diff.std(ddof=1) / np.sqrt(diff.size)) if diff.size > 1 else 0.0
+            )
+            out[f"{name}_n_changed"] = float(np.count_nonzero(diff))
         return out
 
 
@@ -161,14 +190,20 @@ class MetricAccumulator:
 BAND_Z = 2.0
 
 
-def within_band(x: float, x_se: float, y: float, y_se: float) -> bool:
-    """Whether two independent means are indistinguishable at ±BAND_Z×SE.
+def unpaired_band(x_se: float, y_se: float) -> float:
+    """±BAND_Z×SE on the difference of two *independent* means.
 
-    The band is on the *difference*, so both cells' errors add in quadrature.
-    Testing |x − y| against one cell's SE alone would call a real gap noise
-    whenever the other cell happened to be the noisier one.
+    Both cells' errors add in quadrature. Testing |x − y| against one cell's SE
+    alone would call a real gap noise whenever the other cell happened to be the
+    noisier one. Exposed separately from `within_band` so a report can print the
+    band it judged against instead of asserting one.
     """
-    return abs(x - y) <= BAND_Z * math.hypot(x_se, y_se)
+    return BAND_Z * math.hypot(x_se, y_se)
+
+
+def within_band(x: float, x_se: float, y: float, y_se: float) -> bool:
+    """Whether two independent means are indistinguishable at ±BAND_Z×SE."""
+    return abs(x - y) <= unpaired_band(x_se, y_se)
 
 
 def detection_floor(results: dict) -> dict:
