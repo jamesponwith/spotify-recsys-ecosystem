@@ -9,6 +9,7 @@ artifacts/*
 !artifacts/results.html
 !artifacts/demo.json
 !artifacts/*_report.json
+!artifacts/*_vectors.json
 !artifacts/*_meta.json
 !artifacts/lexicon_calibration.json
 .pytest_cache/

@@ -175,6 +175,9 @@ def train(
     # Served co-occurrence must exclude evaluation playlists, or the neighbourhood
     # channel gets to read the answer key at eval time.
     sparse.save_npz(out_dir / "train_interactions.npz", train_interactions.tocsr())
+    # Same for served tag counts: without this, a held-out "rock" challenge can
+    # credit a track for "rock" via the very playlist being scored against.
+    sparse.save_npz(out_dir / "tags_train.npz", tag_matrix.tocsr())
     import pickle
 
     (out_dir / "lexical_vectorizer.pkl").write_bytes(pickle.dumps(vectorizer))
