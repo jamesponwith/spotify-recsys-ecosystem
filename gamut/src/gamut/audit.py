@@ -11,9 +11,35 @@ import pandas as pd
 from cadence.eval.metrics import ndcg, r_precision
 
 from .collect import ABSENT, Collected
-from .config import ARTIFACTS, CADENCE_PROCESSED, CHANNELS, AuditConfig
+from .config import ARTIFACTS, CADENCE_PROCESSED, CHANNELS, SELECT_POOL, AuditConfig
 from .exposure import CatalogFacts, ExposureReport, measure
 from .rerank import apply_artist_cap, popularity_norm, rerank
+
+
+def funnel_stages(cfg: AuditConfig) -> tuple[tuple[str, int], ...]:
+    """The three real narrowings between the catalog and the listener.
+
+    Each stage is a (name, depth) pair, and the depth is published beside the
+    name: the error this corrects was a naming one, and a row carrying its own
+    depth can be checked against the stage it claims to measure.
+
+    `read_by_select` is fusion's top `SELECT_POOL`, which is the prefix
+    `select()` reads *in the configuration Gamut audits* -- `collect` builds the
+    engine without its learned reranker. With a reranker loaded Cadence re-sorts
+    the whole pool before `select` takes that prefix, so the row would name a
+    different set of tracks than it measured.
+
+    Every stage clamps to `cfg.depth`. A stage cannot read deeper than was
+    collected, and an unclamped one reports reach *rising* down the funnel.
+    """
+    return tuple(
+        (name, min(depth, cfg.depth))
+        for name, depth in (
+            ("retrieved", cfg.depth),  # what `retrieve()` returns
+            ("read_by_select", SELECT_POOL),  # the prefix `select()` scores
+            ("shown", cfg.cut),  # what the listener actually sees
+        )
+    )
 
 
 def _accuracy(block: np.ndarray, truth: list[set[int]], depth: int) -> dict[str, float]:
@@ -53,7 +79,7 @@ def _as_dict(r: ExposureReport) -> dict[str, float]:
 def run(cfg: AuditConfig | None = None, verbose: bool = True) -> dict[str, Any]:
     cfg = cfg or AuditConfig()
     t0 = time.perf_counter()
-    collected = Collected.load()
+    collected = Collected.load(min_depth=cfg.depth)
     frame = pd.read_parquet(CADENCE_PROCESSED / "tracks.parquet")
     facts = CatalogFacts.build(frame, cfg.tail_percentile, cfg.head_percentile)
     pop = popularity_norm(facts.play_counts)
@@ -74,12 +100,29 @@ def run(cfg: AuditConfig | None = None, verbose: bool = True) -> dict[str, Any]:
         },
     }
 
+    # --- where the catalog is actually lost -------------------------------
+    # Each stage is measured once and read wherever it is published. Two
+    # measurements of one window can disagree, and a published funnel that
+    # disagrees with itself is exactly what this corrects.
+    stages = funnel_stages(cfg)
+    exposure = {name: measure(collected.indices, facts, d) for name, d in stages}
+    report["funnel"] = [
+        {"stage": name, "depth": d, **_as_dict(exposure[name])} for name, d in stages
+    ]
+    if verbose:
+        for row in report["funnel"]:
+            print(
+                f"  {row['stage']:16s} depth={row['depth']:<5d} "
+                f"reach={row['track_coverage']:.3%}  gini={row['artist_gini']:.3f}",
+                flush=True,
+            )
+
     # --- what the system does today -------------------------------------
-    baseline = measure(collected.indices, facts, cfg.cut)
+    baseline = exposure["shown"]
     report["baseline"] = {
         **_as_dict(baseline),
         **_accuracy(collected.indices, collected.truth, cfg.cut),
-        "pool": _as_dict(measure(collected.indices, facts, cfg.depth)),
+        "pool": _as_dict(exposure["retrieved"]),
     }
     if verbose:
         print(
