@@ -3,6 +3,7 @@ nothing: fusion marks "channel never saw this" as channel_depth + 1, which
 passes a >= 0 filter and turns every channel block into the whole pool."""
 
 import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -83,3 +84,42 @@ def test_save_load_round_trips_a_clean_cache(tmp_path):
     path = _collected(ranks).save(tmp_path / "collected.npz")
     loaded = Collected.load(path)
     assert loaded.channel_ranks.tolist() == ranks.tolist()
+
+
+def _clean_cache(tmp_path, depth: int) -> Path:
+    ranks = np.full((1, 1, depth), ABSENT, dtype=np.int32)
+    return _collected(ranks).save(tmp_path / "collected.npz")
+
+
+def test_load_refuses_a_cache_shallower_than_the_depth_being_reported(tmp_path):
+    # The shipped condition exactly: a 100-deep cache audited as a 1500-deep
+    # pool, every figure from it labelled with a window it never covered.
+    with pytest.raises(ValueError, match="collected 100 deep"):
+        Collected.load(_clean_cache(tmp_path, 100), min_depth=1500)
+
+
+def test_load_accepts_a_cache_exactly_as_deep_as_reported(tmp_path):
+    assert Collected.load(_clean_cache(tmp_path, 100), min_depth=100).indices.shape[1] == 100
+
+
+def test_load_without_a_depth_claim_is_unchanged(tmp_path):
+    # `demo` reads the cache without publishing a funnel, so it must not be
+    # forced to re-collect the whole pool to show one query.
+    assert Collected.load(_clean_cache(tmp_path, 100)).indices.shape[1] == 100
+
+
+def test_load_refuses_a_cache_whose_blocks_disagree_on_width(tmp_path):
+    # Hand-assembled: a 1500-wide pool carrying 100-wide channel ranks would
+    # publish every channel row under a depth it was never measured at.
+    path = tmp_path / "collected.npz"
+    np.savez_compressed(
+        path,
+        indices=np.zeros((1, 1500), dtype=np.int32),
+        scores=np.zeros((1, 1500), dtype=np.float32),
+        channel_ranks=np.full((1, 1, 100), ABSENT, dtype=np.int32),
+        titles=np.array(["q0"], dtype=object),
+        truth=np.array([json.dumps([])], dtype=object),
+        sentinel_stripped=np.True_,
+    )
+    with pytest.raises(ValueError, match="disagreeing width"):
+        Collected.load(path, min_depth=1500)
