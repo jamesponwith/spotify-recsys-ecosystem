@@ -50,10 +50,10 @@ all ask whether the *listener* was served. None asks which artists were served a
 all.
 
 > Across every intervention tested — nine popularity-penalty strengths and four
-> artist caps — artist Gini moves only from 0.951 to 0.936.
-> **You cannot re-rank your way out of a retrieval problem.**
+> artist caps — artist Gini moves only from 0.951 to 0.932.
+> **Re-ranking moves exposure far less than the pool composition does.**
 
-Only 10.7% of the catalog reaches the candidate pool and 2.99% is ever shown.
+Only 70.6% of the catalog reaches the candidate pool and 2.99% is ever shown.
 Re-ordering a hundred candidates cannot introduce what was never a candidate —
 which is Timbre's finding arriving from the opposite direction. **The exposure
 ceiling is set upstream of everything that gets ranked.**

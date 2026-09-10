@@ -93,10 +93,10 @@ CLAIMS: list[Claim] = [
     Claim("gamut", "43.6%", GAM, lambda d: f"{d['baseline']['top1pct_artist_share']:.1%}"),
     Claim("gamut", "0.951", GAM, lambda d: f"{d['baseline']['artist_gini']:.3f}"),
     Claim("gamut", "2.99%", GAM, lambda d: f"{d['baseline']['track_coverage']:.2%}"),
-    Claim("gamut", "10.7%", GAM, lambda d: f"{d['baseline']['pool']['track_coverage']:.1%}"),
+    Claim("gamut", "70.6%", GAM, lambda d: f"{d['baseline']['pool']['track_coverage']:.1%}"),
     Claim(
         "gamut",
-        "0.936",
+        "0.932",
         GAM,
         lambda d: f"{min(x['artist_gini'] for x in d['frontier'] + d['artist_caps']):.3f}",
     ),

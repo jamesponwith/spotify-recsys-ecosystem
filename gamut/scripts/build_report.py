@@ -326,8 +326,8 @@ def build() -> Path:
       <section>
         <h2>The funnel is the story</h2>
         <p>Retrieval reaches {b["pool"]["track_coverage"]:.1%} of the catalog. By the time
-        the list is cut to what a listener sees, {b["track_coverage"]:.1%} remains. Most of
-        the catalog is not being ranked badly — it is never a candidate at all.</p>
+        the list is cut to what a listener sees, {b["track_coverage"]:.1%} remains. Nearly all
+        of the narrowing happens after retrieval, not before it.</p>
         <div class="figure">
           <div class="scroll">{funnel(r)}</div>
           <p class="caption">Distinct tracks appearing at least once across all
@@ -413,14 +413,22 @@ def build() -> Path:
         <div class="note">Across <em>every</em> intervention tested — nine penalty
         strengths and four artist caps — artist Gini moves only from
         <strong>{max(ginis):.3f}</strong> to <strong>{min(ginis):.3f}</strong>.
-        You cannot re-rank your way out of a retrieval problem.</div>
-        <p>Concentration is not being created by the ranking function. It is already
-        present in the candidate pool, and re-ordering a hundred candidates cannot
-        introduce the {100 - b["pool"]["track_coverage"] * 100:.0f}% of the catalog that
-        never became a candidate. The popularity penalty does move long-tail share
-        substantially — it works on the metric it targets — and barely touches artist
-        equality, because a few artists owning many catalog entries is not a fact about
-        any single track's popularity.</p>
+        Re-ranking moves exposure far less than the pool composition does.</div>
+        <p>This claim used to be stronger, and it was measured wrongly. The audit
+        counted the funnel at a depth of 100 while retrieval returns
+        {r["config"]["depth"]:,} — so the original "you cannot re-rank your way out
+        of a retrieval problem" rested on a window fifteen times shallower than the pool.
+        Re-measured at the true depth, {100 - b["pool"]["track_coverage"] * 100:.0f}% of
+        the catalog never becomes a candidate rather than 89%, and re-ranking reaches a
+        Gini of {min(ginis):.3f} rather than stopping at 0.936.</p>
+        <p>The direction survives; the strength does not. Concentration is still mostly
+        upstream, and the penalty still moves long-tail share far more than artist
+        equality — from {r["frontier"][0]["tail_share"]:.0%} to
+        {max(x["tail_share"] for x in r["frontier"]):.0%} of recommendations, while
+        Gini barely shifts, because a few artists owning many catalog entries is not a
+        fact about any single track's popularity. But the deeper pool buys that reach at
+        {100 * (1 - r["frontier"][-1]["r_precision"] / r["frontier"][0]["r_precision"]):.0f}%
+        of R-precision at full strength, against 15% when it was measured at depth 100.</p>
         <p>That lines up with Timbre's result from the other direction: 76.6% of
         distinct tracks are filtered out before Cadence's index is even built. The
         exposure ceiling is set upstream of everything measured here.</p>

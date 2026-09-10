@@ -16,7 +16,7 @@ Tracked as beads under the `spot-` prefix. `bd list` for status.
 
 These are not proposals. The pages are live and wrong.
 
-### 1.1 Gamut's funnel measures the wrong window
+### 1.1 Gamut's funnel measures the wrong window — RESOLVED 2026-09-10
 
 `gamut/src/gamut/config.py` sets `depth = 100`. `cadence/src/cadence/config.py`
 sets `fused_candidates = 1500`. Gamut measured the top 100 of a 1500-deep pool and
@@ -42,6 +42,15 @@ it was measured on a window 15× shallower than the pool, and a pilot at the tru
 depth pushes artist Gini to **0.9321**, past the 0.936 floor the page calls the
 limit of all thirteen interventions. It costs 62% of R-precision instead of 15%,
 so the conclusion holds; the number does not.
+
+> **Resolved.** The mechanism landed in #13; the artifact was regenerated at
+> depth 1,500 on the data host (no builder worktree has the 15 GB corpus) and every
+> literal moved with it in one commit — they had to, because `check_claims` passed
+> only while README and artifact were wrong in the same way. Pool reach is now
+> published as 70.6%, "never a candidate" as 29%, and the Gini floor as 0.932. The
+> headline was softened from "you cannot re-rank your way out of a retrieval
+> problem" to "re-ranking moves exposure far less than the pool composition does":
+> the direction survives, the strength does not.
 
 ### 1.2 Gamut's per-channel attribution is contaminated
 

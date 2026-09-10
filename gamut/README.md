@@ -27,7 +27,7 @@ Over 400 held-out title-only queries, counting the top 20 as what a listener see
 |---|---|
 | Exposure held by the top 1% of artists | **43.6%** (274 of 27,442) |
 | Catalog ever shown | **2.99%** |
-| Catalog reaching the candidate pool at all | 10.71% |
+| Catalog reaching the candidate pool at all | 70.55% |
 | Artist exposure Gini | **0.951** |
 | Long-tail share of recommendations | 58.5% (**1.09× lift**) |
 
@@ -47,12 +47,12 @@ system exists for, five channels are carrying it.
 ### The finding that matters
 
 Across **every** intervention tested — nine popularity-penalty strengths and four
-artist caps — artist Gini moves only from **0.951 to 0.936**.
+artist caps — artist Gini moves only from **0.951 to 0.932**.
 
-> You cannot re-rank your way out of a retrieval problem.
+> Re-ranking moves exposure far less than the pool composition does.
 
-Concentration is already present in the candidate pool. Re-ordering a hundred
-candidates cannot introduce the 89% of the catalog that never became a candidate.
+Concentration is already present in the candidate pool. Re-ordering candidates
+cannot introduce the **29%** of the catalog that never became one.
 That lines up with Timbre's result from the other direction: 76.6% of distinct
 tracks are filtered out before Cadence's index is built. **The exposure ceiling is
 set upstream of everything ranked.**
