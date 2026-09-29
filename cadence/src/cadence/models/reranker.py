@@ -28,6 +28,7 @@ from pathlib import Path
 import numpy as np
 
 from ..config import ARTIFACTS, SEED
+from ..data.order import load_order
 from ..models.train import AUDIO_FEATURE_COLS
 
 CHANNELS = (
@@ -186,6 +187,7 @@ def train_reranker(
     rng = np.random.default_rng(seed)
     playlists = pd.read_parquet(processed_dir / "playlists.parquet")
     interactions = sparse.load_npz(processed_dir / "interactions.npz").tocsr()
+    playlist_order = load_order(processed_dir, interactions)
     holdout, _ = load_splits(processed_dir)
 
     # Never train the reranker on an evaluation playlist.
@@ -202,8 +204,10 @@ def train_reranker(
 
     for qi, row in enumerate(chosen):
         k = int(seed_counts[qi % len(seed_counts)])
-        trs = interactions.indices[interactions.indptr[row] : interactions.indptr[row + 1]]
-        trs = trs.astype(np.int64)
+        # The playlist's genuine first k, not its k lowest track ids. Training
+        # seeds and scoring seeds have to mean the same thing, or the reranker
+        # is supervised on a prefix definition its own harness never uses.
+        trs = playlist_order[row]
         if len(trs) <= k + 5:
             continue
         seeds, truth = trs[:k], set(trs[k:].tolist())
