@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Wire the Build gate. Run once per clone (ADR 0012).
+#
+# lefthook owns .git/hooks; beads is a declared step inside lefthook.yml.
+# core.hooksPath is deliberately left unset — beads installs its hooks wherever
+# it points, which is how a previous attempt lost its pre-commit hook entirely.
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+if [ -n "$(git config core.hooksPath || true)" ]; then
+  echo "unsetting core.hooksPath so lefthook owns .git/hooks"
+  git config --unset core.hooksPath
+fi
+
+command -v lefthook >/dev/null || {
+  echo "installing lefthook…"
+  go install github.com/evilmartians/lefthook@latest
+  export PATH="$(go env GOPATH)/bin:$PATH"
+}
+lefthook install
+
+# Prove it rejects, rather than trusting that it would. A gate you have not
+# watched fail is a gate you have not got.
+# This repo's pre-commit gate is deliberately light (no formatter: the heavy
+# checks run in CI), so probe with what it does check: shell syntax.
+tmp=probe_$$.sh
+printf 'if then fi\n' > "$tmp"
+git add -f "$tmp" # -f: this repo's .gitignore is an allowlist (/* then !exceptions)
+if git commit -q -m "probe: must be rejected" >/dev/null 2>&1; then
+  git reset -q --soft HEAD~1 # undo only the probe; --hard would also wipe uncommitted work
+  git reset -q HEAD "$tmp"; rm -f "$tmp"
+  echo "FAIL: the gate accepted a deliberate shell syntax error" >&2
+  exit 1
+fi
+git reset -q HEAD "$tmp" 2>/dev/null || true
+rm -f "$tmp"
+echo "verified: the gate rejects a shell syntax error"
